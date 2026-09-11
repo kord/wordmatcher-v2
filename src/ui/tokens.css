@@ -3,108 +3,108 @@
  * mode) is a single attribute flip rather than a second stylesheet.
  */
 :root {
-  /* Type */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  /*
+    /* Type */
+    --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    /*
    * Chinese text uses whatever serif CJK face the device already has, so the app
    * stays fully offline with no webfont download. Add a self-hosted subset (for
    * example Noto Serif SC) here if a consistent face across devices is wanted.
    */
-  --font-han: 'Songti SC', 'Source Han Serif SC', 'Noto Serif CJK SC', 'STSong', 'SimSun',
-    ui-serif, serif;
+    --font-han: 'Songti SC', 'Source Han Serif SC', 'Noto Serif CJK SC', 'STSong', 'SimSun',
+        ui-serif, serif;
 
-  --step--1: clamp(0.78rem, 0.74rem + 0.4vw, 0.88rem);
-  --step-0: clamp(0.95rem, 0.9rem + 0.5vw, 1.05rem);
-  --step-1: clamp(1.1rem, 1rem + 0.8vw, 1.3rem);
-  --step-2: clamp(1.35rem, 1.2rem + 1.2vw, 1.7rem);
-  --step-3: clamp(1.7rem, 1.4rem + 2vw, 2.4rem);
+    --step--1: clamp(0.78rem, 0.74rem + 0.4vw, 0.88rem);
+    --step-0: clamp(0.95rem, 0.9rem + 0.5vw, 1.05rem);
+    --step-1: clamp(1.1rem, 1rem + 0.8vw, 1.3rem);
+    --step-2: clamp(1.35rem, 1.2rem + 1.2vw, 1.7rem);
+    --step-3: clamp(1.7rem, 1.4rem + 2vw, 2.4rem);
 
-  /* Space */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.5rem;
-  --space-6: 2rem;
+    /* Space */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
 
-  /* Shape */
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-pill: 999px;
+    /* Shape */
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 999px;
 
-  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.06), 0 4px 14px rgb(0 0 0 / 0.06);
-  --shadow-2: 0 8px 30px rgb(0 0 0 / 0.12);
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.06), 0 4px 14px rgb(0 0 0 / 0.06);
+    --shadow-2: 0 8px 30px rgb(0 0 0 / 0.12);
 
-  /* Motion */
-  --duration-fast: 120ms;
-  --duration-base: 220ms;
-  --duration-slow: 420ms;
-  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* Motion */
+    --duration-fast: 120ms;
+    --duration-base: 220ms;
+    --duration-slow: 420ms;
+    --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-  /* Layout */
-  --app-max-width: 30rem;
-  --tap-target: 44px;
-  --option-min-height: 4.5rem;
+    /* Layout */
+    --app-max-width: 30rem;
+    --tap-target: 44px;
+    --option-min-height: 4.5rem;
 }
 
 /* Traditional-first font order when the player has chosen traditional characters. */
 [data-charset='trad'] {
-  --font-han: 'Songti TC', 'Source Han Serif TC', 'Noto Serif CJK TC', 'PMingLiU', 'STSong',
-    ui-serif, serif;
+    --font-han: 'Songti TC', 'Source Han Serif TC', 'Noto Serif CJK TC', 'PMingLiU', 'STSong',
+        ui-serif, serif;
 }
 
 [data-theme='light'] {
-  --bg: #f7f5f0;
-  --bg-elevated: #ffffff;
-  --surface: #ffffff;
-  --surface-2: #efece4;
-  --border: #e0dbd0;
-  --text: #1a1917;
-  --text-muted: #6e6a62;
-  --accent: #b4342a;
-  --accent-text: #ffffff;
-  --accent-soft: #f6e3e0;
-  --success: #2e7d5b;
-  --success-soft: #e0f0e8;
-  --danger: #c0392b;
-  --danger-soft: #f8e3e0;
-  --focus: #2a63b8;
-  --tone-0: #8a857c;
-  --tone-1: #d64545;
-  --tone-2: #c87f0a;
-  --tone-3: #2e7d5b;
-  --tone-4: #2a63b8;
+    --bg: #f7f5f0;
+    --bg-elevated: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #efece4;
+    --border: #e0dbd0;
+    --text: #1a1917;
+    --text-muted: #6e6a62;
+    --accent: #b4342a;
+    --accent-text: #ffffff;
+    --accent-soft: #f6e3e0;
+    --success: #2e7d5b;
+    --success-soft: #e0f0e8;
+    --danger: #c0392b;
+    --danger-soft: #f8e3e0;
+    --focus: #2a63b8;
+    --tone-0: #8a857c;
+    --tone-1: #d64545;
+    --tone-2: #c87f0a;
+    --tone-3: #2e7d5b;
+    --tone-4: #2a63b8;
 }
 
 [data-theme='dark'] {
-  --bg: #14130f;
-  --bg-elevated: #1e1c18;
-  --surface: #1e1c18;
-  --surface-2: #262420;
-  --border: #34312b;
-  --text: #f2efe8;
-  --text-muted: #a8a399;
-  --accent: #e0604f;
-  --accent-text: #1a1917;
-  --accent-soft: #3a2521;
-  --success: #4caf88;
-  --success-soft: #1c3229;
-  --danger: #e2685c;
-  --danger-soft: #3a2422;
-  --focus: #7aa7ff;
-  --tone-0: #948f85;
-  --tone-1: #ef6b6b;
-  --tone-2: #e0a03a;
-  --tone-3: #56c191;
-  --tone-4: #6f9dfa;
+    --bg: #14130f;
+    --bg-elevated: #1e1c18;
+    --surface: #1e1c18;
+    --surface-2: #262420;
+    --border: #34312b;
+    --text: #f2efe8;
+    --text-muted: #a8a399;
+    --accent: #e0604f;
+    --accent-text: #1a1917;
+    --accent-soft: #3a2521;
+    --success: #4caf88;
+    --success-soft: #1c3229;
+    --danger: #e2685c;
+    --danger-soft: #3a2422;
+    --focus: #7aa7ff;
+    --tone-0: #948f85;
+    --tone-1: #ef6b6b;
+    --tone-2: #e0a03a;
+    --tone-3: #56c191;
+    --tone-4: #6f9dfa;
 }
 
 /* Theme-aware pieces that cannot be expressed as a single colour. */
 [data-theme='light'] {
-  --scrim: rgb(26 25 23 / 0.4);
+    --scrim: rgb(26 25 23 / 0.4);
 }
 
 [data-theme='dark'] {
-  --scrim: rgb(0 0 0 / 0.6);
+    --scrim: rgb(0 0 0 / 0.6);
 }

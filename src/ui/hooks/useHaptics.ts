@@ -7,16 +7,16 @@ type Pattern = number | number[]
  * Treat it as progressive enhancement rather than a cross-platform guarantee.
  */
 export function useHaptics(enabled: boolean) {
-  return useCallback(
-    (pattern: Pattern) => {
-      if (!enabled) return
-      if (typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') return
-      try {
-        navigator.vibrate(pattern)
-      } catch {
-        // Some browsers throw when the page is not visible; ignore.
-      }
-    },
-    [enabled],
-  )
+    return useCallback(
+        (pattern: Pattern) => {
+            if (!enabled) return
+            if (typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') return
+            try {
+                navigator.vibrate(pattern)
+            } catch {
+                // Some browsers throw when the page is not visible; ignore.
+            }
+        },
+        [enabled],
+    )
 }

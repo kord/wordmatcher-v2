@@ -96,6 +96,16 @@
     line-height: 1.15;
 }
 
+/*
+ * A word or a reading belongs on one line. Without this the text would rather
+ * wrap and grow than shrink, so 怎么 would stack as 怎 / 么 to gain a few pixels.
+ * Wrapping also makes the overflow measurable: the element reports its true
+ * single-line width instead of a wrapped, clamped one.
+ */
+.promptSingleLine {
+    white-space: nowrap;
+}
+
 .hanPrompt {
     font-family: var(--font-han);
     font-weight: 500;

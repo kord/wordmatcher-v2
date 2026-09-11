@@ -9,5 +9,5 @@ import type { Objective } from './types'
  * down-weighting a mode the player keeps failing).
  */
 export function chooseObjective(rng: Rng): Objective {
-  return pickWeighted(OBJECTIVES, () => 1, rng) ?? 'zh-en'
+    return pickWeighted(OBJECTIVES, () => 1, rng) ?? 'zh-en'
 }

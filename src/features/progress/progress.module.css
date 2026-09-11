@@ -1,58 +1,58 @@
 .stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-2);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
 }
 
 .stat {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: var(--space-3);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: var(--space-3);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
 }
 
 .statValue {
-  font-size: var(--step-2);
-  font-weight: 700;
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
+    font-size: var(--step-2);
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
 }
 
 .statLabel {
-  font-size: var(--step--1);
-  color: var(--text-muted);
+    font-size: var(--step--1);
+    color: var(--text-muted);
 }
 
 .sessionRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--border);
-  font-size: var(--step--1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border);
+    font-size: var(--step--1);
 }
 
 .sessionRow:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
 
 .sessionScore {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
 }
 
 .sessionMeta {
-  color: var(--text-muted);
+    color: var(--text-muted);
 }
 
 .masteryHeader {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--step--1);
-  color: var(--text-muted);
-  margin-bottom: var(--space-2);
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    margin-bottom: var(--space-2);
 }

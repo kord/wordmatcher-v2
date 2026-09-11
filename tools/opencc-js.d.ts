@@ -3,18 +3,18 @@
  * Only the converter factory used by the build-time data pipeline is declared.
  */
 declare module 'opencc-js' {
-  export interface ConverterOptions {
-    from: string
-    to: string
-  }
+    export interface ConverterOptions {
+        from: string
+        to: string
+    }
 
-  export type Converter = (text: string) => string
+    export type Converter = (text: string) => string
 
-  export function Converter(options: ConverterOptions): Converter
+    export function Converter(options: ConverterOptions): Converter
 
-  const OpenCC: {
-    Converter: typeof Converter
-  }
+    const OpenCC: {
+        Converter: typeof Converter
+    }
 
-  export default OpenCC
+    export default OpenCC
 }

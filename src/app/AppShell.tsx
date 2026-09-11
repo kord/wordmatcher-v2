@@ -9,9 +9,9 @@ import shellStyles from './AppShell.module.css'
  * centred max-width column keeps tablets from stretching the layout.
  */
 export function AppShell({ children }: { children: ReactNode }) {
-  return (
-    <div className={shellStyles.shell}>
-      <div className={shellStyles.inner}>{children}</div>
-    </div>
-  )
+    return (
+        <div className={shellStyles.shell}>
+            <div className={shellStyles.inner}>{children}</div>
+        </div>
+    )
 }

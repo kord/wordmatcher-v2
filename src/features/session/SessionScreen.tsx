@@ -501,12 +501,20 @@ function PromptText({
     // reaching for with `clamp(16px, 50px, 220px)`, which never scaled at all.
     const max = PROMPT_MAX_FONT[kind]
 
+    // A word or a reading stays on one line and shrinks to fit the width. An
+    // English gloss is prose and may wrap, or a long one would become unreadable.
+    const singleLine = kind !== 'gloss'
+
     const { ref } = useFitText<HTMLDivElement>(text, { max, min: 14 })
 
     return (
         <div
             ref={ref}
-            className={[styles.promptText, kind === 'han' ? styles.hanPrompt : '']
+            className={[
+                styles.promptText,
+                kind === 'han' ? styles.hanPrompt : '',
+                singleLine ? styles.promptSingleLine : '',
+            ]
                 .filter(Boolean)
                 .join(' ')}
         >

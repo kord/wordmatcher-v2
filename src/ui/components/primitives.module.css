@@ -1,368 +1,368 @@
 /* --------------------------------------------------------------- app shell */
 
 .shell {
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
-  min-height: 100dvh;
-  background: var(--bg);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--bg);
 }
 
 .inner {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  width: 100%;
-  max-width: var(--app-max-width);
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding-top: env(safe-area-inset-top);
-  padding-right: max(var(--space-4), env(safe-area-inset-right));
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: max(var(--space-4), env(safe-area-inset-left));
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    width: 100%;
+    max-width: var(--app-max-width);
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+    padding-right: max(var(--space-4), env(safe-area-inset-right));
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: max(var(--space-4), env(safe-area-inset-left));
 }
 
 /* ------------------------------------------------------------------ screen */
 
 .screen {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  min-height: 0;
-  gap: var(--space-3);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 0;
+    gap: var(--space-3);
 }
 
 .header {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--space-2);
-  padding-top: var(--space-3);
-  min-height: 2.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    min-height: 2.5rem;
 }
 
 .headerText {
-  min-width: 0;
-  text-align: center;
+    min-width: 0;
+    text-align: center;
 }
 
 .title {
-  font-size: var(--step-1);
-  font-weight: 650;
-  letter-spacing: -0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    font-size: var(--step-1);
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .subtitle {
-  font-size: var(--step--1);
-  color: var(--text-muted);
+    font-size: var(--step--1);
+    color: var(--text-muted);
 }
 
 .body {
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
 }
 
 .bodyFlush {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .footer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding-bottom: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-bottom: var(--space-3);
 }
 
 /* ------------------------------------------------------------------ button */
 
 .button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  min-height: var(--tap-target);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  font-size: var(--step-0);
-  font-weight: 600;
-  transition:
-    transform var(--duration-fast) var(--ease-out),
-    background-color var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--tap-target);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    font-size: var(--step-0);
+    font-weight: 600;
+    transition:
+        transform var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out),
+        border-color var(--duration-fast) var(--ease-out);
 }
 
 .button:active:not(:disabled) {
-  transform: scale(0.98);
+    transform: scale(0.98);
 }
 
 .button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .block {
-  width: 100%;
+    width: 100%;
 }
 
 .primary {
-  background: var(--accent);
-  color: var(--accent-text);
-  box-shadow: var(--shadow-1);
+    background: var(--accent);
+    color: var(--accent-text);
+    box-shadow: var(--shadow-1);
 }
 
 .secondary {
-  background: var(--surface);
-  color: var(--text);
-  border-color: var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border);
 }
 
 .ghost {
-  background: transparent;
-  color: var(--text-muted);
+    background: transparent;
+    color: var(--text-muted);
 }
 
 .danger {
-  background: transparent;
-  color: var(--danger);
-  border-color: var(--danger);
+    background: transparent;
+    color: var(--danger);
+    border-color: var(--danger);
 }
 
 .iconButton {
-  min-height: var(--tap-target);
-  min-width: var(--tap-target);
-  padding: var(--space-2);
-  border-radius: var(--radius-pill);
-  color: var(--text-muted);
-  font-size: var(--step-0);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+    min-height: var(--tap-target);
+    min-width: var(--tap-target);
+    padding: var(--space-2);
+    border-radius: var(--radius-pill);
+    color: var(--text-muted);
+    font-size: var(--step-0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .iconButton:active {
-  background: var(--surface-2);
+    background: var(--surface-2);
 }
 
 /* -------------------------------------------------------------------- card */
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-1);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    box-shadow: var(--shadow-1);
 }
 
 .cardLabel {
-  font-size: var(--step--1);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  margin-bottom: var(--space-2);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-2);
 }
 
 /* ------------------------------------------------------------------ pinyin */
 
 .pinyin {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  white-space: normal;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: normal;
 }
 
 .syllable {
-  color: inherit;
+    color: inherit;
 }
 
 .syllable[data-tone='0'] {
-  color: var(--tone-0);
+    color: var(--tone-0);
 }
 
 .syllable[data-tone='1'] {
-  color: var(--tone-1);
+    color: var(--tone-1);
 }
 
 .syllable[data-tone='2'] {
-  color: var(--tone-2);
+    color: var(--tone-2);
 }
 
 .syllable[data-tone='3'] {
-  color: var(--tone-3);
+    color: var(--tone-3);
 }
 
 .syllable[data-tone='4'] {
-  color: var(--tone-4);
+    color: var(--tone-4);
 }
 
 .syllable sup {
-  font-size: 0.6em;
-  line-height: 1;
+    font-size: 0.6em;
+    line-height: 1;
 }
 
 /* --------------------------------------------------------- progress / meter */
 
 .meterTrack {
-  width: 100%;
-  height: 0.5rem;
-  border-radius: var(--radius-pill);
-  background: var(--surface-2);
-  overflow: hidden;
+    width: 100%;
+    height: 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--surface-2);
+    overflow: hidden;
 }
 
 .meterFill {
-  height: 100%;
-  border-radius: var(--radius-pill);
-  background: var(--accent);
-  transition: width var(--duration-base) var(--ease-out);
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    transition: width var(--duration-base) var(--ease-out);
 }
 
 /* -------------------------------------------------------- segmented control */
 
 .segmented {
-  display: flex;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  background: var(--surface-2);
-  border-radius: var(--radius-pill);
+    display: flex;
+    gap: var(--space-1);
+    padding: var(--space-1);
+    background: var(--surface-2);
+    border-radius: var(--radius-pill);
 }
 
 .segment {
-  flex: 1 1 0;
-  min-height: 2.25rem;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-pill);
-  font-size: var(--step--1);
-  font-weight: 600;
-  color: var(--text-muted);
-  text-align: center;
-  transition: background-color var(--duration-fast) var(--ease-out);
+    flex: 1 1 0;
+    min-height: 2.25rem;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    transition: background-color var(--duration-fast) var(--ease-out);
 }
 
 .segment[aria-checked='true'] {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: var(--shadow-1);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-1);
 }
 
 /* -------------------------------------------------------------- list / rows */
 
 .rowList {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
 }
 
 .row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  min-height: var(--tap-target);
-  padding: var(--space-3) var(--space-4);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  text-align: left;
-  width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: var(--tap-target);
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    text-align: left;
+    width: 100%;
 }
 
 .rowSelected {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+    border-color: var(--accent);
+    background: var(--accent-soft);
 }
 
 .rowMain {
-  min-width: 0;
+    min-width: 0;
 }
 
 .rowTitle {
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .rowMeta {
-  font-size: var(--step--1);
-  color: var(--text-muted);
+    font-size: var(--step--1);
+    color: var(--text-muted);
 }
 
 /* ------------------------------------------------------------------ fields */
 
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
 }
 
 .fieldLabel {
-  font-size: var(--step--1);
-  font-weight: 600;
-  color: var(--text-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--text-muted);
 }
 
 .switchRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  min-height: var(--tap-target);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: var(--tap-target);
 }
 
 .switch {
-  position: relative;
-  flex: 0 0 auto;
-  width: 3rem;
-  height: 1.75rem;
-  border-radius: var(--radius-pill);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  transition: background-color var(--duration-fast) var(--ease-out);
+    position: relative;
+    flex: 0 0 auto;
+    width: 3rem;
+    height: 1.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    transition: background-color var(--duration-fast) var(--ease-out);
 }
 
 .switch[aria-checked='true'] {
-  background: var(--accent);
-  border-color: var(--accent);
+    background: var(--accent);
+    border-color: var(--accent);
 }
 
 .switchKnob {
-  position: absolute;
-  top: 50%;
-  left: 0.2rem;
-  width: 1.3rem;
-  height: 1.3rem;
-  border-radius: 50%;
-  background: var(--surface);
-  box-shadow: var(--shadow-1);
-  transform: translateY(-50%);
-  transition: left var(--duration-fast) var(--ease-out);
+    position: absolute;
+    top: 50%;
+    left: 0.2rem;
+    width: 1.3rem;
+    height: 1.3rem;
+    border-radius: 50%;
+    background: var(--surface);
+    box-shadow: var(--shadow-1);
+    transform: translateY(-50%);
+    transition: left var(--duration-fast) var(--ease-out);
 }
 
 .switch[aria-checked='true'] .switchKnob {
-  left: calc(100% - 1.5rem);
+    left: calc(100% - 1.5rem);
 }
 
 /* -------------------------------------------------------- empty / messages */
 
 .empty {
-  margin: auto;
-  text-align: center;
-  color: var(--text-muted);
-  padding: var(--space-5);
-  font-size: var(--step-0);
+    margin: auto;
+    text-align: center;
+    color: var(--text-muted);
+    padding: var(--space-5);
+    font-size: var(--step-0);
 }
 
 .error {
-  color: var(--danger);
-  background: var(--danger-soft);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  font-size: var(--step--1);
+    color: var(--danger);
+    background: var(--danger-soft);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    font-size: var(--step--1);
 }

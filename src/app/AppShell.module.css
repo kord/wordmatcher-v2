@@ -1,21 +1,21 @@
 .shell {
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
-  min-height: 100dvh;
-  background: var(--bg);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--bg);
 }
 
 .inner {
-  display: grid;
-  /* One full-height row: the screen inside it owns the header/body/footer split. */
-  grid-template-rows: 1fr;
-  width: 100%;
-  max-width: var(--app-max-width);
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding-top: env(safe-area-inset-top);
-  padding-right: max(var(--space-4), env(safe-area-inset-right));
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: max(var(--space-4), env(safe-area-inset-left));
+    display: grid;
+    /* One full-height row: the screen inside it owns the header/body/footer split. */
+    grid-template-rows: 1fr;
+    width: 100%;
+    max-width: var(--app-max-width);
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+    padding-right: max(var(--space-4), env(safe-area-inset-right));
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: max(var(--space-4), env(safe-area-inset-left));
 }

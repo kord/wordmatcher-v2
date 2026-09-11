@@ -60,6 +60,20 @@ test('session, reveal and summary all fit the viewport', async ({ page }) => {
 
     expect(await measureSpillage()).toEqual({ promptSpills: false, optionSpills: false })
 
+    // A prompt made of characters must not be split across lines, whatever its
+    // length: the text shrinks to fit the width instead.
+    const promptLineCount = await page.evaluate(() => {
+        const box = document.querySelector('[data-testid="prompt"]')
+        const el = box ? box.querySelector('div') : null
+        if (!el) return null
+        if (!/[\u4e00-\u9fff]/.test(el.textContent ?? '')) return null
+
+        const lineHeight = Number.parseFloat(getComputedStyle(el).lineHeight) || 1
+        return Math.round(el.getBoundingClientRect().height / lineHeight)
+    })
+
+    if (promptLineCount !== null) expect(promptLineCount).toBe(1)
+
     await options.first().click()
 
     await expect(page.getByTestId('reveal')).toBeVisible()

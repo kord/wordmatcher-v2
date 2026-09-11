@@ -14,12 +14,12 @@ const DAY = 24 * HOUR
 
 /** How long a word rests once it lands in each box. Index === box. */
 export const INTERVALS_MS = [
-  1 * MINUTE, // 0 - just got it wrong or first exposure
-  5 * MINUTE, // 1
-  20 * MINUTE, // 2
-  2 * HOUR, // 3
-  1 * DAY, // 4
-  4 * DAY, // 5
+    1 * MINUTE, // 0 - just got it wrong or first exposure
+    5 * MINUTE, // 1
+    20 * MINUTE, // 2
+    2 * HOUR, // 3
+    1 * DAY, // 4
+    4 * DAY, // 5
 ]
 
 /** A missed word comes back quickly. */

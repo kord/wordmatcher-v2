@@ -1,55 +1,55 @@
 .group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
 }
 
 .groupTitle {
-  font-size: var(--step--1);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--text-muted);
+    font-size: var(--step--1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
 }
 
 .preview {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  padding: var(--space-3);
-  background: var(--surface-2);
-  border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--surface-2);
+    border-radius: var(--radius-md);
 }
 
 .previewHan {
-  font-family: var(--font-han);
-  font-size: var(--step-3);
+    font-family: var(--font-han);
+    font-size: var(--step-3);
 }
 
 .previewPinyin {
-  font-size: var(--step-1);
+    font-size: var(--step-1);
 }
 
 .attribution {
-  font-size: var(--step--1);
-  color: var(--text-muted);
-  line-height: 1.6;
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    line-height: 1.6;
 }
 
 .attribution a {
-  color: var(--accent);
+    color: var(--accent);
 }
 
 .dangerRow {
-  display: flex;
-  gap: var(--space-2);
+    display: flex;
+    gap: var(--space-2);
 }
 
-.dangerRow > * {
-  flex: 1 1 0;
+.dangerRow>* {
+    flex: 1 1 0;
 }
