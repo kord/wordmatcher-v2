@@ -332,6 +332,16 @@
     border-color: var(--accent);
 }
 
+.switch:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.switch[aria-checked='true']:disabled {
+    background: var(--surface-2);
+    border-color: var(--border);
+}
+
 .switchKnob {
     position: absolute;
     top: 50%;

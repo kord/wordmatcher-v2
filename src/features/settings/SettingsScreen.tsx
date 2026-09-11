@@ -12,6 +12,7 @@ import { Screen } from '../../ui/components/Screen'
 import { SegmentedControl } from '../../ui/components/SegmentedControl'
 import { Field, Switch } from '../../ui/components/Switch'
 import { useSettings } from '../../ui/hooks/useSettings'
+import { useTts } from '../../ui/hooks/useTts'
 import { resetProgress } from '../../storage/progressRepo'
 import { resetSessions } from '../../storage/sessionRepo'
 import { useSession } from '../session/SessionProvider'
@@ -40,6 +41,7 @@ const THEMES: { value: ThemePreference; label: string }[] = [
 
 export function SettingsScreen() {
     const { settings, update } = useSettings()
+    const { available: ttsAvailable } = useTts()
     const { navigate } = useRoute()
     const { quit } = useSession()
 
@@ -247,8 +249,13 @@ export function SettingsScreen() {
 
                 <Switch
                     label="Speak the answer"
-                    description="Uses your device's built-in Mandarin voice."
-                    checked={settings.sound}
+                    description={
+                        ttsAvailable
+                            ? "Uses your device's built-in Mandarin voice."
+                            : 'Unavailable — no Chinese voice is installed on this device.'
+                    }
+                    checked={settings.sound && ttsAvailable}
+                    disabled={!ttsAvailable}
                     onChange={(sound) => update({ sound })}
                 />
 

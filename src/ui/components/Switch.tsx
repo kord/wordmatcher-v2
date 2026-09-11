@@ -5,9 +5,10 @@ export interface SwitchProps {
     onChange: (checked: boolean) => void
     label: string
     description?: string
+    disabled?: boolean
 }
 
-export function Switch({ checked, onChange, label, description }: SwitchProps) {
+export function Switch({ checked, onChange, label, description, disabled = false }: SwitchProps) {
     return (
         <div className={styles.switchRow}>
             <div className={styles.rowMain}>
@@ -19,6 +20,8 @@ export function Switch({ checked, onChange, label, description }: SwitchProps) {
                 role="switch"
                 aria-checked={checked}
                 aria-label={label}
+                aria-disabled={disabled || undefined}
+                disabled={disabled}
                 className={styles.switch}
                 onClick={() => onChange(!checked)}
             >

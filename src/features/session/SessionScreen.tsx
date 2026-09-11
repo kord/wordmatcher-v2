@@ -91,7 +91,7 @@ export function SessionScreen() {
     const { settings } = useSettings()
     const { navigate } = useRoute()
     const reduced = useReducedMotion()
-    const { speak } = useTts()
+    const { speak, available: ttsAvailable } = useTts()
     const haptic = useHaptics(settings.haptics)
 
     const [now, setNow] = useState(() => Date.now())
@@ -290,10 +290,19 @@ export function SessionScreen() {
 
     // Speak the word once per question, when the answer is revealed.
     useEffect(() => {
-        if (!reveal || !state || !settings.sound || spokenIndex === index) return
+        if (!reveal || !state || !settings.sound || !ttsAvailable || spokenIndex === index) return
         setSpokenIndex(index)
         speak(faceFor(state.question.entry, 'han', settings.characterSet).text)
-    }, [reveal, state, settings.sound, settings.characterSet, speak, spokenIndex, index])
+    }, [
+        reveal,
+        state,
+        settings.sound,
+        settings.characterSet,
+        ttsAvailable,
+        speak,
+        spokenIndex,
+        index,
+    ])
 
     // Auto-advance, with a longer beat after a miss so the answer can be read.
     useEffect(() => {
@@ -415,7 +424,7 @@ export function SessionScreen() {
                                 </span>
                                 <span className={styles.revealGloss}>{state.question.entry.glossShort}</span>
                             </div>
-                            {settings.sound ? (
+                            {settings.sound && ttsAvailable ? (
                                 <button
                                     type="button"
                                     className={styles.speaker}

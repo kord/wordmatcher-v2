@@ -13,7 +13,7 @@ import styles from './review.module.css'
 
 function ReviewCard({ mistake }: { mistake: MistakeRecord }) {
     const { settings } = useSettings()
-    const { speak, supported } = useTts()
+    const { speak, available: ttsAvailable } = useTts()
     const hanText = faceFor(mistake.entry, 'han', settings.characterSet).text
 
     return (
@@ -59,7 +59,7 @@ function ReviewCard({ mistake }: { mistake: MistakeRecord }) {
                 </div>
             </div>
 
-            {supported && settings.sound ? (
+            {ttsAvailable && settings.sound ? (
                 <Button variant="secondary" onClick={() => speak(hanText)}>
                     🔊 Play pronunciation
                 </Button>
