@@ -117,8 +117,8 @@ async function main() {
     // mark is centred on what is actually drawn.
     await page.setContent(
         `<body style="margin:0"><svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS}" height="${CANVAS}">` +
-            `<text id="probe" x="0" y="0" font-family="${GLYPH_FONT}" font-weight="700" font-size="100" ` +
-            `stroke-width="${GLYPH_EMBOLDEN}" stroke-linejoin="round">${GLYPH}</text></svg></body>`,
+        `<text id="probe" x="0" y="0" font-family="${GLYPH_FONT}" font-weight="700" font-size="100" ` +
+        `stroke-width="${GLYPH_EMBOLDEN}" stroke-linejoin="round">${GLYPH}</text></svg></body>`,
     )
     const ink = await page.evaluate(() => {
         const box = document.getElementById('probe').getBBox()
@@ -140,11 +140,11 @@ async function main() {
         await page.setViewportSize({ width: size, height: size })
         await page.setContent(
             `<body style="margin:0">` +
-                variants[variant].replace(
-                    `width="${CANVAS}" height="${CANVAS}"`,
-                    `width="${size}" height="${size}"`,
-                ) +
-                `</body>`,
+            variants[variant].replace(
+                `width="${CANVAS}" height="${CANVAS}"`,
+                `width="${size}" height="${size}"`,
+            ) +
+            `</body>`,
         )
         return page.locator('svg').screenshot()
     }
