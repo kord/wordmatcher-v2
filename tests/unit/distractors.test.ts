@@ -142,6 +142,26 @@ describe('buildQuestion', () => {
     expect(positions.size).toBeGreaterThan(1)
   })
 
+  it('can source distractors from a pool that excludes the answer', () => {
+    // A mistake-review session may hold one word, so distractors come from the
+    // wider studied list instead.
+    const entries = pool()
+    const lone = entries[0]
+
+    const question = buildQuestion({
+      entry: lone,
+      objective: 'zh-en',
+      pool: entries.slice(1),
+      optionCount: 4,
+      charset: 'simp',
+      rng: mulberry32(17),
+    })
+
+    expect(question.options).toHaveLength(4)
+    expect(question.options.filter((option) => option.isAnswer)).toHaveLength(1)
+    expect(question.options.find((option) => option.isAnswer)?.entry.id).toBe(lone.id)
+  })
+
   it('prefers distractors at the same level and syllable count', () => {
     const answer = makeEntry({ simp: '甲', id: 'target', glossShort: 'target', hsk: 2, pinyin: makePinyin('jia3') })
     const sameLevelSameLength = makeEntry({ simp: '乙', id: 'near-a', glossShort: 'near a', hsk: 2, pinyin: makePinyin('yi3') })

@@ -172,7 +172,6 @@ export interface ListSelectionByHsk {
   level: HskLevel
   includeLower: boolean
 }
-  characterSet: CharacterSet
 
 export interface ListSelectionByRank {
   kind: 'junda'
@@ -186,6 +185,7 @@ export interface SessionConfig {
   length: SessionLength
   optionCount: number
   pinyinDisplay: PinyinDisplay
+  characterSet: CharacterSet
 }
 
 export interface StoredSession {

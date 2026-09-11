@@ -14,5 +14,10 @@
     "strict": true,
     "types": ["node"]
   },
-  "include": ["vite.config.ts", "tools", "data/source", "src/domain/types.ts", "playwright.config.ts"]
+  "include": ["vite.config.ts", "tools", "data/source", "src/domain/types.ts", "playwright.config.ts"],
+  "exclude": [
+    "data/source/languages.ts",
+    "data/source/matcherDict.ts",
+    "data/source/simplifiedTraditionalDictionary.ts"
+  ]
 }

@@ -1,0 +1,71 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  text-align: center;
+}
+
+.word {
+  font-family: var(--font-han);
+  font-size: clamp(3rem, 26vw, 5.5rem);
+  line-height: 1.05;
+}
+
+.pinyin {
+  font-size: var(--step-2);
+}
+
+.glossList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--step-0);
+}
+
+.counter {
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.compare {
+  width: 100%;
+  display: grid;
+  gap: var(--space-2);
+  text-align: left;
+  font-size: var(--step--1);
+}
+
+.compareRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.compareWrong {
+  color: var(--danger);
+}
+
+.compareRight {
+  color: var(--success);
+}
+
+.nav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.nav > * {
+  flex: 1 1 0;
+}

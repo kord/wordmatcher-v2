@@ -193,4 +193,20 @@ describe('sessionSummary', () => {
     expect(summary.mistakes).toHaveLength(1)
     expect(summary.listNames).toEqual(['HSK 1'])
   })
+
+  it('lists each missed word once while counting every wrong answer', () => {
+    let state = createSession(config({ length: { unit: 'rounds', value: 3 } }), questionFor(0), NOW)
+    const repeated = state.question
+    // The same word is missed twice: the original question and its re-ask.
+    state = answering(state, false, NOW + 1000)
+    state = sessionReducer(state, { type: 'advance', question: repeated, now: NOW + 1000 })
+    state = answering(state, false, NOW + 2000)
+    state = sessionReducer(state, { type: 'finish', now: NOW + 3000 })
+
+    const summary = sessionSummary(state, ['HSK 1'], NOW + 3000)
+
+    expect(summary.incorrect).toBe(2)
+    expect(summary.mistakes).toHaveLength(1)
+    expect(summary.mistakes[0].entry.id).toBe(repeated.entry.id)
+  })
 })

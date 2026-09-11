@@ -1,6 +1,5 @@
 import type {
   AnsweredQuestion,
-  CharacterSet,
   MistakeRecord,
   Outcome,
   Question,
@@ -160,7 +159,22 @@ export function sessionSummary(
     incorrect: state.incorrect,
     longestStreak: state.longestStreak,
     durationMs: Math.max(0, finishedAt - state.startedAt),
-    mistakes: state.mistakes,
+    mistakes: dedupeMistakes(state.mistakes),
     listNames,
   }
+}
+
+/**
+ * One review entry per word. A word missed twice (for example the original
+ * question and its in-session re-ask) should be reviewed once, while the
+ * `incorrect` tally still counts every wrong answer.
+ */
+function dedupeMistakes(mistakes: MistakeRecord[]): MistakeRecord[] {
+  const byWord = new Map<string, MistakeRecord>()
+
+  for (const mistake of mistakes) {
+    if (!byWord.has(mistake.entry.id)) byWord.set(mistake.entry.id, mistake)
+  }
+
+  return [...byWord.values()]
 }

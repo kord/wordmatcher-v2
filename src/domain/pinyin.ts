@@ -16,6 +16,11 @@ export interface RenderedSyllable {
 
 export { isHan } from './han'
 
+/** Unicode superscript for a tone, including 5 for the neutral tone. */
+export function toneSuperscript(tone: Tone): string {
+  return SUPERSCRIPT[tone] ?? ''
+}
+
 export function renderPinyinSyllables(pinyin: Pinyin, style: PinyinStyle): RenderedSyllable[] {
   return pinyin.syllables.map((syllable) => {
     // Tokens that did not come from a Chinese character (ellipses, punctuation,
