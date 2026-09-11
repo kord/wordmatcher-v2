@@ -82,7 +82,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
 
       const answerOption = state.question.options.find((option) => option.isAnswer)
       const chosenOption = state.question.options.find(
-        (option) => option.entry.id === action.chosenId,
+        (option) => option.id === action.chosenId,
       )
       if (!answerOption || !chosenOption) return state
 

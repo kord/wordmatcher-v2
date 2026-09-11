@@ -48,7 +48,7 @@ function answering(state: SessionState, correct: boolean, now: number): SessionS
   const target = correct
     ? state.question.options.find((option) => option.isAnswer)
     : state.question.options.find((option) => !option.isAnswer)
-  return sessionReducer(state, { type: 'answer', chosenId: target!.entry.id, now })
+  return sessionReducer(state, { type: 'answer', chosenId: target!.id, now })
 }
 
 describe('createSession', () => {

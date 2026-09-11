@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isHan, renderPinyinSyllables, renderPinyinText } from '../../src/domain/pinyin'
+import { applyToneMark, isHan, pinyinFromSyllables, renderPinyinSyllables, renderPinyinText } from '../../src/domain/pinyin'
 import type { Pinyin } from '../../src/domain/types'
 import { makePinyin } from './fixtures'
 
@@ -89,5 +89,57 @@ describe('renderPinyinText', () => {
 
   it('does not invent tone markers for non-Chinese tokens', () => {
     expect(renderPinyinText(makePinyin('ai4', 'qing2'), 'superscript')).toBe('ai⁴ qing²')
+  })
+})
+
+describe('applyToneMark', () => {
+  it('puts the mark on a when there is one', () => {
+    expect(applyToneMark('hao', 3)).toBe('hǎo')
+    expect(applyToneMark('zhang', 1)).toBe('zhāng')
+  })
+
+  it('prefers o, then e, when there is no a', () => {
+    expect(applyToneMark('zhong', 1)).toBe('zhōng')
+    expect(applyToneMark('xie', 4)).toBe('xiè')
+  })
+
+  it('marks the last vowel for iu and ui', () => {
+    expect(applyToneMark('liu', 2)).toBe('liú')
+    expect(applyToneMark('gui', 4)).toBe('guì')
+  })
+
+  it('marks ü, whether written with an umlaut or a v', () => {
+    expect(applyToneMark('lü', 3)).toBe('lǚ')
+    expect(applyToneMark('lv', 3)).toBe('lǚ')
+  })
+
+  it('leaves a neutral tone unmarked', () => {
+    expect(applyToneMark('de', 0)).toBe('de')
+  })
+
+  it('returns the input when there is no vowel to mark', () => {
+    expect(applyToneMark('…', 2)).toBe('…')
+    expect(applyToneMark('ng', 2)).toBe('ng')
+  })
+})
+
+describe('pinyinFromSyllables', () => {
+  it('joins the marked and numbered forms', () => {
+    const pinyin = pinyinFromSyllables([
+      { base: 'ni', marked: 'nǐ', tone: 3, han: true },
+      { base: 'hao', marked: 'hǎo', tone: 3, han: true },
+    ])
+
+    expect(pinyin.marked).toBe('nǐ hǎo')
+    expect(pinyin.numbered).toBe('ni3 hao3')
+  })
+
+  it('writes the neutral tone as 5 and passes other tokens through', () => {
+    const pinyin = pinyinFromSyllables([
+      { base: 'ma', marked: 'ma', tone: 0, han: true },
+      { base: '…', marked: '…', tone: 0, han: false },
+    ])
+
+    expect(pinyin.numbered).toBe('ma5 …')
   })
 })

@@ -124,7 +124,10 @@ export interface QuestionFace {
 }
 
 export interface QuestionOption {
-  entry: WordEntry
+  /** Unique within the question; doubles as the React key and the answer payload. */
+  id: string
+  /** The dictionary entry behind this option, when it is a real word. */
+  entry?: WordEntry
   face: QuestionFace
   isAnswer: boolean
 }

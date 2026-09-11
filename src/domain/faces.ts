@@ -25,6 +25,18 @@ const OBJECTIVE_LABELS: Record<Objective, string> = {
   'pinyin-zh': 'Pinyin → Chinese',
 }
 
+/**
+ * Instruction shown above the prompt. This must follow the objective, not the
+ * prompt's surface: a Chinese → pinyin question shows characters but asks for
+ * the reading, so keying off the prompt would tell the player to pick a meaning.
+ */
+const TASK_HINTS: Record<Objective, string> = {
+  'zh-en': 'Choose the meaning',
+  'en-zh': 'Choose the word',
+  'zh-pinyin': 'Choose the pinyin',
+  'pinyin-zh': 'Choose the word',
+}
+
 export function promptKindFor(objective: Objective): FaceKind {
   return PROMPT_KIND[objective]
 }
@@ -35,6 +47,10 @@ export function answerKindFor(objective: Objective): FaceKind {
 
 export function objectiveLabel(objective: Objective): string {
   return OBJECTIVE_LABELS[objective]
+}
+
+export function taskHintFor(objective: Objective): string {
+  return TASK_HINTS[objective]
 }
 
 export function faceFor(entry: WordEntry, kind: FaceKind, charset: CharacterSet): QuestionFace {

@@ -26,9 +26,46 @@ test('session, reveal and summary all fit the viewport', async ({ page }) => {
   expect(await options.count()).toBeGreaterThanOrEqual(2)
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1)
 
+  // Neither the prompt nor any option may spill out of its box, at any viewport.
+  const measureSpillage = () =>
+    page.evaluate(() => {
+      const px = (value: string) => Number.parseFloat(value) || 0
+
+      const promptBox = document.querySelector('[data-testid="prompt"]')
+      const promptText = promptBox ? promptBox.querySelector('div') : null
+      let promptSpills = false
+      if (promptBox && promptText) {
+        const style = getComputedStyle(promptBox)
+        const availableWidth =
+          promptBox.clientWidth - px(style.paddingLeft) - px(style.paddingRight)
+        const availableHeight =
+          promptBox.clientHeight - px(style.paddingTop) - px(style.paddingBottom)
+        promptSpills =
+          promptText.scrollWidth > availableWidth + 1 ||
+          promptText.scrollHeight > availableHeight + 1
+      }
+
+      const optionSpills = Array.from(document.querySelectorAll('[data-option-text]')).some(
+        (el) => {
+          const button = el.closest('button')
+          if (!button) return false
+          const text = el.getBoundingClientRect()
+          const box = button.getBoundingClientRect()
+          return text.width > box.width + 1 || text.height > box.height + 1
+        },
+      )
+
+      return { promptSpills, optionSpills }
+    })
+
+  expect(await measureSpillage()).toEqual({ promptSpills: false, optionSpills: false })
+
   await options.first().click()
 
   await expect(page.getByTestId('reveal')).toBeVisible()
+  // The reveal takes height away, so the text must have been re-fitted to it.
+  expect(await measureSpillage()).toEqual({ promptSpills: false, optionSpills: false })
+
   // The vertical budget is the layout's job: nothing may be clipped.
   const clipped = await page.evaluate(() => {
     const el = document.documentElement

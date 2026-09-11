@@ -41,7 +41,7 @@ describe('buildQuestion', () => {
     }
 
     const answer = question.options.find((option) => option.isAnswer)
-    expect(answer?.entry.id).toBe(entries[0].id)
+    expect(answer?.entry?.id).toBe(entries[0].id)
   })
 
   it('never presents two options that read the same', () => {
@@ -159,7 +159,7 @@ describe('buildQuestion', () => {
 
     expect(question.options).toHaveLength(4)
     expect(question.options.filter((option) => option.isAnswer)).toHaveLength(1)
-    expect(question.options.find((option) => option.isAnswer)?.entry.id).toBe(lone.id)
+    expect(question.options.find((option) => option.isAnswer)?.entry?.id).toBe(lone.id)
   })
 
   it('prefers distractors at the same level and syllable count', () => {
@@ -184,8 +184,8 @@ describe('buildQuestion', () => {
       })
       for (const option of question.options) {
         if (option.isAnswer) continue
-        if (option.entry.id.startsWith('near')) nearPicks++
-        if (option.entry.id.startsWith('far')) farPicks++
+        if (option.entry?.id?.startsWith('near')) nearPicks++
+        if (option.entry?.id?.startsWith('far')) farPicks++
       }
     }
 

@@ -235,7 +235,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       const current = stateRef.current
       if (!current || current.phase !== 'asking') return
 
-      const chosen = current.question.options.find((option) => option.entry.id === optionId)
+      const chosen = current.question.options.find((option) => option.id === optionId)
       if (!chosen) return
 
       const now = Date.now()

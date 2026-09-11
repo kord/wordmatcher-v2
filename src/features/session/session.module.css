@@ -14,6 +14,19 @@
   padding-bottom: var(--space-2);
 }
 
+/*
+ * The prompt and the options share this box. Its height is what the grid plan is
+ * measured against, so it must not be influenced by its own children: only the
+ * flex-grow values (set from the plan) move the boundary between them.
+ */
+.playArea {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 0;
+}
+
 /* --------------------------------------------------------------------- hud */
 
 .hud {
@@ -61,7 +74,8 @@
 
 .prompt {
   position: relative;
-  flex: 1.15 1 0;
+  /* flex-grow is set inline from the measured grid plan. */
+  flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,10 +89,11 @@
 }
 
 .promptText {
+  /* Full width so the fit measurement can see when text is too wide. */
+  width: 100%;
   overflow: hidden;
   text-align: center;
   line-height: 1.15;
-  max-width: 100%;
 }
 
 .hanPrompt {
@@ -100,6 +115,7 @@
 /* ----------------------------------------------------------------- options */
 
 .options {
+  /* flex-grow is set inline from the measured grid plan. */
   flex: 1 1 0;
   display: grid;
   grid-template-columns: repeat(var(--columns, 1), 1fr);
@@ -133,7 +149,9 @@
 .optionText {
   overflow: hidden;
   text-align: center;
-  line-height: 1.15;
+  /* Roomy enough that ascenders and descenders are never clipped; the grid plan
+     reads this value back from the DOM, so the two stay in step. */
+  line-height: 1.25;
   max-width: 100%;
 }
 

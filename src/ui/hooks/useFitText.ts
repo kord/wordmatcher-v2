@@ -8,15 +8,38 @@ export interface FitTextOptions {
 }
 
 /**
- * Shrink text until it fits its box.
+ * Shrink (or grow) text until it fits the box it sits in.
  *
- * The previous implementation measured every option with a fresh canvas on every
- * render. This measures with a binary search instead, only when the text or the
- * box size changes, and caches the result per text/size pair.
+ * The measurement is taken against the *container's* content box, not the text
+ * element's own box. A text element hugs its content, so its own `clientHeight`
+ * always equals its `scrollHeight` and the height check could never fail - which
+ * silently capped Latin prompts at about 25px because a font's ink is taller
+ * than a 1.15 line box, and let long Chinese prompts wrap and spill out.
+ *
+ * Results are cached per text and box size, so this runs only when the question
+ * or the box changes, never once per frame.
  */
 const cache = new Map<string, number>()
 
 const MEASURE_STEPS = 11
+/** Stop the cache growing without bound over a long session. */
+const CACHE_LIMIT = 400
+
+function pixels(value: string): number {
+  return Number.parseFloat(value) || 0
+}
+
+/** Content box of the element's parent, which is what the text must fit into. */
+function availableBox(element: HTMLElement): { width: number; height: number } | null {
+  const parent = element.parentElement
+  if (!parent) return null
+
+  const style = getComputedStyle(parent)
+  return {
+    width: parent.clientWidth - pixels(style.paddingLeft) - pixels(style.paddingRight),
+    height: parent.clientHeight - pixels(style.paddingTop) - pixels(style.paddingBottom),
+  }
+}
 
 export function clearFitTextCache(): void {
   cache.clear()
@@ -31,11 +54,12 @@ export function useFitText<T extends HTMLElement>(text: string, options: FitText
     const element = elementRef.current
     if (!element) return
 
-    const width = element.clientWidth
-    const height = element.clientHeight
-    if (width === 0 || height === 0) return
+    const box = availableBox(element)
+    const boxWidth = box ? box.width : element.clientWidth
+    const boxHeight = box ? box.height : element.clientHeight
+    if (boxWidth <= 0 || boxHeight <= 0) return
 
-    const cacheKey = `${text}|${width}x${height}|${max}|${min}`
+    const cacheKey = `${text}|${boxWidth}x${boxHeight}|${max}|${min}`
     const cached = cache.get(cacheKey)
     if (cached !== undefined) {
       element.style.fontSize = `${cached}px`
@@ -46,8 +70,8 @@ export function useFitText<T extends HTMLElement>(text: string, options: FitText
     const fits = (size: number): boolean => {
       element.style.fontSize = `${size}px`
       return (
-        element.scrollWidth <= element.clientWidth + tolerance &&
-        element.scrollHeight <= element.clientHeight + tolerance
+        element.scrollWidth <= boxWidth + tolerance &&
+        element.scrollHeight <= boxHeight + tolerance
       )
     }
 
@@ -56,7 +80,7 @@ export function useFitText<T extends HTMLElement>(text: string, options: FitText
     let best = min
 
     // Binary search for the largest size that still fits.
-    for (let i = 0; i < MEASURE_STEPS; i++) {
+    for (let step = 0; step < MEASURE_STEPS; step++) {
       const mid = (low + high) / 2
       if (fits(mid)) {
         best = mid
@@ -69,6 +93,7 @@ export function useFitText<T extends HTMLElement>(text: string, options: FitText
     // Round down a touch so sub-pixel differences cannot cause overflow.
     best = Math.max(min, Math.floor(best * 10) / 10)
     element.style.fontSize = `${best}px`
+    if (cache.size > CACHE_LIMIT) cache.clear()
     cache.set(cacheKey, best)
     setFontSize(best)
   }, [max, min, text, tolerance])
@@ -87,12 +112,11 @@ export function useFitText<T extends HTMLElement>(text: string, options: FitText
 
     measure()
 
-    if (typeof ResizeObserver === 'undefined') {
-      return
-    }
+    if (typeof ResizeObserver === 'undefined') return
 
     const observer = new ResizeObserver(() => measure())
     observer.observe(element)
+    if (element.parentElement) observer.observe(element.parentElement)
     return () => observer.disconnect()
   }, [measure])
 
