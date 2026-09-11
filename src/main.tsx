@@ -23,7 +23,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Started for its side effect only - the handle is never read, and `noUnusedLocals`
+// rejects an unused binding.
+void getAnalytics(app);
 
 const container = document.getElementById('root')
 if (!container) throw new Error('Root element #root is missing from index.html')

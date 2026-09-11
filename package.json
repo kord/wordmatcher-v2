@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
-    "data:build": "tsx tools/build-data.ts"
+    "data:build": "tsx tools/build-data.ts",
+    "icons": "node tools/build-icons.mjs"
   },
   "dependencies": {
     "firebase": "^12.19.0",

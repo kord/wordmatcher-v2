@@ -91,6 +91,13 @@
 .promptText {
     /* Full width so the fit measurement can see when text is too wide. */
     width: 100%;
+    /*
+     * Clipping here is safe only because `useFitText` pads the box to hold the
+     * ink. The element is `lines x line-height` tall, and a font's own box is
+     * taller than that (Segoe UI measures 1.33em against this 1.15em), so the
+     * surplus - which is exactly where descenders live - was being cut off, and
+     * a gloss prompt like "job" lost about 13px off its j.
+     */
     overflow: hidden;
     text-align: center;
     line-height: 1.15;
@@ -157,10 +164,14 @@
 }
 
 .optionText {
-    overflow: hidden;
     text-align: center;
-    /* Roomy enough that ascenders and descenders are never clipped; the grid plan
-     reads this value back from the DOM, so the two stay in step. */
+    /*
+     * 1.25 is closer to the font's own box than the prompt's 1.15, but it is
+     * still short of it (~1.33em for Latin faces), so a descender can poke a
+     * couple of px below this element. No `overflow: hidden` for that reason -
+     * the padding on `.option` is the room it uses. The grid plan reads this
+     * value back from the DOM, so the two stay in step.
+     */
     line-height: 1.25;
     max-width: 100%;
 }
