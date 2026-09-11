@@ -22,7 +22,9 @@ npm run dev
 | `npm run dev`          | Vite dev server                                                     |
 | `npm run build`        | Type-check then build to `dist/`                                    |
 | `npm run preview`      | Serve the production build locally                                  |
+| `npm run deploy`       | Deploy to Firebase — see [Deploying](#deploying)                     |
 | `npm run data:build`   | Regenerate `public/data/lists/*.json` from `data/source`            |
+| `npm run icons`        | Regenerate the PWA icon set from `tools/build-icons.mjs`            |
 | `npm run test`         | Unit tests (Vitest)                                                 |
 | `npm run e2e`          | End-to-end tests (Playwright)                                       |
 | `npm run typecheck`    | Type-check app and tooling configs                                  |
@@ -30,14 +32,18 @@ npm run dev
 
 ## Deploying
 
-Hosting is intentionally left to you. The included `firebase.json` already points Firebase Hosting at
-Vite's `dist/` output (the old project pointed at CRA's `build/`). Set your project id in `.firebaserc`,
-then:
-
 ```sh
-npm run build
-npx firebase deploy --only hosting
+npm run deploy
 ```
+
+Runs `firebase deploy` for the project in `.firebaserc`, publishing `dist/` to Hosting. A `predeploy`
+hook builds first, so a failed type-check aborts the deploy instead of shipping the last build.
+
+Because it is a bare `firebase deploy`, it also pushes the Firestore rules and auth config from
+`firebase.json`. For the site alone, use `npx firebase deploy --only hosting`.
+
+Players see rebuilt word lists one visit after a deploy: the service worker serves the cached copy
+first, then refreshes it in the background.
 
 ## Architecture
 
