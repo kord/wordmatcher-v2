@@ -1,25 +1,8 @@
-/* --------------------------------------------------------------- app shell */
-
-.shell {
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    min-height: 100dvh;
-    background: var(--bg);
-}
-
-.inner {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    width: 100%;
-    max-width: var(--app-max-width);
-    min-height: 100vh;
-    min-height: 100dvh;
-    padding-top: env(safe-area-inset-top);
-    padding-right: max(var(--space-4), env(safe-area-inset-right));
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: max(var(--space-4), env(safe-area-inset-left));
-}
+/*
+ * The app shell (.shell / .inner) lives with the component that renders it:
+ * src/app/AppShell.module.css. It used to be duplicated here as well, which made it
+ * alarmingly easy to "fix" the copy that nothing applies - so it is gone.
+ */
 
 /* ------------------------------------------------------------------ screen */
 

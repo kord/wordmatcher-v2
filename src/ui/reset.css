@@ -15,6 +15,15 @@ body,
 html {
     /* Stop iOS from inflating text in landscape. */
     -webkit-text-size-adjust: 100%;
+    /*
+     * Panning only - pinch-zoom is disabled on purpose. The layout sizes text to fit
+     * the screen, so a zoomed view leaves the prompt and its options overlapping. The
+     * viewport meta says the same thing, but iOS Safari only honours `user-scalable=no`
+     * once the app is on the home screen; `touch-action` is intersected down from here
+     * to cover the rest. Note this is an accessibility trade-off: someone who needs to
+     * magnify cannot.
+     */
+    touch-action: pan-x pan-y;
 }
 
 body {

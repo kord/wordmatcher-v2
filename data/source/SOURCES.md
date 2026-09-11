@@ -62,8 +62,11 @@ Obligations, which apply to every redistributed copy of the generated JSON as we
 1. Credit CC-CEDICT and name the licence. The Settings screen does this — keep it in step.
 2. License copies of the data under CC BY-SA 4.0. Do not relicense them as MIT.
 3. State that the data has been changed. The build regenerates pinyin with `pinyin-pro`, converts
-   traditional forms with `opencc-js`, de-duplicates entries, and truncates glosses to the first sense
-   for `glossShort`.
+   traditional forms with `opencc-js`, de-duplicates entries, truncates glosses to the first sense for
+   `glossShort`, normalises CC-CEDICT's internal markup out of the gloss text, drops senses that are
+   usage notes rather than meanings, and applies the hand corrections listed in
+   `tools/lib/glossOverrides.ts`. See `tools/lib/gloss.ts` for what the normalising does, and
+   `tests/unit/dataQuality.test.ts` for the invariants it guarantees.
 
 The `txt/` originals are kept for provenance only; the same terms apply to them.
 

@@ -129,6 +129,64 @@ test('a miss can be reviewed and re-practised', async ({ page }) => {
 })
 
 /**
+ * The bug this guards: the shell used `min-height` rather than `height`, so the content
+ * column grew to fit its contents. The screen's scrolling body then measured exactly as
+ * tall as its contents and had nothing to scroll, while its `overscroll-behavior: contain`
+ * stopped the gesture chaining up to the document - so a long screen such as Settings
+ * could not be scrolled at all, by touch or by wheel. It shipped because the layout looks
+ * perfectly fine until the content is taller than the phone.
+ */
+test('a screen taller than the viewport scrolls to the end', async ({ page }) => {
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Settings' }).click()
+    await expect(page.getByRole('heading', { name: 'Word list' })).toBeVisible()
+
+    const scroller = page.getByTestId('screen-body')
+    await expect(scroller).toBeVisible()
+
+    const layout = await page.evaluate(() => {
+        const body = document.querySelector('[data-testid="screen-body"]')
+        if (!body) return null
+        const doc = document.documentElement
+        return {
+            scrollable: body.scrollHeight > body.clientHeight,
+            // One scroll container, not two: the page itself must not also overflow.
+            documentOverflow: doc.scrollHeight - doc.clientHeight,
+        }
+    })
+
+    expect(layout?.scrollable).toBe(true)
+    expect(layout?.documentOverflow ?? 99).toBeLessThanOrEqual(1)
+
+    // Scroll it the way a player would, with a gesture over the content.
+    const box = await scroller.boundingBox()
+    if (!box) throw new Error('the screen body has no box')
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+    for (let i = 0; i < 12; i += 1) {
+        await page.mouse.wheel(0, 500)
+        await page.waitForTimeout(60)
+    }
+
+    const end = await page.evaluate(() => {
+        const body = document.querySelector('[data-testid="screen-body"]')
+        if (!body) return null
+        const heading = Array.from(document.querySelectorAll('h2')).find(
+            (h) => h.textContent?.trim() === 'Sources',
+        )
+        const rect = heading ? heading.getBoundingClientRect() : null
+        return {
+            moved: body.scrollTop > 0,
+            reachedEnd: Math.round(body.scrollTop + body.clientHeight) >= body.scrollHeight - 2,
+            lastSectionVisible: rect ? rect.top >= 0 && rect.bottom <= window.innerHeight : false,
+        }
+    })
+
+    expect(end?.moved).toBe(true)
+    expect(end?.reachedEnd).toBe(true)
+    expect(end?.lastSectionVisible).toBe(true)
+})
+
+/**
  * The bug this guards against: `.promptText` clipped to its own box, and that box
  * is only `lines x line-height` tall - shorter than the font's own box (Segoe UI
  * measures ~1.33em against a 1.15em line-height). Every descender was sliced off,

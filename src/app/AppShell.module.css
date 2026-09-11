@@ -1,8 +1,16 @@
+/*
+ * A bounded height, not `min-height`. With min-height the column grows to fit its
+ * content, and then the screen's `.body` never scrolls: it measures exactly as tall as
+ * its content, so `overflow-y: auto` has nothing to do. The page overflowed the
+ * viewport instead - and because `.body` sets `overscroll-behavior: contain`, the
+ * gesture did not chain up to the document either, so long screens were unscrollable by
+ * touch and by wheel alike.
+ */
 .shell {
     display: flex;
     justify-content: center;
-    min-height: 100vh;
-    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     background: var(--bg);
 }
 
@@ -12,8 +20,8 @@
     grid-template-rows: 1fr;
     width: 100%;
     max-width: var(--app-max-width);
-    min-height: 100vh;
-    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     padding-top: env(safe-area-inset-top);
     padding-right: max(var(--space-4), env(safe-area-inset-right));
     padding-bottom: env(safe-area-inset-bottom);

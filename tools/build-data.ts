@@ -20,6 +20,7 @@ import type {
     WordListFile,
 } from '../src/domain/types.ts'
 import { parseGloss } from './lib/gloss.ts'
+import { glossOverrideFor, unusedGlossOverrides } from './lib/glossOverrides.ts'
 import { buildPinyin } from './lib/pinyin.ts'
 
 import { hsk1Wordlist } from '../data/source/hsk1.ts'
@@ -65,13 +66,19 @@ function buildEntry(pair: WordPairs[number], options: BuildEntryOptions): WordEn
     const pinyin = buildPinyin(simp)
     const parsed = parseGloss(gloss)
 
+    // A hand correction wins over the upstream text. The id stays keyed on the
+    // character and its reading rather than the gloss, so rewording a definition
+    // never disturbs a player's saved progress.
+    const corrected = glossOverrideFor(options.listId, simp, pinyin.numbered)
+    const glosses = corrected ? [...corrected] : parsed.glosses
+
     const entry: WordEntry = {
         id: entryId(simp, pinyin.marked),
         simp,
         trad: toTraditional(simp),
         pinyin,
-        glosses: parsed.glosses,
-        glossShort: parsed.glossShort,
+        glosses,
+        glossShort: glosses[0] ?? parsed.glossShort,
         classifiers: parsed.classifiers,
         listId: options.listId,
     }
@@ -170,6 +177,16 @@ async function main(): Promise<void> {
         `  ${'total'.padEnd(7)} ${String(totalEntries).padStart(5)} entries  ${(totalBytes / 1024).toFixed(1).padStart(7)} KB`,
     )
     console.log('\nManifest written to public/data/lists/manifest.json')
+
+    // An override whose key no longer matches anything is a silent regression: the
+    // correction is gone but the build still succeeds. Fail instead.
+    const orphaned = unusedGlossOverrides()
+    if (orphaned.length > 0) {
+        console.warn(`\n${orphaned.length} gloss override(s) matched no entry:`)
+        for (const key of orphaned) console.warn(`  ${key}`)
+        console.warn('Check the spelling of the key, and that the reading has not changed upstream.')
+        process.exitCode = 1
+    }
 }
 
 main().catch((error: unknown) => {

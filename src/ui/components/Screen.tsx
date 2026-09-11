@@ -39,7 +39,10 @@ export function Screen({
                 {headerActions ?? <span />}
             </header>
 
-            <div className={[styles.body, flush ? styles.bodyFlush : ''].filter(Boolean).join(' ')}>
+            <div
+                data-testid="screen-body"
+                className={[styles.body, flush ? styles.bodyFlush : ''].filter(Boolean).join(' ')}
+            >
                 {children}
             </div>
 

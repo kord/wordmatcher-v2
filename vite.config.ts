@@ -41,10 +41,14 @@ export default defineConfig({
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
-            // Word lists are immutable per build, so serve from cache and only
-            // hit the network when a list has never been downloaded.
+            // Serve the word lists from cache so play works offline, then revalidate in
+            // the background. CacheFirst would be wrong here: the URL is identical on
+            // every build, so a returning player would keep whatever glosses and pinyin
+            // they first loaded, and a data rebuild would never reach them. With
+            // StaleWhileRevalidate the cost is one conditional request per list per
+            // visit - a 304 from Firebase - and a rebuild lands on the next session.
             urlPattern: /\/data\/lists\/.*\.json$/,
-            handler: 'CacheFirst',
+            handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'word-lists',
               expiration: {
