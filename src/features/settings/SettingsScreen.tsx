@@ -304,7 +304,19 @@ export function SettingsScreen() {
                 <h2 className={styles.groupTitle}>Sources</h2>
                 <p className={styles.attribution}>
                     Vocabulary from the HSK lists via hsk.academy; frequency data from Jun Da's Modern Chinese
-                    Character Frequency List. Pinyin generated with{' '}
+                    Character Frequency List. Definitions from{' '}
+                    <a href="https://cc-cedict.org/" rel="noreferrer noopener" target="_blank">
+                        CC-CEDICT
+                    </a>
+                    , used under{' '}
+                    <a
+                        href="https://creativecommons.org/licenses/by-sa/4.0/"
+                        rel="noreferrer noopener"
+                        target="_blank"
+                    >
+                        CC BY-SA 4.0
+                    </a>
+                    . Pinyin regenerated with{' '}
                     <a href="https://github.com/zh-lx/pinyin-pro" rel="noreferrer noopener" target="_blank">
                         pinyin-pro
                     </a>
@@ -312,7 +324,7 @@ export function SettingsScreen() {
                     <a href="https://github.com/nk2028/opencc-js" rel="noreferrer noopener" target="_blank">
                         opencc-js
                     </a>
-                    . Definitions resemble CC-CEDICT content — check the upstream licences before redistributing.
+                    ; entries de-duplicated and glosses shortened. The app's own code is MIT licensed.
                 </p>
             </section>
         </Screen>

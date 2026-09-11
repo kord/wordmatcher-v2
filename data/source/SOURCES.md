@@ -40,6 +40,31 @@ Both are dev dependencies and ship no code to the client.
 
 ## Licensing
 
-No licence file accompanied the original repository, and the gloss text resembles CC-CEDICT-derived
-content. **Verify the licence terms of each upstream list before distributing this app publicly**, and
-keep the in-app attribution screen up to date.
+Two licences apply, and they are not the same one.
+
+**The code is MIT** — see `LICENSE`.
+
+**These lists, and everything generated from them (`public/data/lists/*.json`), are CC BY-SA 4.0.**
+
+The English glosses are CC-CEDICT-derived. That is a match rather than a resemblance: CC-CEDICT gives
+哪 (něi) as "which? (interrogative, followed by classifier or numeral-classifier)", which is verbatim
+the gloss in `hsk1.ts`, and 爱 as "to love / affection / to be fond of / to like". CC-CEDICT is licensed
+CC BY-SA 4.0, so these files inherit attribution and share-alike terms and **cannot be relicensed as
+MIT**.
+
+The upstream lists this repo copies (`hsk.academy`, Jun Da) do not appear to carry CC-CEDICT attribution
+themselves, so credit the real source:
+
+> Definitions from CC-CEDICT, licensed CC BY-SA 4.0.
+
+Obligations, which apply to every redistributed copy of the generated JSON as well as to this repo:
+
+1. Credit CC-CEDICT and name the licence. The Settings screen does this — keep it in step.
+2. License copies of the data under CC BY-SA 4.0. Do not relicense them as MIT.
+3. State that the data has been changed. The build regenerates pinyin with `pinyin-pro`, converts
+   traditional forms with `opencc-js`, de-duplicates entries, and truncates glosses to the first sense
+   for `glossShort`.
+
+The `txt/` originals are kept for provenance only; the same terms apply to them.
+
+Sources: <https://cc-cedict.org/> and <https://creativecommons.org/licenses/by-sa/4.0/>.

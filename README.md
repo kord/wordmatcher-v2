@@ -61,7 +61,16 @@ Design notes:
 - **Word lists are lazy-loaded** so the device only downloads the list being played.
 - **Nothing is sized with `vh`.** The shell uses `dvh` with a `svh` fallback plus safe-area insets.
 
-## Attribution and licensing
+## Licensing
 
-See `data/source/SOURCES.md` and the in-app attribution screen. The English glosses are derived from
-upstream word lists; verify their licence terms before redistributing this app publicly.
+**The code is MIT** — see `LICENSE`. Use it, fork it, ship it, sell it; just keep the copyright notice.
+
+**The word-list data is not covered by that.** The English glosses in `data/source/` and the generated
+`public/data/lists/*.json` are CC-CEDICT-derived, and CC-CEDICT is licensed
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) — attribution plus share-alike. Those
+files are therefore distributed under CC BY-SA 4.0, not MIT, and copies of them (including the JSON the
+app downloads) have to carry the same licence.
+
+A permissive licence on the code alongside a share-alike licence on the data is a normal arrangement,
+but it does mean the project is not MIT end to end. Making it so would mean replacing the glosses with
+original or CC0 text. See `data/source/SOURCES.md` for the details and the outstanding obligations.
