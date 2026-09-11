@@ -1,0 +1,110 @@
+
+Name	Chinese	Taiwanese	Hakka	Code
+Banqiao	板橋	Pang-kiô	Piông-khiâu	BL07
+Beimen	北門	Pak-mn̂g	Pet-mùn	G13
+Beitou	北投	Pak-tâu	Pet-thèu	R22
+Cailiao	菜寮	Chhài-liâu	Chhoi-liâu	O14
+Chiang Kai-Shek Memorial Hall	中正紀念堂	Tiong-chèng Kì-liām-tn̂g	Chûng-chang Ki-ngiam-thòng	R08/G10
+Daan	大安	Tāi-an	Thai-ôn	BR09/R05
+Daan Park	大安森林公園	Tāi-an Sim-lîm Kong-hn̂g	Thai-ôn Sêm-lìm Kûng-yèn	R06
+Dahu Park	大湖公園	Tōa-ô͘ Kong-hn̂g	Thai-fù Kûng-yèn	BR20
+Danfeng	丹鳳	Tan-hōng	Tan-fung	O20
+Dapinglin	大坪林	Toā-pêⁿ-nâ	Thai-phiâng-lìm	G04
+Daqiaotou	大橋頭	Tōa-kiô-thâu	Thai-khiâu-theù	O12
+Dazhi	大直	Tāi-ti̍t	Thai-chhṳ̍t	BR14
+Dingpu	頂埔	Téng-po͘	Táng-phû	BL01
+Dingxi	頂溪	Téng-khe	Táng-hâi	O04
+Donghu	東湖	Tang-ô͘	Tûng-fù	BR22
+Dongmen	東門	Tang-mn̂g	Tûng-mùn	R07/O06
+Far Eastern Hospital	亞東醫院	A-tang Pēⁿ-īⁿ	Â-tûng Yî-yèn	BL05
+Fu Jen University	輔大	Hú-tāi	Phú-thai	O19
+Fuxinggang	復興崗	Ho̍k-heng-kong	Fu̍k-hîn-kông	R23
+Fuzhong	府中	Hú-tiong	Fú-chûng	BL06
+Gangqian	港墘	Káng-kîⁿ	Kóng-chhièn	BR17
+Gongguan	公館	Kong-koán	Kûng-kón	G07
+Guandu	關渡	Kan-tāu	Koân-thu	R25
+Guting	古亭	Kó͘-têng	Kú-thìn	O05/G09
+Haishan	海山	Hái-san	Hói-sân	BL04
+Hongshulin	紅樹林	Âng-chhiū-nâ	Fùng-su-lìm	R27
+Houshanpi	後山埤	Āu-soaⁿ-pi	Heu-sân-phî	BL20
+Huilong	迴龍	Hôe-liông	Fûi-liùng	O21
+Huzhou	葫洲	Ô͘-chiu	Fù-chû	BR21
+Jiangzicui	江子翠	Káng-á-chhuì	Kông-chṳ́-chhù	BL09
+Jiannan Road	劍南路	Kiàm-lâm-lō͘	Kiam-nàm-lu	BR15
+Jiantan	劍潭	Kiàm-thâm	Kiam-thâm	R15
+Jingan	景安	Kéng-an	Kín-ôn	O02
+Jingmei	景美	Kéng-bí	Kín-mî	G05
+Kunyang	昆陽	Khun-iông	Khûn-yòng	BL21
+Linguang	麟光	Lîn-kong	Lîn-kông	BR06
+Liuzhangli	六張犁	La̍k-tiuⁿ-lê	Liuk-chông-lài	BR07
+Longshan Temple	龍山寺	Liông-san-sī	Liùng-sân-sṳ̀	BL10
+Luzhou	蘆洲	Lô͘-chiu	Lù-chû	O54
+Mingde	明德	Bêng-tek	Mìn-tet	R18
+Minquan West Road	民權西路	Bîn-koân-se-lō͘	Mìn-khièn-sî-lu	R13/O11
+Muzha	木柵	Ba̍k-sa	Muk-cha	BR02
+Nangang	南港	Lâm-káng	Nàm-kóng	BL22
+Nangang Software Park	南港軟體園區	Lâm-káng Nńg-thé Hn̂g-khu	Nàm-kóng Ngiôn-thí Yèn-khî	BR23
+Nanjing Fuxing	南京復興	Lâm-kiaⁿ Ho̍k-heng	Nàm-kîn Fu̍k-hîn	BR11/G16
+Nanjing Sanmin	南京三民	Lâm-kiaⁿ Sam-bîn	Nàm-kîn Sâm-mìn	G18
+Nanshijiao	南勢角	Lâm-sì-kak	Nàm-sṳ-kok	O01
+National Taiwan University Hospital	台大醫院	Tâi-tāi Pēⁿ-īⁿ	Thòi-thai Yî-yen	R09
+Neihu	內湖	Lāi-ô͘	Nui-fù	BR19
+Qilian	唭哩岸	Ki-lí-gān	Kî-lí-ngan	R20
+Qiyan	奇岩	Kî-giâm	Khì-ngâm	R21
+Qizhang	七張	Chhit-tiuⁿ	Chhit-chông	G03
+Sanchong	三重	Saⁿ-têng-po͘	Sâm-chhùng	O15
+Sanchong Elementary School	三重國小	Sam-tiông Kok-sió	Sâm-chhùng Koet-seú	O50
+Sanhe Junior High School	三和國中	Sam-hô Kok-tiong	Sâm-fò Koet-chûng	O51
+Sanmin Senior High School	三民高中	Sam-bîn Ko-tiong	Sâm-mìn Kô-chûng	O53
+Shandao Temple	善導寺	Siān-tō-sī	San-thô-sṳ̀	BL13
+Shilin	士林	Sū-lîm	Sṳ-lìm	R16
+Shipai	石牌	Chio̍h-pâi-á	Sa̍k-phài	R19
+Shuanglian	雙連	Siang-liân	Sûng-lièn	R12
+Songjiang Nanjing	松江南京	Siông-kang Lâm-kiaⁿ	Chhiùng-kông Nàm-kîn	O08/G15
+Songshan	松山	Siông-san	Chhiùng-sân	G19
+Songshan Airport	松山機場	Siông-san Ki-tiûⁿ	Chhiùng-sân Kî-chhòng	BR13
+St. Ignatius High School	徐匯中學	Chhî-hōe Tiong-ha̍k	Chhî-fi Chûng-ho̍k	O52
+Sun Yat-Sen Memorial Hall	國父紀念館	Kok-hū Kì-liām-koán	Koet-fu Ki-ngiam-kón	BL17
+Taipei 101 / World Trade Center	台北101/世貿	Tâi-pak 101/Sè bō͘	Thòi-pet 101/Sṳ Mo	R03
+Taipei Arena	台北小巨蛋	Tâi-pak Sió-kī-tàn	Thòi-pet Seú-ki-thàn	G17
+Taipei Bridge	台北橋	Tâi-pak-kiô	Thòi-pet-khiâu	O13
+Taipei City Hall	市政府	Chhī-chèng-hú	Sṳ-chṳn-fú	BL18
+Taipei Main	台北車站	Tâi-pak Chhia-chām	Thòi-pet Chhâ-chhàm	R10/BL12
+Taipei Nangang Exhibition Center	南港展覽館	Lâm-káng Tián-lám-koán	Nàm-kóng Chán-lám-kón	BR24/BL23
+Taipei Zoo	動物園	Tōng-bu̍t-hn̂g	Thung-vu̍t-yèn	BR01
+Taipower Building	台電大樓	Tâi-tiān Tōa-lâu	Thòi-thien Thai-leù	G08
+Tamsui	淡水	Tām-chúi	Thâm-súi	R28
+Technology Building	科技大樓	Kho-ki Tōa-lâu	Khô-kî Thai-lèu	BR08
+Touqianzhuang	頭前莊	Thâu-chêng-chng	Theù-chhièn-chông	O17
+Tucheng	土城	Thô͘-siâⁿ	Thú-sàng	BL03
+Wanfang Community	萬芳社區	Bān-hong Siā-khu	Van-fông Sa-khî	BR03
+Wanfang Hospital	萬芳醫院	Bān-hong Pēⁿ-īⁿ	Van-fông Phiang-yen	BR04
+Wanlong	萬隆	Bān-liông	Van-lùng	G06
+Wende	文德	Bûn-tek	Vùn-tet	BR18
+Xiangshan	象山	Chhiūⁿ-soaⁿ	Siong-sân	R02
+Xianse Temple	先嗇宮	Sian-sek-kiong	Siên-sep-kiûng	O16
+Xiaobitan	小碧潭	Sió-phek-thâm	Seú-pit-thàm	G03A
+Xiaonanmen	小南門	Sió-lâm-mn̂g	Seú-nàm-mùn	G11
+Xihu	西湖	Se-ô͘	Sî-fù	BR16
+Ximen	西門	Se-mn̂g	Sî-mùn	G12/BL11
+Xinbeitou	新北投	Sin-pak-tâu	Sîn-pet-thèu	R22A
+Xindian	新店	Sin-tiàm	Sîn-tiam	G01
+Xindian District Office	新店區公所	Sin-tiàm Khu-kong-só͘	Sîn-tiam-khî-kûng-só	G02
+Xingtian Temple	行天宮	Hêng-thian-kiong	Hàng-thiên-kiûng	O09
+Xinhai	辛亥	Sin-hāi	Sin-hāi	BR05
+Xinpu	新埔	Sin-po͘	Sîn-phû	BL08
+Xinyi Anhe	信義安和	Sìn-gī An-hô	Sin-ngi Ôn-fò	R04
+Xinzhuang	新莊	Sin-chng	Sîn-chông	O18
+Yongan Market	永安市場	Éng-an Chhī-tiûⁿ	Yún-ôn Sṳ-chhòng	O03
+Yongchun	永春	Éng-chhun	Yún-chhûn	BL19
+Yongning	永寧	Éng-lêng	Yún-nèn	BL02
+Yuanshan	圓山	Îⁿ-soa-á	Yèn-sân	R14
+Zhishan	芝山	Chi-san	Chṳ-sân	R17
+Zhongshan	中山	Tiong-san	Chûng-sân	R11/G14
+Zhongshan Elementary School	中山國小	Tiong-san Kok-sió	Chûng-sân Koet-seú	O10
+Zhongshan Junior High School	中山國中	Tiong-san Kok-tiong	Chûng-sân Koet-tsûng	BR12
+Zhongxiao Dunhua	忠孝敦化	Tiong-hàu Tun-hoà	Chûng-hau Tûn-fa	BL16
+Zhongxiao Fuxing	忠孝復興	Tiong-hàu Ho̍k-heng	Chûng-hau Fu̍k-hîn	BR10/BL15
+Zhongxiao Xinsheng	忠孝新生	Tiong-hàu Sin-seng	Chûng-hau Sîn-sâng	O07/BL14
+Zhongyi	忠義	Tiong-gī	Chûng-ngi	R24
+Zhuwei	竹圍	Tek-ûi-á	Chuk-vì	R26

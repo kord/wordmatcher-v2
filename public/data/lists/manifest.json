@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-11T13:55:19.850Z",
+  "lists": [
+    {
+      "id": "hsk1",
+      "name": "HSK 1",
+      "subtitle": "150 words",
+      "count": 150,
+      "file": "hsk1.json",
+      "bytes": 47971,
+      "kind": "hsk",
+      "level": 1
+    },
+    {
+      "id": "hsk2",
+      "name": "HSK 2",
+      "subtitle": "149 words",
+      "count": 149,
+      "file": "hsk2.json",
+      "bytes": 51206,
+      "kind": "hsk",
+      "level": 2
+    },
+    {
+      "id": "hsk3",
+      "name": "HSK 3",
+      "subtitle": "298 words",
+      "count": 298,
+      "file": "hsk3.json",
+      "bytes": 102754,
+      "kind": "hsk",
+      "level": 3
+    },
+    {
+      "id": "hsk4",
+      "name": "HSK 4",
+      "subtitle": "600 words",
+      "count": 600,
+      "file": "hsk4.json",
+      "bytes": 210007,
+      "kind": "hsk",
+      "level": 4
+    },
+    {
+      "id": "hsk5",
+      "name": "HSK 5",
+      "subtitle": "1300 words",
+      "count": 1300,
+      "file": "hsk5.json",
+      "bytes": 453208,
+      "kind": "hsk",
+      "level": 5
+    },
+    {
+      "id": "hsk6",
+      "name": "HSK 6",
+      "subtitle": "2500 words",
+      "count": 2500,
+      "file": "hsk6.json",
+      "bytes": 885780,
+      "kind": "hsk",
+      "level": 6
+    },
+    {
+      "id": "junda",
+      "name": "Jun Da",
+      "subtitle": "Top 4921 characters by frequency",
+      "count": 4921,
+      "file": "junda.json",
+      "bytes": 1372219,
+      "kind": "junda"
+    }
+  ]
+}

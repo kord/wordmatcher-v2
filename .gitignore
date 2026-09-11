@@ -1,0 +1,17 @@
+node_modules
+dist
+dist-ssr
+coverage
+playwright-report
+test-results
+.firebase
+.firebase/*.log
+*.local
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+# Generated from data/source by `npm run data:build`.
+# Committed on purpose so the site can be deployed without the build step's dev deps.
+# Remove this line if you would rather generate it in CI.
+# public/data
