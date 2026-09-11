@@ -5,13 +5,13 @@
  * Nothing here is measured in `vh`, so the mobile URL bar cannot break it.
  */
 .session {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
-  padding-bottom: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: var(--space-2);
 }
 
 /*
@@ -20,278 +20,285 @@
  * flex-grow values (set from the plan) move the boundary between them.
  */
 .playArea {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  min-height: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 0;
 }
 
 /* --------------------------------------------------------------------- hud */
 
 .hud {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding-top: var(--space-2);
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
 }
 
 .hudSpacer {
-  flex: 1 1 auto;
+    flex: 1 1 auto;
 }
 
 .hudItem {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  min-width: 2.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 2.25rem;
 }
 
 .hudValue {
-  font-size: var(--step-1);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
+    font-size: var(--step-1);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
 }
 
 .hudLabel {
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--text-muted);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
 }
 
 .hudRight {
-  text-align: right;
+    text-align: right;
 }
 
 .meter {
-  margin-top: var(--space-2);
+    margin-top: var(--space-2);
 }
 
 /* ------------------------------------------------------------------ prompt */
 
 .prompt {
-  position: relative;
-  /* flex-grow is set inline from the measured grid plan. */
-  flex: 1 1 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 0;
-  padding: var(--space-4);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-1);
-  overflow: hidden;
+    position: relative;
+    /* flex-grow is set inline from the measured grid plan. */
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1);
+    overflow: hidden;
 }
 
 .promptText {
-  /* Full width so the fit measurement can see when text is too wide. */
-  width: 100%;
-  overflow: hidden;
-  text-align: center;
-  line-height: 1.15;
+    /* Full width so the fit measurement can see when text is too wide. */
+    width: 100%;
+    overflow: hidden;
+    text-align: center;
+    line-height: 1.15;
 }
 
 .hanPrompt {
-  font-family: var(--font-han);
-  font-weight: 500;
-  letter-spacing: 0.02em;
+    font-family: var(--font-han);
+    font-weight: 500;
+    letter-spacing: 0.02em;
 }
 
 .promptHint {
-  position: absolute;
-  top: var(--space-2);
-  left: var(--space-3);
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--text-muted);
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-3);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
 }
 
 /* ----------------------------------------------------------------- options */
 
 .options {
-  /* flex-grow is set inline from the measured grid plan. */
-  flex: 1 1 0;
-  display: grid;
-  grid-template-columns: repeat(var(--columns, 1), 1fr);
-  grid-auto-rows: 1fr;
-  gap: var(--space-2);
-  min-height: 0;
+    /* flex-grow is set inline from the measured grid plan. */
+    flex: 1 1 0;
+    display: grid;
+    grid-template-columns: repeat(var(--columns, 1), 1fr);
+    grid-auto-rows: 1fr;
+    gap: var(--space-2);
+    min-height: 0;
 }
 
 .option {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.5rem;
-  padding: var(--space-2) var(--space-3);
-  overflow: hidden;
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
-  transition:
-    border-color var(--duration-fast) var(--ease-out),
-    background-color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out),
-    opacity var(--duration-fast) var(--ease-out);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: var(--space-2) var(--space-3);
+    overflow: hidden;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    transition:
+        border-color var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out),
+        opacity var(--duration-fast) var(--ease-out);
 }
 
 .option:active:not(:disabled) {
-  transform: scale(0.985);
+    transform: scale(0.985);
 }
 
 .optionText {
-  overflow: hidden;
-  text-align: center;
-  /* Roomy enough that ascenders and descenders are never clipped; the grid plan
+    overflow: hidden;
+    text-align: center;
+    /* Roomy enough that ascenders and descenders are never clipped; the grid plan
      reads this value back from the DOM, so the two stay in step. */
-  line-height: 1.25;
-  max-width: 100%;
+    line-height: 1.25;
+    max-width: 100%;
 }
 
 .hanOption {
-  font-family: var(--font-han);
-  font-weight: 500;
+    font-family: var(--font-han);
+    font-weight: 500;
 }
 
 .optionCorrect {
-  border-color: var(--success);
-  background: var(--success-soft);
-  animation: pop var(--duration-slow) var(--ease-out);
+    border-color: var(--success);
+    background: var(--success-soft);
+    animation: pop var(--duration-slow) var(--ease-out);
 }
 
 .optionWrong {
-  border-color: var(--danger);
-  background: var(--danger-soft);
-  animation: shake var(--duration-slow) var(--ease-out);
+    border-color: var(--danger);
+    background: var(--danger-soft);
+    animation: shake var(--duration-slow) var(--ease-out);
 }
 
 .optionDim {
-  opacity: 0.45;
+    opacity: 0.45;
 }
 
 /* ------------------------------------------------------------------ reveal */
 
 .reveal {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
 }
 
 .revealCard {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--success);
-  border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--success);
+    border-radius: var(--radius-md);
 }
 
 .revealMiss {
-  border-left-color: var(--danger);
+    border-left-color: var(--danger);
 }
 
 .revealWord {
-  font-family: var(--font-han);
-  font-size: var(--step-2);
-  line-height: 1.1;
+    font-family: var(--font-han);
+    font-size: var(--step-2);
+    line-height: 1.1;
 }
 
 .revealMeta {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
 }
 
 .revealPinyin {
-  font-size: var(--step-0);
+    font-size: var(--step-0);
 }
 
 .revealGloss {
-  font-size: var(--step--1);
-  color: var(--text-muted);
+    font-size: var(--step--1);
+    color: var(--text-muted);
 }
 
 .speaker {
-  flex: 0 0 auto;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--radius-pill);
-  background: var(--surface-2);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--surface-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tapHint {
-  text-align: center;
-  font-size: 0.7rem;
-  color: var(--text-muted);
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-muted);
 }
 
 /* Short viewports (landscape phones, small webviews): tighten everything. */
 @media (max-height: 34rem) {
-  .session {
-    gap: var(--space-2);
-  }
+    .session {
+        gap: var(--space-2);
+    }
 
-  .prompt {
-    padding: var(--space-3);
-  }
+    .prompt {
+        padding: var(--space-3);
+    }
 
-  .option {
-    padding: var(--space-1) var(--space-2);
-  }
+    .option {
+        padding: var(--space-1) var(--space-2);
+    }
 
-  .hudValue {
-    font-size: var(--step-0);
-  }
+    .hudValue {
+        font-size: var(--step-0);
+    }
 
-  .revealWord {
-    font-size: var(--step-1);
-  }
+    .revealWord {
+        font-size: var(--step-1);
+    }
 }
 
 /* -------------------------------------------------------------- animations */
 
 @keyframes pop {
-  0% {
-    transform: scale(1);
-  }
-  45% {
-    transform: scale(1.035);
-  }
-  100% {
-    transform: scale(1);
-  }
+    0% {
+        transform: scale(1);
+    }
+
+    45% {
+        transform: scale(1.035);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 @keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  20% {
-    transform: translateX(-6px);
-  }
-  40% {
-    transform: translateX(6px);
-  }
-  60% {
-    transform: translateX(-4px);
-  }
-  80% {
-    transform: translateX(4px);
-  }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-6px);
+    }
+
+    40% {
+        transform: translateX(6px);
+    }
+
+    60% {
+        transform: translateX(-4px);
+    }
+
+    80% {
+        transform: translateX(4px);
+    }
 }

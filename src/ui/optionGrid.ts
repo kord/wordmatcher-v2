@@ -13,47 +13,47 @@ import { REFERENCE_FONT_SIZE } from './textMetrics'
  * without a browser.
  */
 export interface GridPlanInput {
-  /** How many options are on screen. */
-  count: number
-  /** Width of each option's text at REFERENCE_FONT_SIZE. */
-  widthsAtReference: number[]
-  /**
-   * Width of every breakable unit of each option at REFERENCE_FONT_SIZE, in
-   * order. A Latin word cannot be split across lines, while Chinese text can
-   * break between any two characters. Omit to treat each text as unbreakable.
-   */
-  unitWidthsAtReference?: number[][]
-  /** Width of a single space at REFERENCE_FONT_SIZE. */
-  spaceWidthAtReference?: number
-  /** Width available to the options grid, in px. */
-  gridWidth: number
-  /** Height shared between the prompt and the options, in px. */
-  sharedHeight: number
-  /** Row/column gap, in px. */
-  gap: number
-  /** Row-equivalents of the shared height the prompt should claim. */
-  promptUnits: number
-  /** Horizontal padding inside an option box, in px. */
-  insetX: number
-  /** Vertical padding inside an option box, in px. */
-  insetY: number
-  /** Line height as a multiple of the font size. */
-  lineHeight: number
-  minFontSize: number
-  maxFontSize: number
+    /** How many options are on screen. */
+    count: number
+    /** Width of each option's text at REFERENCE_FONT_SIZE. */
+    widthsAtReference: number[]
+    /**
+     * Width of every breakable unit of each option at REFERENCE_FONT_SIZE, in
+     * order. A Latin word cannot be split across lines, while Chinese text can
+     * break between any two characters. Omit to treat each text as unbreakable.
+     */
+    unitWidthsAtReference?: number[][]
+    /** Width of a single space at REFERENCE_FONT_SIZE. */
+    spaceWidthAtReference?: number
+    /** Width available to the options grid, in px. */
+    gridWidth: number
+    /** Height shared between the prompt and the options, in px. */
+    sharedHeight: number
+    /** Row/column gap, in px. */
+    gap: number
+    /** Row-equivalents of the shared height the prompt should claim. */
+    promptUnits: number
+    /** Horizontal padding inside an option box, in px. */
+    insetX: number
+    /** Vertical padding inside an option box, in px. */
+    insetY: number
+    /** Line height as a multiple of the font size. */
+    lineHeight: number
+    minFontSize: number
+    maxFontSize: number
 }
 
 export interface GridPlan {
-  columns: number
-  rows: number
-  /** Largest font size this layout can show, in px. */
-  fontSize: number
-  promptFlex: number
-  optionsFlex: number
+    columns: number
+    rows: number
+    /** Largest font size this layout can show, in px. */
+    fontSize: number
+    promptFlex: number
+    optionsFlex: number
 }
 
 function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value))
+    return Math.max(min, Math.min(max, value))
 }
 
 /**
@@ -63,12 +63,12 @@ function clamp(value: number, min: number, max: number): number {
  * will scale up to fill it; a long English gloss needs proportionally less.
  */
 export function promptRowUnits(promptLength: number): number {
-  return clamp(3.4 - 0.22 * promptLength, 1.5, 3.4)
+    return clamp(3.4 - 0.22 * promptLength, 1.5, 3.4)
 }
 
 /** Column counts worth considering for a given number of options. */
 export function candidateColumns(count: number): number[] {
-  return [1, 2, 3].filter((columns) => columns <= count && (columns < 3 || count % 3 === 0))
+    return [1, 2, 3].filter((columns) => columns <= count && (columns < 3 || count % 3 === 0))
 }
 
 /**
@@ -79,20 +79,20 @@ export function candidateColumns(count: number): number[] {
  * that, which is how an option ends up spilling out of its box in landscape.
  */
 function greedyLineCount(units: readonly number[], usableWidth: number, space: number): number {
-  let lines = 1
-  let used = 0
+    let lines = 1
+    let used = 0
 
-  for (const width of units) {
-    const addition = used === 0 ? width : space + width
-    if (used + addition <= usableWidth + 1e-6) {
-      used += addition
-    } else {
-      lines += 1
-      used = width
+    for (const width of units) {
+        const addition = used === 0 ? width : space + width
+        if (used + addition <= usableWidth + 1e-6) {
+            used += addition
+        } else {
+            lines += 1
+            used = width
+        }
     }
-  }
 
-  return lines
+    return lines
 }
 
 /**
@@ -103,61 +103,61 @@ function greedyLineCount(units: readonly number[], usableWidth: number, space: n
  * Latin word from being modelled as if it could break in half.
  */
 function fitsAt(input: GridPlanInput, size: number, boxWidth: number, boxHeight: number): boolean {
-  const usableWidth = boxWidth - input.insetX
-  const usableHeight = boxHeight - input.insetY
-  if (usableWidth <= 0 || usableHeight <= 0) return false
+    const usableWidth = boxWidth - input.insetX
+    const usableHeight = boxHeight - input.insetY
+    if (usableWidth <= 0 || usableHeight <= 0) return false
 
-  const scale = size / REFERENCE_FONT_SIZE
-  const space = (input.spaceWidthAtReference ?? 0) * scale
+    const scale = size / REFERENCE_FONT_SIZE
+    const space = (input.spaceWidthAtReference ?? 0) * scale
 
-  for (let index = 0; index < input.widthsAtReference.length; index++) {
-    const units = input.unitWidthsAtReference?.[index]
-    const scaled = units
-      ? units.map((width) => width * scale)
-      : [input.widthsAtReference[index] * scale]
+    for (let index = 0; index < input.widthsAtReference.length; index++) {
+        const units = input.unitWidthsAtReference?.[index]
+        const scaled = units
+            ? units.map((width) => width * scale)
+            : [input.widthsAtReference[index] * scale]
 
-    if (scaled.length === 0) continue
+        if (scaled.length === 0) continue
 
-    // An unbreakable unit that is wider than the box can never fit.
-    if (Math.max(...scaled) > usableWidth + 1e-6) return false
+        // An unbreakable unit that is wider than the box can never fit.
+        if (Math.max(...scaled) > usableWidth + 1e-6) return false
 
-    const lines = greedyLineCount(scaled, usableWidth, space)
-    if (lines * input.lineHeight * size > usableHeight + 1e-6) return false
-  }
+        const lines = greedyLineCount(scaled, usableWidth, space)
+        if (lines * input.lineHeight * size > usableHeight + 1e-6) return false
+    }
 
-  return true
+    return true
 }
 
 /** The largest font size that fits every text into the boxes this layout makes. */
 export function evaluateGrid(input: GridPlanInput, columns: number): GridPlan {
-  const rows = Math.ceil(input.count / columns)
+    const rows = Math.ceil(input.count / columns)
 
-  // Split the shared height between the prompt and the options in proportion to
-  // their row counts, so a compact options grid leaves more room for the prompt.
-  const optionsHeight = (input.sharedHeight * rows) / (rows + input.promptUnits)
-  const boxWidth = (input.gridWidth - input.gap * (columns - 1)) / columns
-  const boxHeight = (optionsHeight - input.gap * (rows - 1)) / rows
+    // Split the shared height between the prompt and the options in proportion to
+    // their row counts, so a compact options grid leaves more room for the prompt.
+    const optionsHeight = (input.sharedHeight * rows) / (rows + input.promptUnits)
+    const boxWidth = (input.gridWidth - input.gap * (columns - 1)) / columns
+    const boxHeight = (optionsHeight - input.gap * (rows - 1)) / rows
 
-  const base = { columns, rows, promptFlex: input.promptUnits, optionsFlex: rows }
+    const base = { columns, rows, promptFlex: input.promptUnits, optionsFlex: rows }
 
-  // Scan down from the ceiling. The step granularity is finer than the eye can
-  // see, and this is pure arithmetic over at most a handful of options.
-  for (let size = input.maxFontSize; size > input.minFontSize; size -= 0.5) {
-    if (fitsAt(input, size, boxWidth, boxHeight)) {
-      return { ...base, fontSize: size }
+    // Scan down from the ceiling. The step granularity is finer than the eye can
+    // see, and this is pure arithmetic over at most a handful of options.
+    for (let size = input.maxFontSize; size > input.minFontSize; size -= 0.5) {
+        if (fitsAt(input, size, boxWidth, boxHeight)) {
+            return { ...base, fontSize: size }
+        }
     }
-  }
 
-  return { ...base, fontSize: input.minFontSize }
+    return { ...base, fontSize: input.minFontSize }
 }
 
 /** Every candidate layout, best first: largest text wins, then the wider grid. */
 export function gridCandidates(input: GridPlanInput): GridPlan[] {
-  return candidateColumns(input.count)
-    .map((columns) => evaluateGrid(input, columns))
-    .sort((a, b) => b.fontSize - a.fontSize || b.columns - a.columns)
+    return candidateColumns(input.count)
+        .map((columns) => evaluateGrid(input, columns))
+        .sort((a, b) => b.fontSize - a.fontSize || b.columns - a.columns)
 }
 
 export function planOptionGrid(input: GridPlanInput): GridPlan {
-  return gridCandidates(input)[0]
+    return gridCandidates(input)[0]
 }
