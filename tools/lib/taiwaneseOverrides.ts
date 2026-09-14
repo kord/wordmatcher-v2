@@ -19,7 +19,9 @@
  * checked against the extract, because by that level the everyday Taiwanese word is often not
  * the character in front of you at all. Those live in `taiwaneseHsk2.ts` and are merged in below.
  */
+import type { HandRow } from './handAuthored.ts'
 import { HSK2_ROWS } from './taiwaneseHsk2.ts'
+import { HSK3_ROWS } from './taiwaneseHsk3.ts'
 
 export interface TaiwaneseOverride {
     /** Taiwanese written form. Empty when the word is written in romanisation alone. */
@@ -36,29 +38,32 @@ export interface TaiwaneseOverride {
 }
 
 /**
- * The HSK 2 forms, in the shape the resolver expects.
+ * A hand-authored table, in the shape the resolver expects.
  *
  * `fromSource` is false throughout: these were not picked from the dictionary, and marking them
  * otherwise would hide the one fact a reviewer needs. The note on each row becomes the reason,
  * so the explanation travels with the entry into the build output.
  */
-const HSK2_OVERRIDES: Record<string, TaiwaneseOverride> = Object.fromEntries(
-    HSK2_ROWS.map(([simp, han, tailo, poj, note]): [string, TaiwaneseOverride] => [
-        `hsk2|${simp}`,
-        {
-            han,
-            tailo,
-            poj,
-            reason: note ?? 'hand-authored for HSK 2, checked against the extract',
-            fromSource: false,
-        },
-    ]),
-)
+function handAuthored(level: number, rows: readonly HandRow[]): Record<string, TaiwaneseOverride> {
+    return Object.fromEntries(
+        rows.map(([simp, han, tailo, poj, note]): [string, TaiwaneseOverride] => [
+            `hsk${level}|${simp}`,
+            {
+                han,
+                tailo,
+                poj,
+                reason: note ?? `hand-authored for HSK ${level}, checked against the extract`,
+                fromSource: false,
+            },
+        ]),
+    )
+}
 
 export const TAIWANESE_OVERRIDES: Readonly<Record<string, TaiwaneseOverride>> = {
-    // --- HSK 2: chosen by hand, then verified against the extract ------------------------
+    // --- HSK 2 and up: chosen by hand, then verified against the extract -----------------
 
-    ...HSK2_OVERRIDES,
+    ...handAuthored(2, HSK2_ROWS),
+    ...handAuthored(3, HSK3_ROWS),
 
     // --- HSK 1: corrections to the mechanically ranked forms ----------------------------
     // --- Candidates the ranking passed over: the answer was in the data all along ------

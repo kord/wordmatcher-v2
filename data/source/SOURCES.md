@@ -91,15 +91,20 @@ the everyday Taiwanese word is frequently not the character in front of you at a
 is 行, 黑 is 烏, 玩 is 耍, 找 is 揣, 眼睛 is 目睭, 忙 is 無閒 — and a ranking has no way to tell a
 literary reading from the word people say.
 
-1. Every form is authored in `tools/lib/taiwaneseHsk2.ts` and marked `fromSource: false`, so a
+1. Every form is authored in a table under `tools/lib/` — `taiwaneseHsk2.ts`, `taiwaneseHsk3.ts` and
+   so on, sharing the row shape declared in `handAuthored.ts` — and marked `fromSource: false`, so a
    reviewer can tell these apart from the HSK 1 corrections that were merely pickings.
-2. `tools/hsk2-check.ts` reports each one against the extract: whether the source knows the word, and
-   separately whether it agrees on the spelling, the tones and the POJ. As shipped, 119 of 149 agree
-   exactly with a source reading, none disagree on tone, and the rest are words the extract either
-   lacks or carries only in their literary reading.
+2. `tools/taigi-check.ts --level N` reports each one against the extract: whether the source knows the
+   word, and separately whether it agrees on the spelling, the tones and the POJ. It also reports rows
+   the Mandarin list needs and the table does not have, and rows no Mandarin word asks for, because
+   both fail silently otherwise.
 3. Where the source carries the same word with a variant reading, the source's spelling is adopted, so
-   one orthography runs across both levels.
-4. The result is emitted as `hsk2-tw` alongside the Mandarin list it mirrors.
+   one orthography runs across every level.
+4. Each result is emitted as `hsk2-tw`, `hsk3-tw` and so on, alongside the Mandarin list it mirrors.
+
+As shipped, HSK 2 matches a source reading exactly on 119 of 149 words and HSK 3 on 213 of 298. The
+remainder are words the extract lacks, words it carries only in a literary reading, or a deliberate
+colloquial choice; they are listed per level in the check report under `tmp/`.
 
 `tests/unit/taigiDataQuality.test.ts` checks every built Taiwanese list against the same invariants,
 so a new level cannot ship without meeting them.

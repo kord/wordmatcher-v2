@@ -43,7 +43,7 @@ interface TaiwaneseEntry {
  * Every Taiwanese list is checked the same way, so a new level inherits the guarantees rather
  * than getting its own copy of them.
  */
-const LIST_IDS = ['hsk1-tw', 'hsk2-tw'] as const
+const LIST_IDS = ['hsk1-tw', 'hsk2-tw', 'hsk3-tw'] as const
 
 function entriesOf(listId: string): TaiwaneseEntry[] {
     const file = JSON.parse(

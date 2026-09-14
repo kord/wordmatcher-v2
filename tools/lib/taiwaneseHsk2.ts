@@ -12,18 +12,11 @@
  * `taiwaneseOverrides.ts` carry that through so a reviewer can tell them apart from the HSK 1
  * corrections that were merely pickings from the source.
  *
- * Conventions, all matching how the source and the Ministry of Education write Tâi-lô:
- *   - `-` separates syllables inside a word, `--` marks a neutral-tone syllable.
- *   - POJ uses `ch`/`chh` for Tâi-lô `ts`/`tsh`, `o͘` for `oo`, `ⁿ` for `nn`, `eng` for `ing`
- *     and `ek` for `ik`.
- *   - An empty character field means the word has no settled character; the app falls back to
- *     the romanisation, which is how 吧 and the aspect particles are written anyway.
+ * The row shape and the romanisation conventions are documented on `HandRow`.
  */
+import type { HandRow } from './handAuthored.ts'
 
-/** `[simplified, Taiwanese characters, Tâi-lô, POJ, note?]` */
-export type Hsk2Row = readonly [string, string, string, string, string?]
-
-export const HSK2_ROWS: readonly Hsk2Row[] = [
+export const HSK2_ROWS: readonly HandRow[] = [
     ['吧', '啦', 'là', 'là', 'Taiwanese has no 吧; the suggestion particle is 啦'],
     ['白', '白', 'pe̍h', 'pe̍h'],
     ['百', '百', 'pah', 'pah'],

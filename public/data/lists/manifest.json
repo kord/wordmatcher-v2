@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-14T11:20:58.461Z",
+  "generatedAt": "2026-09-14T11:30:35.920Z",
   "lists": [
     {
       "id": "hsk1",
@@ -99,6 +99,17 @@
       "kind": "hsk",
       "language": "taiwanese",
       "level": 2
+    },
+    {
+      "id": "hsk3-tw",
+      "name": "HSK 3 (Taiwanese)",
+      "subtitle": "298 words",
+      "count": 298,
+      "file": "hsk3-tw.json",
+      "bytes": 263426,
+      "kind": "hsk",
+      "language": "taiwanese",
+      "level": 3
     }
   ]
 }

@@ -1,21 +1,32 @@
 /**
- * Checks the hand-authored HSK 2 forms against the ChhoeTaigi extract.
+ * Checks a hand-authored Taiwanese table against the ChhoeTaigi extract.
  *
- *   npx tsx tools/hsk2-check.ts
+ *   npx tsx tools/taigi-check.ts [--level 3]
  *
- * Writes a report to `%TEMP%/hsk2-check.txt` and prints only the path, because PowerShell
- * mangles CJK on the way to the console.
+ * Writes a report to `tmp/taigi-check-<level>.txt` and prints only the path.
  *
  * For every row it reports three independent things: whether the source knows the word at all,
- * whether it agrees with my Tâi-lô spelling once tone marks are set aside, and whether it agrees
- * with my POJ. Those are separate questions - a word can be in the dictionary and still be
- * spelled differently by me, and my POJ can be wrong even when the Tâi-lô is right.
+ * whether it agrees with my Tâi-lô once tone marks are set aside, and whether it agrees with my
+ * POJ. Those are separate questions - a word can be in the dictionary and still be spelled
+ * differently by me, and my POJ can be wrong even when the Tâi-lô is right.
+ *
+ * It also reports rows the Mandarin list needs and the table does not have, and rows the table
+ * has that no Mandarin word asks for, because both are silent failures otherwise.
  */
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import type { HandRow } from './lib/handAuthored.ts'
 import { parseReading } from './lib/taigiReading.ts'
 import { writeReport } from './lib/tmp.ts'
 import { HSK2_ROWS } from './lib/taiwaneseHsk2.ts'
+import { HSK3_ROWS } from './lib/taiwaneseHsk3.ts'
+
+const TABLES: Readonly<Record<number, readonly HandRow[]>> = { 2: HSK2_ROWS, 3: HSK3_ROWS }
+
+const levelFlag = process.argv.indexOf('--level')
+const level = levelFlag >= 0 ? Number(process.argv[levelFlag + 1]) : 2
+const HAND_ROWS = TABLES[level]
+if (!HAND_ROWS) throw new Error(`No hand-authored table for HSK ${level}`)
 
 interface SourceRow {
     m: string[]
@@ -29,7 +40,7 @@ const source = JSON.parse(
 ) as { rows: SourceRow[] }
 
 const mandarin = JSON.parse(
-    await readFile(join(process.cwd(), 'public', 'data', 'lists', 'hsk2.json'), 'utf8'),
+    await readFile(join(process.cwd(), 'public', 'data', 'lists', `hsk${level}.json`), 'utf8'),
 ) as { entries: { simp: string; trad: string }[] }
 
 const tradOf = new Map(mandarin.entries.map((entry) => [entry.simp, entry.trad]))
@@ -80,7 +91,7 @@ let tlToneWrong = 0
 let pojOk = 0
 let pojMissing = 0
 
-for (const [index, row] of HSK2_ROWS.entries()) {
+for (const [index, row] of HAND_ROWS.entries()) {
     const [simp, han, tailo, poj, note] = row
     const trad = tradOf.get(simp) ?? simp
 
@@ -161,25 +172,40 @@ for (const [index, row] of HSK2_ROWS.entries()) {
 // entry id is derived from exactly those two things.
 const seen = new Map<string, string>()
 const duplicates: string[] = []
-for (const [simp, han, tailo] of HSK2_ROWS) {
+for (const [simp, han, tailo] of HAND_ROWS) {
     const key = `${han}|${base(tailo)}`
     const previous = seen.get(key)
     if (previous) duplicates.push(`${han} ${tailo} — ${previous} and ${simp}`)
     seen.set(key, simp)
 }
 
+// Every Mandarin word needs a row, and every row needs a Mandarin word. A table that has
+// drifted from its list fails silently otherwise: the word is simply missing from the output.
+const authored = new Set(HAND_ROWS.map(([simp]) => simp))
+const missing = mandarin.entries
+    .filter((entry) => !authored.has(entry.simp))
+    .map((entry) => entry.simp)
+const unwanted = HAND_ROWS.map(([simp]) => simp).filter(
+    (simp) => !mandarin.entries.some((entry) => entry.simp === simp),
+)
+
 const header = [
-    `HSK 2 rows:            ${HSK2_ROWS.length}`,
-    `found in source:       ${inSource}`,
-    `Tâi-lô agrees exactly:  ${tlOk}`,
-    `Tâi-lô tone differs:    ${tlToneWrong}`,
-    `POJ agrees exactly:     ${pojOk}`,
-    `source had no POJ:     ${pojMissing}`,
-    `duplicate forms:       ${duplicates.length}`,
+    `HSK ${level} hand-authored rows: ${HAND_ROWS.length}`,
+    `Mandarin words:                ${mandarin.entries.length}`,
+    `found in source:               ${inSource}`,
+    `Tâi-lô agrees exactly:         ${tlOk}`,
+    `Tâi-lô tone differs:           ${tlToneWrong}`,
+    `POJ agrees exactly:            ${pojOk}`,
+    `source had no POJ:             ${pojMissing}`,
+    `duplicate forms:               ${duplicates.length}`,
+    `words with no row:             ${missing.length}`,
+    `rows with no word:             ${unwanted.length}`,
     '',
 ]
+if (missing.length > 0) header.push('MISSING ROWS', ...missing.map((simp) => `  ${simp}`), '')
+if (unwanted.length > 0) header.push('ROWS WITH NO WORD', ...unwanted.map((simp) => `  ${simp}`), '')
 if (duplicates.length > 0) header.push('DUPLICATES', ...duplicates.map((d) => `  ${d}`), '')
 if (problems.length > 0) header.push('NEEDS REVIEW', ...problems.map((p) => `  ${p}`), '')
 
-const out = await writeReport('hsk2-check.txt', [...header, ...lines].join('\n'))
+const out = await writeReport(`taigi-check-${level}.txt`, [...header, ...lines].join('\n'))
 console.log(out)
