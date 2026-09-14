@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-14T11:52:59.877Z",
+  "generatedAt": "2026-09-14T14:24:44.280Z",
   "lists": [
     {
       "id": "hsk1",
@@ -95,7 +95,7 @@
       "subtitle": "149 words",
       "count": 149,
       "file": "hsk2-tw.json",
-      "bytes": 127990,
+      "bytes": 128005,
       "kind": "hsk",
       "language": "taiwanese",
       "level": 2
@@ -106,10 +106,32 @@
       "subtitle": "298 words",
       "count": 298,
       "file": "hsk3-tw.json",
-      "bytes": 263426,
+      "bytes": 263430,
       "kind": "hsk",
       "language": "taiwanese",
       "level": 3
+    },
+    {
+      "id": "hsk4-tw",
+      "name": "HSK 4 (Taiwanese)",
+      "subtitle": "600 words",
+      "count": 600,
+      "file": "hsk4-tw.json",
+      "bytes": 546039,
+      "kind": "hsk",
+      "language": "taiwanese",
+      "level": 4
+    },
+    {
+      "id": "hsk5-tw",
+      "name": "HSK 5 (Taiwanese)",
+      "subtitle": "1300 words",
+      "count": 1300,
+      "file": "hsk5-tw.json",
+      "bytes": 1192892,
+      "kind": "hsk",
+      "language": "taiwanese",
+      "level": 5
     }
   ]
 }

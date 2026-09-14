@@ -22,6 +22,23 @@
 import type { HandRow } from './handAuthored.ts'
 import { HSK2_ROWS } from './taiwaneseHsk2.ts'
 import { HSK3_ROWS } from './taiwaneseHsk3.ts'
+import { HSK4_ROWS } from './taiwaneseHsk4.ts'
+import {
+    HSK5_ROWS_A,
+    HSK5_ROWS_B,
+    HSK5_ROWS_C,
+    HSK5_ROWS_D,
+    HSK5_ROWS_E,
+} from './taiwaneseHsk5.ts'
+
+/** HSK 5 is authored in five chunks purely so the file stays reviewable. */
+const HSK5_ROWS: readonly HandRow[] = [
+    ...HSK5_ROWS_A,
+    ...HSK5_ROWS_B,
+    ...HSK5_ROWS_C,
+    ...HSK5_ROWS_D,
+    ...HSK5_ROWS_E,
+]
 
 export interface TaiwaneseOverride {
     /** Taiwanese written form. Empty when the word is written in romanisation alone. */
@@ -64,6 +81,8 @@ export const TAIWANESE_OVERRIDES: Readonly<Record<string, TaiwaneseOverride>> = 
 
     ...handAuthored(2, HSK2_ROWS),
     ...handAuthored(3, HSK3_ROWS),
+    ...handAuthored(4, HSK4_ROWS),
+    ...handAuthored(5, HSK5_ROWS),
 
     // --- HSK 1: corrections to the mechanically ranked forms ----------------------------
     // --- Candidates the ranking passed over: the answer was in the data all along ------

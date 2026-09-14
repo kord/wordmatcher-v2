@@ -97,14 +97,42 @@ literary reading from the word people say.
 2. `tools/taigi-check.ts --level N` reports each one against the extract: whether the source knows the
    word, and separately whether it agrees on the spelling, the tones and the POJ. It also reports rows
    the Mandarin list needs and the table does not have, and rows no Mandarin word asks for, because
-   both fail silently otherwise.
+   both fail silently otherwise. The same report prints what the mechanical ranking would have chosen
+   instead, per word.
 3. Where the source carries the same word with a variant reading, the source's spelling is adopted, so
    one orthography runs across every level.
 4. Each result is emitted as `hsk2-tw`, `hsk3-tw` and so on, alongside the Mandarin list it mirrors.
 
-As shipped, HSK 2 matches a source reading exactly on 119 of 149 words and HSK 3 on 213 of 298. The
-remainder are words the extract lacks, words it carries only in a literary reading, or a deliberate
-colloquial choice; they are listed per level in the check report under `tmp/`.
+As shipped, the tables match a source reading exactly on 119 of 149 HSK 2 words, 218 of 298 HSK 3,
+409 of 600 HSK 4 and 903 of 1,300 HSK 5. The remainder are words the extract lacks, words it carries
+only in a literary reading, or a deliberate colloquial choice; they are listed per level in the check
+report under `tmp/`. Where a tone still differs the hand-authored one is kept, because the source's
+own column disagrees with itself often enough that a difference is not evidence of an error on its
+own — HSK 5 keeps 22 such tones.
+
+**How much the mechanical ranking would have got wrong.** Because the tables are authored
+independently of the source's ranking, the two can be compared, and `taigi-check` does: for each word
+it re-runs the ranking with no override in place and says whether it would have landed on the same
+form, the same word with a different reading, a different word, or nothing at all.
+
+| Level | same | different reading | different word | nothing | would differ |
+| ----- | ---- | ----------------- | -------------- | ------- | ------------ |
+| HSK 4 | 380 (63%) | 96 (16%) | 84 (14%) | 40 (7%) | 37% |
+| HSK 5 | 864 (66%) | 192 (15%) | 172 (13%) | 72 (6%) | 34% |
+
+Roughly a third of the corpus, then. The "different reading" column is the quiet one: those rows
+would have shown the right word with the wrong pronunciation, which reads as correct to anyone who
+does not already know the word. HSK 5 examples include 包子 as 鋼包 `kǹg-pau`, 打招呼 as 叫金鼓 and
+厕所 as 廁所 `tshik-sóo`; the ranking was better than the table on a handful, such as 當 "to be" as
+`tang` and 吃驚 as 生驚 `tshenn-kiann`.
+
+**Romanisation.** Both schemes are hand-written for every row, so each one is a chance to copy the
+column next to it. `tests/unit/taigiDataQuality.test.ts` catches a POJ column that is byte-identical
+to the Tâi-lô one, but that misses a half-finished conversion — `tsng-sek` differs from `tsng-sik`, so
+it passes, and still says `tsng` where POJ says `chng`. `tools/poj-check.ts` closes that gap by
+reducing each column to the spelling the other scheme would require and comparing; it prints the
+conversion it uses, and `tools/scheme-pairs.ts` derives that conversion from the extract rather than
+from documentation, by aligning every source row that carries both romanisations.
 
 `tests/unit/taigiDataQuality.test.ts` checks every built Taiwanese list against the same invariants,
 so a new level cannot ship without meeting them.

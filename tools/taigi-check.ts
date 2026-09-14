@@ -17,11 +17,31 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { HandRow } from './lib/handAuthored.ts'
 import { parseReading } from './lib/taigiReading.ts'
+import { indexTaiwanese, rankCandidates } from './lib/taiwanese.ts'
 import { writeReport } from './lib/tmp.ts'
 import { HSK2_ROWS } from './lib/taiwaneseHsk2.ts'
 import { HSK3_ROWS } from './lib/taiwaneseHsk3.ts'
+import { HSK4_ROWS } from './lib/taiwaneseHsk4.ts'
+import {
+    HSK5_ROWS_A,
+    HSK5_ROWS_B,
+    HSK5_ROWS_C,
+    HSK5_ROWS_D,
+    HSK5_ROWS_E,
+} from './lib/taiwaneseHsk5.ts'
 
-const TABLES: Readonly<Record<number, readonly HandRow[]>> = { 2: HSK2_ROWS, 3: HSK3_ROWS }
+const TABLES: Readonly<Record<number, readonly HandRow[]>> = {
+    2: HSK2_ROWS,
+    3: HSK3_ROWS,
+    4: HSK4_ROWS,
+    5: [
+        ...HSK5_ROWS_A,
+        ...HSK5_ROWS_B,
+        ...HSK5_ROWS_C,
+        ...HSK5_ROWS_D,
+        ...HSK5_ROWS_E,
+    ],
+}
 
 const levelFlag = process.argv.indexOf('--level')
 const level = levelFlag >= 0 ? Number(process.argv[levelFlag + 1]) : 2
@@ -189,8 +209,49 @@ const unwanted = HAND_ROWS.map(([simp]) => simp).filter(
     (simp) => !mandarin.entries.some((entry) => entry.simp === simp),
 )
 
+/*
+ * What the dictionary would have said instead.
+ *
+ * This answers whether the hand work buys anything. `rankCandidates` with no override list is
+ * exactly the mechanical answer, so comparing the two says how far apart the methods are and in
+ * which direction - a different *reading* of the same word, or a different *word* altogether.
+ */
+const index = indexTaiwanese(source.rows)
+
+const verdicts = { same: 0, reading: 0, word: 0, nothing: 0 }
+const examples: string[] = []
+
+for (const [simp, han, tailo] of HAND_ROWS) {
+    const ranked = rankCandidates(index, simp, tradOf.get(simp) ?? simp)
+    const row = ranked.best?.row
+    const rankerTailo = (row?.tl.split('/')[0] ?? '').trim()
+    const rankerHan = row?.h[0] ?? ''
+
+    let verdict: keyof typeof verdicts
+    if (!row || rankerTailo.length === 0) verdict = 'nothing'
+    else if (rankerHan !== han) verdict = 'word'
+    else if (
+        base(rankerTailo) !== base(tailo) ||
+        tones(rankerTailo, 'tailo') !== tones(tailo, 'tailo')
+    )
+        verdict = 'reading'
+    else verdict = 'same'
+
+    verdicts[verdict] += 1
+    if (verdict !== 'same' && examples.length < 30) {
+        examples.push(
+            `  ${verdict.padEnd(7)} ${simp.padEnd(6)} mine ${(han || '(none)').padEnd(8)} ${tailo.padEnd(18)} ranker ${(rankerHan || '(none)').padEnd(8)} ${rankerTailo || '(none)'}`,
+        )
+    }
+}
+
 const header = [
     `HSK ${level} hand-authored rows: ${HAND_ROWS.length}`,
+    `ranker would have agreed:      ${verdicts.same}`,
+    `different reading:             ${verdicts.reading}`,
+    `different word:                ${verdicts.word}`,
+    `ranker had nothing:            ${verdicts.nothing}`,
+    '',
     `Mandarin words:                ${mandarin.entries.length}`,
     `found in source:               ${inSource}`,
     `Tâi-lô agrees exactly:         ${tlOk}`,
@@ -205,6 +266,7 @@ const header = [
 if (missing.length > 0) header.push('MISSING ROWS', ...missing.map((simp) => `  ${simp}`), '')
 if (unwanted.length > 0) header.push('ROWS WITH NO WORD', ...unwanted.map((simp) => `  ${simp}`), '')
 if (duplicates.length > 0) header.push('DUPLICATES', ...duplicates.map((d) => `  ${d}`), '')
+if (examples.length > 0) header.push('WHERE THE RANKER DIFFERS', ...examples, '')
 if (problems.length > 0) header.push('NEEDS REVIEW', ...problems.map((p) => `  ${p}`), '')
 
 const out = await writeReport(`taigi-check-${level}.txt`, [...header, ...lines].join('\n'))

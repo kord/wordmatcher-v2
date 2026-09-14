@@ -67,10 +67,12 @@ const THEMES: { value: ThemePreference; label: string }[] = [
  * 花好月圓 is a blessing - blooming flowers, a full moon - and read either way its four
  * syllables fall on four different tones. In pinyin that is 1, 3, 4, 2; in Tâi-lô it is
  * `hue-hó-gue̍h-guân`, which is 1, 2, 8 and 5, so it reaches the two tones Tâi-lô has that
- * pinyin does not.
+ * pinyin does not. In POJ the same word is `hoe-hó-goe̍h-goân`: the same four tones, and the
+ * four spellings that separate the two schemes, so switching romanisation shows the switch.
  *
  * That matters beyond the sample: while this only ever showed pinyin, a missing colour for
- * tones 5, 7 and 8 was invisible to the people who would have seen it.
+ * tones 5, 7 and 8 was invisible to the people who would have seen it, and while it only ever
+ * showed Tâi-lô, choosing POJ appeared to change nothing.
  */
 const MANDARIN_PREVIEW: Romanization = {
     scheme: 'pinyin',
@@ -84,17 +86,34 @@ const MANDARIN_PREVIEW: Romanization = {
     ],
 }
 
-const TAIWANESE_PREVIEW: Romanization = {
-    scheme: 'tailo',
-    marked: 'hue-hó-gue̍h-guân',
-    numbered: 'hue1 ho2 gueh8 guan5',
-    syllables: [
-        { base: 'hue', marked: 'hue', tone: 1, han: true },
-        { base: 'ho', marked: 'hó', tone: 2, han: true },
-        { base: 'gueh', marked: 'gue̍h', tone: 8, han: true },
-        { base: 'guan', marked: 'guân', tone: 5, han: true },
-    ],
+const TAIWANESE_PREVIEW: Record<'tailo' | 'poj', Romanization> = {
+    tailo: {
+        scheme: 'tailo',
+        marked: 'hue-hó-gue̍h-guân',
+        numbered: 'hue1 ho2 gueh8 guan5',
+        syllables: [
+            { base: 'hue', marked: 'hue', tone: 1, han: true },
+            { base: 'ho', marked: 'hó', tone: 2, han: true },
+            { base: 'gueh', marked: 'gue̍h', tone: 8, han: true },
+            { base: 'guan', marked: 'guân', tone: 5, han: true },
+        ],
+    },
+    poj: {
+        scheme: 'poj',
+        marked: 'hoe-hó-goe̍h-goân',
+        numbered: 'hoe1 ho2 goeh8 goan5',
+        syllables: [
+            { base: 'hoe', marked: 'hoe', tone: 1, han: true },
+            { base: 'ho', marked: 'hó', tone: 2, han: true },
+            { base: 'goeh', marked: 'goe̍h', tone: 8, han: true },
+            { base: 'goan', marked: 'goân', tone: 5, han: true },
+        ],
+    },
 }
+
+/** Tâi-lô unless POJ was asked for; a pinyin scheme never reaches this. */
+const taiwanesePreview = (scheme: RomanizationScheme): Romanization =>
+    scheme === 'poj' ? TAIWANESE_PREVIEW.poj : TAIWANESE_PREVIEW.tailo
 
 export function SettingsScreen() {
     const { settings, update } = useSettings()
@@ -341,7 +360,7 @@ export function SettingsScreen() {
                         <PinyinText
                             romanization={
                                 settings.language === 'taiwanese'
-                                    ? TAIWANESE_PREVIEW
+                                    ? taiwanesePreview(language.romanization)
                                     : MANDARIN_PREVIEW
                             }
                             style={settings.pinyinDisplay.style}

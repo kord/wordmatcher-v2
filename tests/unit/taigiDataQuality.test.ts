@@ -43,7 +43,7 @@ interface TaiwaneseEntry {
  * Every Taiwanese list is checked the same way, so a new level inherits the guarantees rather
  * than getting its own copy of them.
  */
-const LIST_IDS = ['hsk1-tw', 'hsk2-tw', 'hsk3-tw'] as const
+const LIST_IDS = ['hsk1-tw', 'hsk2-tw', 'hsk3-tw', 'hsk4-tw', 'hsk5-tw'] as const
 
 function entriesOf(listId: string): TaiwaneseEntry[] {
     const file = JSON.parse(
@@ -114,15 +114,21 @@ describe.each(LIST_IDS)('%s: the two romanisations are genuinely different syste
         const setAsideToneMarks = (text: string) =>
             text.normalize('NFD').replace(/[\u0300-\u036d]/g, '')
 
-        for (const entry of entries) {
-            const tailo = entry.romanizations.tailo
-            const poj = entry.romanizations.poj
-            if (!tailo || !poj) continue
+        // Collected rather than asserted one at a time, so a single run reports every offending
+        // row instead of stopping at the first and hiding the rest.
+        const suspects = entries
+            .filter((entry) => {
+                const tailo = entry.romanizations.tailo
+                const poj = entry.romanizations.poj
+                if (!tailo || !poj) return false
+                return (
+                    differsInBothSchemes.test(setAsideToneMarks(tailo.marked)) &&
+                    tailo.marked === poj.marked
+                )
+            })
+            .map(label)
 
-            if (differsInBothSchemes.test(setAsideToneMarks(tailo.marked))) {
-                expect(tailo.marked, label(entry)).not.toBe(poj.marked)
-            }
-        }
+        expect(suspects).toEqual([])
     })
 
     it('labels each reading with its own scheme', () => {
