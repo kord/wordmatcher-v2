@@ -75,6 +75,14 @@
     --tone-2: #c87f0a;
     --tone-3: #2e7d5b;
     --tone-4: #2a63b8;
+    /*
+     * Tai-lo has three tones pinyin does not: 5 (rising), 7 (mid level) and 8 (high checked).
+     * They were missing, so those syllables fell through to the inherited colour and the whole
+     * feature looked broken rather than incomplete.
+     */
+    --tone-5: #8a4fbf;
+    --tone-7: #0d8fa6;
+    --tone-8: #c0277a;
 }
 
 [data-theme='dark'] {
@@ -98,6 +106,9 @@
     --tone-2: #e0a03a;
     --tone-3: #56c191;
     --tone-4: #6f9dfa;
+    --tone-5: #bf95f0;
+    --tone-7: #4fd0e6;
+    --tone-8: #f57fb4;
 }
 
 /* Theme-aware pieces that cannot be expressed as a single colour. */

@@ -13,6 +13,7 @@ import type {
     Language,
     LanguageSettings,
     PinyinStyle,
+    Romanization,
     RomanizationScheme,
     ThemePreference,
 } from '../../domain/types'
@@ -59,6 +60,41 @@ const THEMES: { value: ThemePreference; label: string }[] = [
     { value: 'light', label: 'Light' },
     { value: 'dark', label: 'Dark' },
 ]
+
+/**
+ * The preview sample, chosen so that the tone colours have something to show.
+ *
+ * 花好月圓 is a blessing - blooming flowers, a full moon - and read either way its four
+ * syllables fall on four different tones. In pinyin that is 1, 3, 4, 2; in Tâi-lô it is
+ * `hue-hó-gue̍h-guân`, which is 1, 2, 8 and 5, so it reaches the two tones Tâi-lô has that
+ * pinyin does not.
+ *
+ * That matters beyond the sample: while this only ever showed pinyin, a missing colour for
+ * tones 5, 7 and 8 was invisible to the people who would have seen it.
+ */
+const MANDARIN_PREVIEW: Romanization = {
+    scheme: 'pinyin',
+    marked: 'huā hǎo yuè yuán',
+    numbered: 'hua1 hao3 yue4 yuan2',
+    syllables: [
+        { base: 'hua', marked: 'huā', tone: 1, han: true },
+        { base: 'hao', marked: 'hǎo', tone: 3, han: true },
+        { base: 'yue', marked: 'yuè', tone: 4, han: true },
+        { base: 'yuan', marked: 'yuán', tone: 2, han: true },
+    ],
+}
+
+const TAIWANESE_PREVIEW: Romanization = {
+    scheme: 'tailo',
+    marked: 'hue-hó-gue̍h-guân',
+    numbered: 'hue1 ho2 gueh8 guan5',
+    syllables: [
+        { base: 'hue', marked: 'hue', tone: 1, han: true },
+        { base: 'ho', marked: 'hó', tone: 2, han: true },
+        { base: 'gueh', marked: 'gue̍h', tone: 8, han: true },
+        { base: 'guan', marked: 'guân', tone: 5, han: true },
+    ],
+}
 
 export function SettingsScreen() {
     const { settings, update } = useSettings()
@@ -296,26 +332,18 @@ export function SettingsScreen() {
                 />
 
                 <div className={styles.preview}>
-                    {/* A small easter egg: 花好月圆 is a blessing ("blooming flowers,
-                        a full moon"), and its four syllables happen to be tones
-                        1, 3, 4, 2 - so every tone colour appears, each pinyin style
-                        reads differently, and the traditional form changes too. */}
+                    {/* Same blessing in both varieties, traditional or simplified by setting.
+                        See the samples above for what its four tones are. */}
                     <span className={styles.previewHan}>
                         {language.characterSet === 'trad' ? '花好月圓' : '花好月圆'}
                     </span>
                     <span className={styles.previewPinyin}>
                         <PinyinText
-                            romanization={{
-                                scheme: 'pinyin',
-                                marked: 'huā hǎo yuè yuán',
-                                numbered: 'hua1 hao3 yue4 yuan2',
-                                syllables: [
-                                    { base: 'hua', marked: 'huā', tone: 1, han: true },
-                                    { base: 'hao', marked: 'hǎo', tone: 3, han: true },
-                                    { base: 'yue', marked: 'yuè', tone: 4, han: true },
-                                    { base: 'yuan', marked: 'yuán', tone: 2, han: true },
-                                ],
-                            }}
+                            romanization={
+                                settings.language === 'taiwanese'
+                                    ? TAIWANESE_PREVIEW
+                                    : MANDARIN_PREVIEW
+                            }
                             style={settings.pinyinDisplay.style}
                             toneColours={settings.pinyinDisplay.toneColours}
                         />

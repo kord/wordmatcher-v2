@@ -184,6 +184,19 @@
     color: var(--tone-4);
 }
 
+/* Tai-lo only. See tokens.css for why these three exist. */
+.syllable[data-tone='5'] {
+    color: var(--tone-5);
+}
+
+.syllable[data-tone='7'] {
+    color: var(--tone-7);
+}
+
+.syllable[data-tone='8'] {
+    color: var(--tone-8);
+}
+
 .syllable sup {
     font-size: 0.6em;
     line-height: 1;
