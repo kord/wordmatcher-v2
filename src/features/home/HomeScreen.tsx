@@ -103,8 +103,8 @@ export function HomeScreen() {
                         {phase === 'loading'
                             ? 'Preparing…'
                             : firstRun
-                              ? 'Start your first session'
-                              : 'Start session'}
+                                ? 'Start your first session'
+                                : 'Start session'}
                     </Button>
                     {firstRun ? (
                         // There is nothing to show yet, so say that here rather than let the
