@@ -338,6 +338,8 @@ export function SessionScreen() {
 
     const { config } = state
     const totalRounds = config.length.unit === 'rounds' ? config.length.value : null
+    // Before the first answer every number on the HUD is a zero, so only the clock is shown.
+    const started = state.answeredCount > 0
     const remaining = endsAt === null ? null : Math.max(0, endsAt - now)
     const progressValue =
         totalRounds !== null
@@ -363,10 +365,17 @@ export function SessionScreen() {
                         <span aria-hidden="true">✕</span>
                     </IconButton>
 
-                    <div className={styles.hudItem}>
-                        <span className={styles.hudValue}>{state.correct}</span>
-                        <span className={styles.hudLabel}>Correct</span>
-                    </div>
+                    {/*
+                     * A first-time player was being shown four zeroes at once - a score, a
+                     * clock, a streak and a miss count - of which only the clock meant anything
+                     * yet. The rest arrive once they have something to say.
+                     */}
+                    {started ? (
+                        <div className={styles.hudItem}>
+                            <span className={styles.hudValue}>{state.correct}</span>
+                            <span className={styles.hudLabel}>Correct</span>
+                        </div>
+                    ) : null}
 
                     <div className={styles.hudItem}>
                         <span className={styles.hudValue}>
@@ -377,17 +386,25 @@ export function SessionScreen() {
 
                     <span className={styles.hudSpacer} />
 
-                    <div className={styles.hudItem}>
-                        <span className={styles.hudValue}>{state.streak > 0 ? `🔥${state.streak}` : '—'}</span>
-                        <span className={styles.hudLabel}>Streak</span>
-                    </div>
+                    {started ? (
+                        <>
+                            <div className={styles.hudItem}>
+                                <span className={styles.hudValue}>
+                                    {state.streak > 0 ? `🔥${state.streak}` : '—'}
+                                </span>
+                                <span className={styles.hudLabel}>Streak</span>
+                            </div>
 
-                    <div className={[styles.hudItem, styles.hudRight].join(' ')}>
-                        <span className={styles.hudValue}>
-                            {remaining !== null ? formatClock(remaining) : `${state.incorrect}`}
-                        </span>
-                        <span className={styles.hudLabel}>{remaining !== null ? 'Left' : 'Missed'}</span>
-                    </div>
+                            <div className={[styles.hudItem, styles.hudRight].join(' ')}>
+                                <span className={styles.hudValue}>
+                                    {remaining !== null ? formatClock(remaining) : `${state.incorrect}`}
+                                </span>
+                                <span className={styles.hudLabel}>
+                                    {remaining !== null ? 'Left' : 'Missed'}
+                                </span>
+                            </div>
+                        </>
+                    ) : null}
                 </div>
 
                 <div className={styles.meter}>

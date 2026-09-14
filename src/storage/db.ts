@@ -30,7 +30,19 @@ function memoryStore(name: string): Map<string, unknown> {
 
 let cachedDb: Promise<IDBDatabase> | null = null
 
+/**
+ * Cleared for the rest of the session once the database proves not to work.
+ *
+ * Being *present* is not the same as being *usable*: a connection can be wedged by a stalled
+ * upgrade or by a pending deletion from another tab, and then calls hang rather than fail.
+ */
+let indexedDbUsable = true
+
+/** How long to wait for a connection before giving up on IndexedDB for this session. */
+const OPEN_TIMEOUT_MS = 3000
+
 export function isIndexedDbAvailable(): boolean {
+    if (!indexedDbUsable) return false
     try {
         return typeof indexedDB !== 'undefined' && indexedDB !== null
     } catch {
@@ -42,6 +54,31 @@ export function openDb(): Promise<IDBDatabase> {
     if (cachedDb) return cachedDb
 
     cachedDb = new Promise((resolve, reject) => {
+        let settled = false
+        let timer: ReturnType<typeof setTimeout>
+
+        const finish = (action: () => void) => {
+            if (settled) return
+            settled = true
+            clearTimeout(timer)
+            action()
+        }
+
+        /*
+         * A wedged IndexedDB can sit for ever without firing a single event - not even
+         * `onblocked`, which reports a version change and nothing else. Without this timeout the
+         * app waits here and the start button reads "Preparing..." indefinitely, which is the one
+         * thing a first-time user must never see. Timing out costs the session its persistence,
+         * not its existence.
+         */
+        timer = setTimeout(() => {
+            finish(() => {
+                cachedDb = null
+                indexedDbUsable = false
+                reject(new Error('IndexedDB did not respond.'))
+            })
+        }, OPEN_TIMEOUT_MS)
+
         const request = indexedDB.open(DB_NAME, DB_VERSION)
 
         request.onupgradeneeded = () => {
@@ -56,12 +93,33 @@ export function openDb(): Promise<IDBDatabase> {
             }
         }
 
-        request.onsuccess = () => resolve(request.result)
-        request.onerror = () => reject(request.error)
-        request.onblocked = () => reject(new Error('IndexedDB upgrade blocked by another tab.'))
+        request.onsuccess = () =>
+            finish(() => {
+                if (indexedDbUsable) resolve(request.result)
+                else request.result.close()
+            })
+        request.onerror = () => finish(() => reject(request.error))
+        request.onblocked = () =>
+            finish(() => reject(new Error('IndexedDB upgrade blocked by another tab.')))
     })
 
     return cachedDb
+}
+
+/**
+ * The connection, or null when IndexedDB cannot be used at all.
+ *
+ * Never rejects. Every operation falls back to the in-memory store instead, so a device that
+ * refuses IndexedDB loses persistence rather than the app.
+ */
+async function openOrNull(): Promise<IDBDatabase | null> {
+    if (!isIndexedDbAvailable()) return null
+    try {
+        return await openDb()
+    } catch {
+        indexedDbUsable = false
+        return null
+    }
 }
 
 function keyOf(storeName: string, value: unknown): string {
@@ -70,11 +128,9 @@ function keyOf(storeName: string, value: unknown): string {
 }
 
 export async function readAll<T>(storeName: string): Promise<T[]> {
-    if (!isIndexedDbAvailable()) {
-        return [...memoryStore(storeName).values()] as T[]
-    }
+    const db = await openOrNull()
+    if (!db) return [...memoryStore(storeName).values()] as T[]
 
-    const db = await openDb()
     return new Promise((resolve, reject) => {
         const request = db.transaction(storeName, 'readonly').objectStore(storeName).getAll()
         request.onsuccess = () => resolve(request.result as T[])
@@ -93,13 +149,12 @@ export async function readMany<T>(storeName: string, keys: readonly string[]): P
 export async function writeMany<T>(storeName: string, values: readonly T[]): Promise<void> {
     if (values.length === 0) return
 
-    if (!isIndexedDbAvailable()) {
+    const db = await openOrNull()
+    if (!db) {
         const store = memoryStore(storeName)
         for (const value of values) store.set(keyOf(storeName, value), value)
         return
     }
-
-    const db = await openDb()
     return new Promise((resolve, reject) => {
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
@@ -111,12 +166,11 @@ export async function writeMany<T>(storeName: string, values: readonly T[]): Pro
 }
 
 export async function removeOne(storeName: string, key: string): Promise<void> {
-    if (!isIndexedDbAvailable()) {
+    const db = await openOrNull()
+    if (!db) {
         memoryStore(storeName).delete(key)
         return
     }
-
-    const db = await openDb()
     return new Promise((resolve, reject) => {
         const tx = db.transaction(storeName, 'readwrite')
         tx.objectStore(storeName).delete(key)
@@ -128,13 +182,12 @@ export async function removeOne(storeName: string, key: string): Promise<void> {
 export async function removeMany(storeName: string, keys: readonly string[]): Promise<void> {
     if (keys.length === 0) return
 
-    if (!isIndexedDbAvailable()) {
+    const db = await openOrNull()
+    if (!db) {
         const store = memoryStore(storeName)
         for (const key of keys) store.delete(key)
         return
     }
-
-    const db = await openDb()
     return new Promise((resolve, reject) => {
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
@@ -146,12 +199,11 @@ export async function removeMany(storeName: string, keys: readonly string[]): Pr
 }
 
 export async function clearStore(storeName: string): Promise<void> {
-    if (!isIndexedDbAvailable()) {
+    const db = await openOrNull()
+    if (!db) {
         memoryStore(storeName).clear()
         return
     }
-
-    const db = await openDb()
     return new Promise((resolve, reject) => {
         const tx = db.transaction(storeName, 'readwrite')
         tx.objectStore(storeName).clear()
@@ -163,5 +215,6 @@ export async function clearStore(storeName: string): Promise<void> {
 /** Test helper: forget the cached connection and any in-memory data. */
 export function resetDbForTests(): void {
     cachedDb = null
+    indexedDbUsable = true
     memoryStores.clear()
 }
