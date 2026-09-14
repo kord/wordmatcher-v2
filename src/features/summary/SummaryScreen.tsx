@@ -1,5 +1,6 @@
 import { useRoute } from '../../app/router'
 import { faceFor } from '../../domain/faces'
+import { romanizationFor } from '../../domain/romanization'
 import { Button } from '../../ui/components/Button'
 import { PinyinText } from '../../ui/components/PinyinText'
 import { ProgressBar } from '../../ui/components/ProgressBar'
@@ -95,10 +96,20 @@ export function SummaryScreen() {
                         <div className={styles.missedItem} key={mistake.entry.id}>
                             <div>
                                 <div className={styles.missedWord}>
-                                    {faceFor(mistake.entry, 'han', settings.characterSet).text}
+                                    {
+                                        faceFor(
+                                            mistake.entry,
+                                            'han',
+                                            settings.byLanguage[settings.language].characterSet,
+                                            settings.byLanguage[settings.language].romanization,
+                                        ).text
+                                    }
                                 </div>
                                 <PinyinText
-                                    pinyin={mistake.entry.pinyin}
+                                    romanization={romanizationFor(
+                                        mistake.entry,
+                                        settings.byLanguage[settings.language].romanization,
+                                    )}
                                     style={settings.pinyinDisplay.style}
                                     toneColours={settings.pinyinDisplay.toneColours}
                                 />

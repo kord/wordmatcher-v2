@@ -8,7 +8,7 @@ import {
     taskHintFor,
 } from '../../src/domain/faces'
 import type { Objective } from '../../src/domain/types'
-import { makeEntry } from './fixtures'
+import { makeEntry, makePinyin } from './fixtures'
 
 const OBJECTIVES: Objective[] = ['zh-en', 'en-zh', 'zh-pinyin', 'pinyin-zh']
 
@@ -21,17 +21,23 @@ describe('prompt and answer kinds', () => {
     it('pairs the surfaces the way each task requires', () => {
         expect([promptKindFor('zh-en'), answerKindFor('zh-en')]).toEqual(['han', 'gloss'])
         expect([promptKindFor('en-zh'), answerKindFor('en-zh')]).toEqual(['gloss', 'han'])
-        expect([promptKindFor('zh-pinyin'), answerKindFor('zh-pinyin')]).toEqual(['han', 'pinyin'])
-        expect([promptKindFor('pinyin-zh'), answerKindFor('pinyin-zh')]).toEqual(['pinyin', 'han'])
+        expect([promptKindFor('zh-pinyin'), answerKindFor('zh-pinyin')]).toEqual([
+            'han',
+            'romanization',
+        ])
+        expect([promptKindFor('pinyin-zh'), answerKindFor('pinyin-zh')]).toEqual([
+            'romanization',
+            'han',
+        ])
     })
 })
 
 describe('taskHintFor', () => {
-    it('asks for the pinyin when the answer is pinyin, even though the prompt is characters', () => {
+    it('asks for the reading when the answer is a reading, even though the prompt is characters', () => {
         // Regression: this used to read "Choose the meaning" because the hint was
         // derived from the prompt's surface rather than the objective.
         expect(promptKindFor('zh-pinyin')).toBe('han')
-        expect(taskHintFor('zh-pinyin')).toBe('Choose the pinyin')
+        expect(taskHintFor('zh-pinyin')).toBe('Choose the reading')
     })
 
     it('never tells the player to pick a meaning unless the answers are meanings', () => {
@@ -50,7 +56,9 @@ describe('taskHintFor', () => {
     })
 
     it('describes each objective', () => {
-        expect(objectiveLabel('zh-pinyin')).toBe('Chinese → pinyin')
+        // Wording is deliberately language-neutral: the same four objectives drive the
+        // Taiwanese lists, where the reading is Tai-lo rather than pinyin.
+        expect(objectiveLabel('zh-pinyin')).toBe('Characters → reading')
     })
 })
 
@@ -58,20 +66,34 @@ describe('faceFor and faceKey', () => {
     const entry = makeEntry({ simp: '学习', trad: '學習', id: 'xuexi', glossShort: 'to study' })
 
     it('honours the character set for han faces', () => {
-        expect(faceFor(entry, 'han', 'simp').text).toBe('学习')
-        expect(faceFor(entry, 'han', 'trad').text).toBe('學習')
+        expect(faceFor(entry, 'han', 'simp', 'pinyin').text).toBe('学习')
+        expect(faceFor(entry, 'han', 'trad', 'pinyin').text).toBe('學習')
     })
 
-    it('carries the pinyin object on pinyin faces', () => {
-        const face = faceFor(entry, 'pinyin', 'simp')
-        expect(face.text).toBe(entry.pinyin.marked)
-        expect(face.pinyin).toBe(entry.pinyin)
+    it('carries the romanisation object on romanisation faces', () => {
+        const face = faceFor(entry, 'romanization', 'simp', 'pinyin')
+        expect(face.text).toBe(entry.romanizations.pinyin?.marked)
+        expect(face.romanization).toBe(entry.romanizations.pinyin)
+    })
+
+    it('falls back to the romanisation when a word has no character', () => {
+        // Taiwanese words such as the negator `m̄` have no settled character at all.
+        const bare = makeEntry({
+            simp: '',
+            trad: '',
+            id: 'm',
+            language: 'taiwanese',
+            glossShort: 'not',
+            romanizations: { tailo: makePinyin('m7') },
+        })
+
+        expect(faceFor(bare, 'han', 'trad', 'tailo').text).toBe('m7')
     })
 
     it('keys faces by kind and text so duplicates can be detected', () => {
-        expect(faceKey(faceFor(entry, 'gloss', 'simp'))).toBe('gloss:to study')
-        expect(faceKey(faceFor(entry, 'han', 'simp'))).not.toBe(
-            faceKey(faceFor(entry, 'han', 'trad')),
+        expect(faceKey(faceFor(entry, 'gloss', 'simp', 'pinyin'))).toBe('gloss:to study')
+        expect(faceKey(faceFor(entry, 'han', 'simp', 'pinyin'))).not.toBe(
+            faceKey(faceFor(entry, 'han', 'trad', 'pinyin')),
         )
     })
 })

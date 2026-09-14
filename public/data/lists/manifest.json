@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-11T16:55:37.464Z",
+  "generatedAt": "2026-09-14T11:03:17.610Z",
   "lists": [
     {
       "id": "hsk1",
@@ -8,8 +8,9 @@
       "subtitle": "150 words",
       "count": 150,
       "file": "hsk1.json",
-      "bytes": 47767,
+      "bytes": 56457,
       "kind": "hsk",
+      "language": "mandarin",
       "level": 1
     },
     {
@@ -18,8 +19,9 @@
       "subtitle": "149 words",
       "count": 149,
       "file": "hsk2.json",
-      "bytes": 50949,
+      "bytes": 59587,
       "kind": "hsk",
+      "language": "mandarin",
       "level": 2
     },
     {
@@ -28,8 +30,9 @@
       "subtitle": "298 words",
       "count": 298,
       "file": "hsk3.json",
-      "bytes": 102714,
+      "bytes": 119996,
       "kind": "hsk",
+      "language": "mandarin",
       "level": 3
     },
     {
@@ -38,8 +41,9 @@
       "subtitle": "600 words",
       "count": 600,
       "file": "hsk4.json",
-      "bytes": 209836,
+      "bytes": 244634,
       "kind": "hsk",
+      "language": "mandarin",
       "level": 4
     },
     {
@@ -48,8 +52,9 @@
       "subtitle": "1300 words",
       "count": 1300,
       "file": "hsk5.json",
-      "bytes": 452328,
+      "bytes": 527728,
       "kind": "hsk",
+      "language": "mandarin",
       "level": 5
     },
     {
@@ -58,8 +63,9 @@
       "subtitle": "2500 words",
       "count": 2500,
       "file": "hsk6.json",
-      "bytes": 884795,
+      "bytes": 1029795,
       "kind": "hsk",
+      "language": "mandarin",
       "level": 6
     },
     {
@@ -68,8 +74,20 @@
       "subtitle": "Top 4921 characters by frequency",
       "count": 4921,
       "file": "junda.json",
-      "bytes": 1372117,
-      "kind": "junda"
+      "bytes": 1657535,
+      "kind": "junda",
+      "language": "mandarin"
+    },
+    {
+      "id": "hsk1-tw",
+      "name": "HSK 1 (Taiwanese)",
+      "subtitle": "150 words",
+      "count": 150,
+      "file": "hsk1-tw.json",
+      "bytes": 118135,
+      "kind": "hsk",
+      "language": "taiwanese",
+      "level": 1
     }
   ]
 }

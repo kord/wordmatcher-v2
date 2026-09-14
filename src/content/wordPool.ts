@@ -1,4 +1,4 @@
-import type { HskLevel, ListManifest, ListSelection, WordEntry } from '../domain/types'
+import type { HskLevel, Language, ListManifest, ListSelection, WordEntry } from '../domain/types'
 import { loadList } from './listLoader'
 
 export interface ResolvedPool {
@@ -14,15 +14,23 @@ export interface ResolvedPool {
     distractorPool?: WordEntry[]
 }
 
-/** Which list ids a selection needs, in a stable order. */
-export function listIdsFor(selection: ListSelection): string[] {
+/**
+ * Which list ids a selection needs, in a stable order.
+ *
+ * The variety chooses the file: the Taiwanese lists mirror the HSK levels under `-tw` ids,
+ * so the same selection means "the equivalent list in the other language". Jun Da has no
+ * Taiwanese counterpart - it is a Mandarin character-frequency list - and the settings keep
+ * it out of Taiwanese sessions rather than silently substituting something else.
+ */
+export function listIdsFor(selection: ListSelection, language: Language): string[] {
     if (selection.kind === 'junda') return ['junda']
 
+    const suffix = language === 'taiwanese' ? '-tw' : ''
     const levels: HskLevel[] = selection.includeLower
         ? ([1, 2, 3, 4, 5, 6] as HskLevel[]).filter((level) => level <= selection.level)
         : [selection.level]
 
-    return levels.map((level) => `hsk${level}`)
+    return levels.map((level) => `hsk${level}${suffix}`)
 }
 
 /**
@@ -34,8 +42,9 @@ export function listIdsFor(selection: ListSelection): string[] {
 export async function resolvePool(
     selection: ListSelection,
     manifest: ListManifest,
+    language: Language,
 ): Promise<ResolvedPool> {
-    const ids = listIdsFor(selection)
+    const ids = listIdsFor(selection, language)
     const nameOf = new Map(manifest.lists.map((list) => [list.id, list.name]))
 
     const files = await Promise.all(ids.map((id) => loadList(id)))

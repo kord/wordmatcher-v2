@@ -1,8 +1,12 @@
 import { DEFAULT_LENGTH, DEFAULT_OPTION_COUNT } from '../domain/constants'
 import type {
+    CharacterSet,
     HskLevel,
+    Language,
+    LanguageSettings,
     ListSelection,
     PinyinStyle,
+    RomanizationScheme,
     SessionLength,
     Settings,
     ThemePreference,
@@ -15,29 +19,35 @@ export interface StorageLike {
 }
 
 export const SETTINGS_KEY = 'wm2.settings'
-export const LEGACY_IMPORT_FLAG = 'wm2.legacySettingsImported'
-export const SETTINGS_SCHEMA_VERSION = 1
 
-/** Keys written by the original Create React App version. */
-const LEGACY = {
-    wordListType: 'wm_options-wordListType',
-    hskLevel: 'wm_options-hskLevel',
-    jundaMax: 'wm_options-jundaMax',
-    includeLowerHskLevels: 'wm_options-includeLowerHskLevels',
-    characterSet: 'wm_options-characterType',
-    durationType: 'wm_options-gameDurationType',
-    durationQuestions: 'wm_options-gameDurationQuestions',
-    durationSeconds: 'wm_options-gameDurationTimeSeconds',
-} as const
+/**
+ * There is exactly one stored shape, so nothing reads this back yet. It is written anyway
+ * so that a future change of shape is a visible diff rather than a silent reinterpretation
+ * of whatever happened to be in storage.
+ */
+export const SETTINGS_SCHEMA_VERSION = 1
 
 export function defaultSettings(): Settings {
     return {
         schemaVersion: SETTINGS_SCHEMA_VERSION,
-        selection: { kind: 'hsk', level: 1, includeLower: false },
+        language: 'mandarin',
+        byLanguage: {
+            mandarin: {
+                selection: { kind: 'hsk', level: 1, includeLower: false },
+                characterSet: 'simp',
+                romanization: 'pinyin',
+            },
+            // Taiwanese is written in traditional characters only and is never romanised
+            // with pinyin, so these two are fixed rather than offered as choices.
+            taiwanese: {
+                selection: { kind: 'hsk', level: 1, includeLower: false },
+                characterSet: 'trad',
+                romanization: 'tailo',
+            },
+        },
         length: { ...DEFAULT_LENGTH },
         optionCount: DEFAULT_OPTION_COUNT,
         pinyinDisplay: { style: 'diacritic', toneColours: false },
-        characterSet: 'simp',
         autoAdvance: true,
         sound: true,
         haptics: true,
@@ -64,6 +74,29 @@ function asPinyinStyle(value: unknown): PinyinStyle | null {
 
 function asTheme(value: unknown): ThemePreference | null {
     return value === 'system' || value === 'light' || value === 'dark' ? value : null
+}
+
+function asLanguage(value: unknown): Language | null {
+    return value === 'mandarin' || value === 'taiwanese' ? value : null
+}
+
+function asScheme(value: unknown): RomanizationScheme | null {
+    return value === 'pinyin' || value === 'tailo' || value === 'poj' ? value : null
+}
+
+function asCharacterSet(value: unknown, fallback: CharacterSet): CharacterSet {
+    return value === 'trad' || value === 'simp' ? value : fallback
+}
+
+function normalizeLanguageSettings(raw: unknown, fallback: LanguageSettings): LanguageSettings {
+    if (typeof raw !== 'object' || raw === null) return fallback
+    const candidate = raw as Record<string, unknown>
+
+    return {
+        selection: normalizeSelection(candidate.selection, fallback.selection),
+        characterSet: asCharacterSet(candidate.characterSet, fallback.characterSet),
+        romanization: asScheme(candidate.romanization) ?? fallback.romanization,
+    }
 }
 
 function normalizeLength(value: unknown, fallback: SessionLength): SessionLength {
@@ -107,10 +140,18 @@ export function normalizeSettings(raw: unknown): Settings {
 
     const optionCount = Number(candidate.optionCount)
     const display = (candidate.pinyinDisplay ?? {}) as Record<string, unknown>
+    const byLanguage = candidate.byLanguage as Record<string, unknown> | undefined
 
     return {
         schemaVersion: SETTINGS_SCHEMA_VERSION,
-        selection: normalizeSelection(candidate.selection, defaults.selection),
+        language: asLanguage(candidate.language) ?? defaults.language,
+        byLanguage: {
+            mandarin: normalizeLanguageSettings(byLanguage?.mandarin, defaults.byLanguage.mandarin),
+            taiwanese: normalizeLanguageSettings(
+                byLanguage?.taiwanese,
+                defaults.byLanguage.taiwanese,
+            ),
+        },
         length: normalizeLength(candidate.length, defaults.length),
         optionCount:
             Number.isFinite(optionCount) && optionCount >= 2 && optionCount <= 8
@@ -120,55 +161,11 @@ export function normalizeSettings(raw: unknown): Settings {
             style: asPinyinStyle(display.style) ?? defaults.pinyinDisplay.style,
             toneColours: display.toneColours === true,
         },
-        characterSet: candidate.characterSet === 'trad' ? 'trad' : 'simp',
         autoAdvance: candidate.autoAdvance !== false,
         sound: candidate.sound !== false,
         haptics: candidate.haptics !== false,
         theme: asTheme(candidate.theme) ?? defaults.theme,
     }
-}
-
-/**
- * One-time import of the old `wm_options-*` keys.
- *
- * The old app stored an HSK enum offset by 999 (`HSK1 === 1000`) and wrote
- * `gameDurationType: 'questions'` while reading `'rounds'`, which is why its
- * "questions" mode silently behaved as unlimited. Both are corrected here.
- */
-export function legacySettingsFrom(storage: StorageLike): Settings | null {
-    const read = (key: string) => storage.getItem(key)
-    const anyLegacyKey = Object.values(LEGACY).some((key) => read(key) !== null)
-    if (!anyLegacyKey) return null
-
-    const settings = defaultSettings()
-
-    const hskLevel = clampHskLevel(Number(read(LEGACY.hskLevel)) - 999)
-    const junDaMax = Number(read(LEGACY.jundaMax))
-    const wordListType = read(LEGACY.wordListType)
-
-    if (wordListType === 'JunDa' && Number.isFinite(junDaMax) && junDaMax > 0) {
-        settings.selection = { kind: 'junda', maxRank: Math.round(junDaMax) }
-    } else {
-        settings.selection = {
-            kind: 'hsk',
-            level: hskLevel ?? 1,
-            includeLower: read(LEGACY.includeLowerHskLevels) === 'true',
-        }
-    }
-
-    settings.characterSet = read(LEGACY.characterSet) === 'cn' ? 'simp' : 'trad'
-
-    const durationType = read(LEGACY.durationType)
-    const questions = Number(read(LEGACY.durationQuestions))
-    const seconds = Number(read(LEGACY.durationSeconds))
-
-    if (durationType === 'time' && Number.isFinite(seconds) && seconds > 0) {
-        settings.length = { unit: 'time', value: Math.round(seconds) }
-    } else if (durationType === 'questions' && Number.isFinite(questions) && questions > 0) {
-        settings.length = { unit: 'rounds', value: Math.round(questions) }
-    }
-
-    return settings
 }
 
 export function loadSettings(storage: StorageLike | null = browserStorage()): Settings {
@@ -179,16 +176,7 @@ export function loadSettings(storage: StorageLike | null = browserStorage()): Se
         try {
             return normalizeSettings(JSON.parse(stored))
         } catch {
-            // Corrupt payload: fall through and rebuild.
-        }
-    }
-
-    if (storage.getItem(LEGACY_IMPORT_FLAG) === null) {
-        const imported = legacySettingsFrom(storage)
-        storage.setItem(LEGACY_IMPORT_FLAG, new Date().toISOString())
-        if (imported) {
-            saveSettings(imported, storage)
-            return imported
+            // Corrupt payload: fall through to the defaults rather than throwing.
         }
     }
 

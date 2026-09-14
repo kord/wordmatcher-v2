@@ -1,11 +1,21 @@
 import { useRoute } from '../../app/router'
+import { useManifest } from '../../content/useManifest'
+import { listIdsFor } from '../../content/wordPool'
 import {
     JUN_DA_PRESETS,
     OPTION_COUNT_PRESETS,
     ROUND_LENGTH_PRESETS,
     TIME_LENGTH_PRESETS,
 } from '../../domain/constants'
-import type { HskLevel, PinyinStyle, ThemePreference } from '../../domain/types'
+import { LANGUAGE_LABELS } from '../../domain/languages'
+import type {
+    HskLevel,
+    Language,
+    LanguageSettings,
+    PinyinStyle,
+    RomanizationScheme,
+    ThemePreference,
+} from '../../domain/types'
 import { Button } from '../../ui/components/Button'
 import { PinyinText } from '../../ui/components/PinyinText'
 import { Screen } from '../../ui/components/Screen'
@@ -33,6 +43,17 @@ const PINYIN_STYLES: { value: PinyinStyle; label: string }[] = [
     { value: 'superscript', label: 'Superscript' },
 ]
 
+const LANGUAGES: { value: Language; label: string }[] = [
+    { value: 'mandarin', label: LANGUAGE_LABELS.mandarin },
+    { value: 'taiwanese', label: LANGUAGE_LABELS.taiwanese },
+]
+
+/** Tai-lo is what Taiwan's education ministry uses; POJ is what most older dictionaries print. */
+const TAIWANESE_SCHEMES: { value: RomanizationScheme; label: string }[] = [
+    { value: 'tailo', label: 'Tâi-lô' },
+    { value: 'poj', label: 'POJ' },
+]
+
 const THEMES: { value: ThemePreference; label: string }[] = [
     { value: 'system', label: 'System' },
     { value: 'light', label: 'Light' },
@@ -44,17 +65,43 @@ export function SettingsScreen() {
     const { available: ttsAvailable } = useTts()
     const { navigate } = useRoute()
     const { quit } = useSession()
+    const { manifest } = useManifest()
 
-    const selection = settings.selection
+    const language = settings.byLanguage[settings.language]
+    const selection = language.selection
+
+    // Only offer levels that exist for the chosen variety, so the app cannot be pointed at a
+    // list that has not been built. It matters now because Taiwanese is being built one
+    // level at a time, and it will matter again when Cantonese arrives. Until the manifest
+    // has loaded every level is offered, and starting a session surfaces the real error.
+    const levelOptions = HSK_LEVELS.filter((option) => {
+        if (!manifest) return true
+        const [id] = listIdsFor(
+            { kind: 'hsk', level: option.value, includeLower: false },
+            settings.language,
+        )
+        return manifest.lists.some((list) => list.id === id)
+    })
+
+    // Choices live per variety, so every edit writes into the active one rather than
+    // replacing a single shared value. Switching languages therefore cannot disturb the
+    // other language's setup.
+    const updateLanguage = (patch: Partial<LanguageSettings>) =>
+        update({
+            byLanguage: {
+                ...settings.byLanguage,
+                [settings.language]: { ...language, ...patch },
+            },
+        })
 
     const handleResetProgress = () => {
-        if (!window.confirm('Erase all word progress? This cannot be undone.')) return
-        void resetProgress()
+        if (!window.confirm(`Erase ${LANGUAGE_LABELS[settings.language]} word progress?`)) return
+        void resetProgress(settings.language)
     }
 
     const handleResetSessions = () => {
-        if (!window.confirm('Erase your session history?')) return
-        void resetSessions()
+        if (!window.confirm(`Erase your ${LANGUAGE_LABELS[settings.language]} session history?`)) return
+        void resetSessions(settings.language)
     }
 
     return (
@@ -68,18 +115,34 @@ export function SettingsScreen() {
             }
         >
             <section className={styles.group}>
-                <h2 className={styles.groupTitle}>Word list</h2>
+                <h2 className={styles.groupTitle}>What you are practising</h2>
+
+                <Field label="Language">
+                    <SegmentedControl
+                        label="Language"
+                        value={settings.language}
+                        options={LANGUAGES}
+                        onChange={(next) => update({ language: next })}
+                    />
+                </Field>
 
                 <Field label="Source">
                     <SegmentedControl
                         label="Word list source"
                         value={selection.kind}
-                        options={[
-                            { value: 'hsk', label: 'HSK' },
-                            { value: 'junda', label: 'Jun Da' },
-                        ]}
+                        // Jun Da is a Mandarin character-frequency list with no Taiwanese
+                        // counterpart, so it is not offered rather than quietly resolving to
+                        // something else.
+                        options={
+                            settings.language === 'taiwanese'
+                                ? [{ value: 'hsk' as const, label: 'HSK' }]
+                                : [
+                                      { value: 'hsk' as const, label: 'HSK' },
+                                      { value: 'junda' as const, label: 'Jun Da' },
+                                  ]
+                        }
                         onChange={(kind) =>
-                            update({
+                            updateLanguage({
                                 selection:
                                     kind === 'hsk'
                                         ? { kind: 'hsk', level: 1, includeLower: false }
@@ -95,9 +158,15 @@ export function SettingsScreen() {
                             <SegmentedControl
                                 label="HSK level"
                                 value={selection.level}
-                                options={HSK_LEVELS}
+                                options={levelOptions}
                                 onChange={(level) =>
-                                    update({ selection: { kind: 'hsk', level, includeLower: selection.includeLower } })
+                                    updateLanguage({
+                                        selection: {
+                                            kind: 'hsk',
+                                            level,
+                                            includeLower: selection.includeLower,
+                                        },
+                                    })
                                 }
                             />
                         </Field>
@@ -106,7 +175,9 @@ export function SettingsScreen() {
                             description="Mix in every level below the one selected."
                             checked={selection.includeLower}
                             onChange={(includeLower) =>
-                                update({ selection: { kind: 'hsk', level: selection.level, includeLower } })
+                                updateLanguage({
+                                    selection: { kind: 'hsk', level: selection.level, includeLower },
+                                })
                             }
                         />
                     </>
@@ -116,7 +187,7 @@ export function SettingsScreen() {
                             label="Jun Da range"
                             value={selection.maxRank}
                             options={JUN_DA_PRESETS.map((rank) => ({ value: rank, label: `${rank}` }))}
-                            onChange={(maxRank) => update({ selection: { kind: 'junda', maxRank } })}
+                            onChange={(maxRank) => updateLanguage({ selection: { kind: 'junda', maxRank } })}
                         />
                     </Field>
                 )}
@@ -178,23 +249,37 @@ export function SettingsScreen() {
             </section>
 
             <section className={styles.group}>
-                <h2 className={styles.groupTitle}>Characters and pinyin</h2>
+                <h2 className={styles.groupTitle}>Characters and reading</h2>
 
-                <Field label="Character set">
-                    <SegmentedControl
-                        label="Character set"
-                        value={settings.characterSet}
-                        options={[
-                            { value: 'simp', label: 'Simplified' },
-                            { value: 'trad', label: 'Traditional' },
-                        ]}
-                        onChange={(characterSet) => update({ characterSet })}
-                    />
-                </Field>
+                {/* Taiwanese is written in traditional characters only and is never
+                    romanised with pinyin, so each variety gets the control that applies to
+                    it rather than the same two rows with one greyed out. */}
+                {settings.language === 'mandarin' ? (
+                    <Field label="Character set">
+                        <SegmentedControl
+                            label="Character set"
+                            value={language.characterSet}
+                            options={[
+                                { value: 'simp', label: 'Simplified' },
+                                { value: 'trad', label: 'Traditional' },
+                            ]}
+                            onChange={(characterSet) => updateLanguage({ characterSet })}
+                        />
+                    </Field>
+                ) : (
+                    <Field label="Romanisation">
+                        <SegmentedControl
+                            label="Romanisation"
+                            value={language.romanization}
+                            options={TAIWANESE_SCHEMES}
+                            onChange={(romanization) => updateLanguage({ romanization })}
+                        />
+                    </Field>
+                )}
 
-                <Field label="Pinyin style">
+                <Field label="Reading style">
                     <SegmentedControl
-                        label="Pinyin style"
+                        label="Reading style"
                         value={settings.pinyinDisplay.style}
                         options={PINYIN_STYLES}
                         onChange={(style) => update({ pinyinDisplay: { ...settings.pinyinDisplay, style } })}
@@ -216,11 +301,12 @@ export function SettingsScreen() {
                         1, 3, 4, 2 - so every tone colour appears, each pinyin style
                         reads differently, and the traditional form changes too. */}
                     <span className={styles.previewHan}>
-                        {settings.characterSet === 'trad' ? '花好月圓' : '花好月圆'}
+                        {language.characterSet === 'trad' ? '花好月圓' : '花好月圆'}
                     </span>
                     <span className={styles.previewPinyin}>
                         <PinyinText
-                            pinyin={{
+                            romanization={{
+                                scheme: 'pinyin',
                                 marked: 'huā hǎo yuè yuán',
                                 numbered: 'hua1 hao3 yue4 yuan2',
                                 syllables: [
@@ -324,7 +410,16 @@ export function SettingsScreen() {
                     <a href="https://github.com/nk2028/opencc-js" rel="noreferrer noopener" target="_blank">
                         opencc-js
                     </a>
-                    ; entries de-duplicated and glosses shortened. The app's own code is MIT licensed.
+                    ; entries de-duplicated and glosses shortened. Taiwanese readings from the 臺華雙語辭典
+                    via{' '}
+                    <a
+                        href="https://github.com/ChhoeTaigi/ChhoeTaigiDatabase"
+                        rel="noreferrer noopener"
+                        target="_blank"
+                    >
+                        ChhoeTaigi
+                    </a>
+                    , used under the same licence. The app's own code is MIT licensed.
                 </p>
             </section>
         </Screen>

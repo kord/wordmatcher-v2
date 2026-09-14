@@ -25,12 +25,15 @@ export const GLOSS_OVERRIDES: Readonly<Record<string, GlossOverride>> = {
     // A 141-character grammar lecture. Same correction for both levels; note that the
     // HSK 4 entry carries the glosses for 得 děi ("to have to, to need to, must") while
     // the app derives the reading dé, so the gloss is aligned to what is displayed.
-    'hsk2|得|de2': ['particle linking a verb to its result, degree or possibility'],
-    'hsk4|得|de2': ['particle linking a verb to its result, degree or possibility'],
+    // The reading is itself corrected to the neutral particle `de0` by `pinyinOverrides`;
+    // these keys follow that, not the reading `pinyin-pro` produces.
+    'hsk2|得|de0': ['particle linking a verb to its result, degree or possibility'],
+    'hsk4|得|de0': ['particle linking a verb to its result, degree or possibility'],
 
     // 过 after a verb marks *experience* ("have ever done"); completion is 了. The
-    // upstream gloss says "completion", which is the confusion to avoid.
-    'hsk2|过|guo4': ['(verb suffix) to have ever done', 'to pass', 'to cross'],
+    // upstream gloss says "completion", which is the confusion to avoid. Neutral tone, so
+    // the reading is the suffix `guo0` rather than the verb guò.
+    'hsk2|过|guo0': ['(verb suffix) to have ever done', 'to pass', 'to cross'],
 
     // Drops a stray trailing bracket and a cross-reference sense.
     'hsk2|您|nin2': ['you (polite)'],

@@ -1,9 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import { applyToneMark, isHan, pinyinFromSyllables, renderPinyinSyllables, renderPinyinText } from '../../src/domain/pinyin'
-import type { Pinyin } from '../../src/domain/types'
+import {
+    applyToneMark,
+    isHan,
+    renderPinyinSyllables,
+    renderPinyinText,
+    romanizationFromSyllables,
+    separatorsOf,
+} from '../../src/domain/pinyin'
+import type { Romanization } from '../../src/domain/types'
 import { makePinyin } from './fixtures'
 
-const HELLO: Pinyin = {
+const HELLO: Romanization = {
+    scheme: 'pinyin',
     marked: 'nǐ hǎo',
     numbered: 'ni3 hao3',
     syllables: [
@@ -12,7 +20,8 @@ const HELLO: Pinyin = {
     ],
 }
 
-const NEUTRAL: Pinyin = {
+const NEUTRAL: Romanization = {
+    scheme: 'pinyin',
     marked: 'mā ma',
     numbered: 'ma1 ma5',
     syllables: [
@@ -52,7 +61,8 @@ describe('renderPinyinSyllables', () => {
     })
 
     it('passes non-Chinese tokens through untouched', () => {
-        const withEllipsis: Pinyin = {
+        const withEllipsis: Romanization = {
+            scheme: 'pinyin',
             marked: 'bú dàn …',
             numbered: 'bu2 dan4 …',
             syllables: [
@@ -123,23 +133,82 @@ describe('applyToneMark', () => {
     })
 })
 
-describe('pinyinFromSyllables', () => {
+describe('romanizationFromSyllables', () => {
     it('joins the marked and numbered forms', () => {
-        const pinyin = pinyinFromSyllables([
-            { base: 'ni', marked: 'nǐ', tone: 3, han: true },
-            { base: 'hao', marked: 'hǎo', tone: 3, han: true },
-        ])
+        const reading = romanizationFromSyllables(
+            [
+                { base: 'ni', marked: 'nǐ', tone: 3, han: true },
+                { base: 'hao', marked: 'hǎo', tone: 3, han: true },
+            ],
+            'pinyin',
+        )
 
-        expect(pinyin.marked).toBe('nǐ hǎo')
-        expect(pinyin.numbered).toBe('ni3 hao3')
+        expect(reading.marked).toBe('nǐ hǎo')
+        expect(reading.numbered).toBe('ni3 hao3')
+        expect(reading.scheme).toBe('pinyin')
     })
 
     it('writes the neutral tone as 5 and passes other tokens through', () => {
-        const pinyin = pinyinFromSyllables([
-            { base: 'ma', marked: 'ma', tone: 0, han: true },
-            { base: '…', marked: '…', tone: 0, han: false },
-        ])
+        const reading = romanizationFromSyllables(
+            [
+                { base: 'ma', marked: 'ma', tone: 0, han: true },
+                { base: '…', marked: '…', tone: 0, han: false },
+            ],
+            'pinyin',
+        )
 
-        expect(pinyin.numbered).toBe('ma5 …')
+        expect(reading.numbered).toBe('ma5 …')
+    })
+})
+
+describe('separatorsOf', () => {
+    it('recovers the spaces pinyin separates its syllables with', () => {
+        expect(separatorsOf(HELLO)).toEqual(['', ' '])
+        expect(renderPinyinText(HELLO, 'diacritic')).toBe('nǐ hǎo')
+    })
+
+    it('recovers the hyphens a Tai-lo word joins its syllables with', () => {
+        // Rendering this with a space would read as two words rather than one.
+        const reading: Romanization = {
+            scheme: 'tailo',
+            marked: 'sian-senn',
+            numbered: 'sian1-senn7',
+            syllables: [
+                { base: 'sian', marked: 'sian', tone: 1, han: true },
+                { base: 'senn', marked: 'senn', tone: 7, han: true },
+            ],
+        }
+
+        expect(separatorsOf(reading)).toEqual(['', '-'])
+        expect(renderPinyinText(reading, 'diacritic')).toBe('sian-senn')
+    })
+
+    it('leaves a neutral syllable carrying its own marker', () => {
+        const reading: Romanization = {
+            scheme: 'tailo',
+            marked: 'khùn--khì',
+            numbered: 'khun3',
+            syllables: [
+                { base: 'khun', marked: 'khùn', tone: 3, han: true },
+                { base: 'khi', marked: '--khì', tone: 0, han: true },
+            ],
+        }
+
+        expect(separatorsOf(reading)).toEqual(['', ''])
+        expect(renderPinyinText(reading, 'diacritic')).toBe('khùn--khì')
+    })
+
+    it('falls back to a space if a syllable is not found in the written form', () => {
+        const inconsistent: Romanization = {
+            scheme: 'pinyin',
+            marked: 'nǐ hǎo',
+            numbered: 'ni3 hao3',
+            syllables: [
+                { base: 'ni', marked: 'nǐ', tone: 3, han: true },
+                { base: 'hao', marked: 'hào', tone: 4, han: true },
+            ],
+        }
+
+        expect(separatorsOf(inconsistent)).toEqual(['', ' '])
     })
 })

@@ -1,6 +1,6 @@
 # Word Matcher v2
 
-Adaptive Mandarin vocabulary drills, built as a portrait-first PWA for phones.
+Adaptive Mandarin and Taiwanese vocabulary drills, built as a portrait-first PWA for phones.
 
 This is a from-scratch rewrite of the original `wordmatcher` Create React App. The old app was an
 infinite multiple-choice loop with no feedback, no session end and no adaptive pacing; v2 replaces the
@@ -60,10 +60,14 @@ src/features/     Screens: home, session, summary, review, progress, settings
 
 Design notes:
 
-- **No pinyin or conversion library ships to the client.** `pinyin-pro` and `opencc-js` are
+- **No romanisation or conversion library ships to the client.** `pinyin-pro` and `opencc-js` are
   dev dependencies used only by `tools/build-data.ts`.
-- **Per-syllable pinyin is stored as data** (`{ base, marked, tone }`), so tone-marked diacritics,
-  tone numbers and superscript styles are all derivable at runtime with no conversion cost.
+- **Per-syllable readings are stored as data** (`{ base, marked, tone }`), so tone-marked diacritics,
+  tone numbers and superscript styles are all derivable at runtime with no conversion cost. One shape
+  covers pinyin and Tâi-lô alike, and hyphen and space placement is recovered from the marked text
+  rather than stored beside it, so the two cannot drift apart.
+- **Each language is a separate lesson.** Progress, session history, settings and word lists are all
+  scoped to one variety, and drilling one never moves the other's numbers.
 - **Word lists are lazy-loaded** so the device only downloads the list being played.
 - **Nothing is sized with `vh`.** The shell uses `dvh` with a `svh` fallback plus safe-area insets.
 
@@ -73,9 +77,11 @@ Design notes:
 
 **The word-list data is not covered by that.** The English glosses in `data/source/` and the generated
 `public/data/lists/*.json` are CC-CEDICT-derived, and CC-CEDICT is licensed
-[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) — attribution plus share-alike. Those
-files are therefore distributed under CC BY-SA 4.0, not MIT, and copies of them (including the JSON the
-app downloads) have to carry the same licence.
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) — attribution plus share-alike. The
+Taiwanese readings come from the 臺華雙語辭典 via
+[ChhoeTaigi](https://github.com/ChhoeTaigi/ChhoeTaigiDatabase), under the same licence. Those files are
+therefore distributed under CC BY-SA 4.0, not MIT, and copies of them (including the JSON the app
+downloads) have to carry the same licence.
 
 A permissive licence on the code alongside a share-alike licence on the data is a normal arrangement,
 but it does mean the project is not MIT end to end. Making it so would mean replacing the glosses with

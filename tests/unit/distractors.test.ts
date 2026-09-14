@@ -7,12 +7,12 @@ import { makeEntry, makePinyin } from './fixtures'
 
 function pool(): WordEntry[] {
     return [
-        makeEntry({ simp: '爱', trad: '愛', id: 'ai', glossShort: 'to love', hsk: 1, pinyin: makePinyin('ai4') }),
-        makeEntry({ simp: '恨', trad: '恨', id: 'hen', glossShort: 'to hate', hsk: 1, pinyin: makePinyin('hen4') }),
-        makeEntry({ simp: '想', trad: '想', id: 'xiang', glossShort: 'to want', hsk: 1, pinyin: makePinyin('xiang3') }),
-        makeEntry({ simp: '看', trad: '看', id: 'kan', glossShort: 'to look', hsk: 1, pinyin: makePinyin('kan4') }),
-        makeEntry({ simp: '听', trad: '聽', id: 'ting', glossShort: 'to listen', hsk: 1, pinyin: makePinyin('ting1') }),
-        makeEntry({ simp: '说', trad: '說', id: 'shuo', glossShort: 'to speak', hsk: 1, pinyin: makePinyin('shuo1') }),
+        makeEntry({ simp: '爱', trad: '愛', id: 'ai', glossShort: 'to love', hsk: 1, romanizations: { pinyin: makePinyin('ai4') } }),
+        makeEntry({ simp: '恨', trad: '恨', id: 'hen', glossShort: 'to hate', hsk: 1, romanizations: { pinyin: makePinyin('hen4') } }),
+        makeEntry({ simp: '想', trad: '想', id: 'xiang', glossShort: 'to want', hsk: 1, romanizations: { pinyin: makePinyin('xiang3') } }),
+        makeEntry({ simp: '看', trad: '看', id: 'kan', glossShort: 'to look', hsk: 1, romanizations: { pinyin: makePinyin('kan4') } }),
+        makeEntry({ simp: '听', trad: '聽', id: 'ting', glossShort: 'to listen', hsk: 1, romanizations: { pinyin: makePinyin('ting1') } }),
+        makeEntry({ simp: '说', trad: '說', id: 'shuo', glossShort: 'to speak', hsk: 1, romanizations: { pinyin: makePinyin('shuo1') } }),
     ]
 }
 
@@ -99,14 +99,14 @@ describe('buildQuestion', () => {
         const simplified = build('simp')
         const traditional = build('trad')
 
-        expect(faceFor(entries[0], 'han', 'simp').text).toBe('爱')
-        expect(faceFor(entries[0], 'han', 'trad').text).toBe('愛')
+        expect(faceFor(entries[0], 'han', 'simp', 'pinyin').text).toBe('爱')
+        expect(faceFor(entries[0], 'han', 'trad', 'pinyin').text).toBe('愛')
         expect(simplified.options.some((option) => option.face.text === '爱')).toBe(true)
         expect(traditional.options.some((option) => option.face.text === '愛')).toBe(true)
         expect(traditional.options.some((option) => option.face.text === '爱')).toBe(false)
     })
 
-    it('carries pinyin data on pinyin faces', () => {
+    it('carries romanisation data on romanisation faces', () => {
         const entries = pool()
         const question = buildQuestion({
             entry: entries[0],
@@ -118,8 +118,8 @@ describe('buildQuestion', () => {
         })
 
         for (const option of question.options) {
-            expect(option.face.pinyin).toBeDefined()
-            expect(option.face.pinyin?.syllables.length).toBeGreaterThan(0)
+            expect(option.face.romanization).toBeDefined()
+            expect(option.face.romanization?.syllables.length).toBeGreaterThan(0)
         }
     })
 
@@ -163,11 +163,11 @@ describe('buildQuestion', () => {
     })
 
     it('prefers distractors at the same level and syllable count', () => {
-        const answer = makeEntry({ simp: '甲', id: 'target', glossShort: 'target', hsk: 2, pinyin: makePinyin('jia3') })
-        const sameLevelSameLength = makeEntry({ simp: '乙', id: 'near-a', glossShort: 'near a', hsk: 2, pinyin: makePinyin('yi3') })
-        const sameLevelSameLength2 = makeEntry({ simp: '丙', id: 'near-b', glossShort: 'near b', hsk: 2, pinyin: makePinyin('bing3') })
-        const farAway = makeEntry({ simp: '丁戊己', id: 'far-a', glossShort: 'far a', hsk: 6, pinyin: makePinyin('ding1', 'wu4', 'ji3') })
-        const farAway2 = makeEntry({ simp: '庚辛壬', id: 'far-b', glossShort: 'far b', hsk: 6, pinyin: makePinyin('geng1', 'xin1', 'ren2') })
+        const answer = makeEntry({ simp: '甲', id: 'target', glossShort: 'target', hsk: 2, romanizations: { pinyin: makePinyin('jia3') } })
+        const sameLevelSameLength = makeEntry({ simp: '乙', id: 'near-a', glossShort: 'near a', hsk: 2, romanizations: { pinyin: makePinyin('yi3') } })
+        const sameLevelSameLength2 = makeEntry({ simp: '丙', id: 'near-b', glossShort: 'near b', hsk: 2, romanizations: { pinyin: makePinyin('bing3') } })
+        const farAway = makeEntry({ simp: '丁戊己', id: 'far-a', glossShort: 'far a', hsk: 6, romanizations: { pinyin: makePinyin('ding1', 'wu4', 'ji3') } })
+        const farAway2 = makeEntry({ simp: '庚辛壬', id: 'far-b', glossShort: 'far b', hsk: 6, romanizations: { pinyin: makePinyin('geng1', 'xin1', 'ren2') } })
 
         const rng = mulberry32(21)
         let nearPicks = 0

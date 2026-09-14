@@ -125,6 +125,26 @@ export async function removeOne(storeName: string, key: string): Promise<void> {
     })
 }
 
+export async function removeMany(storeName: string, keys: readonly string[]): Promise<void> {
+    if (keys.length === 0) return
+
+    if (!isIndexedDbAvailable()) {
+        const store = memoryStore(storeName)
+        for (const key of keys) store.delete(key)
+        return
+    }
+
+    const db = await openDb()
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readwrite')
+        const store = tx.objectStore(storeName)
+        for (const key of keys) store.delete(key)
+        tx.oncomplete = () => resolve()
+        tx.onerror = () => reject(tx.error)
+        tx.onabort = () => reject(tx.error)
+    })
+}
+
 export async function clearStore(storeName: string): Promise<void> {
     if (!isIndexedDbAvailable()) {
         memoryStore(storeName).clear()

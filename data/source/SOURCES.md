@@ -1,7 +1,9 @@
 # Data sources
 
-These files are read-only copies of the word lists used by the original `wordmatcher` project. They are
-inputs to `tools/build-data.ts`; do not edit them by hand.
+These files are inputs to `tools/build-data.ts`; do not edit them by hand.
+
+Most are read-only copies of the word lists used by the original `wordmatcher` project. `taiwanese.json`
+is different: it is a filtered extract of an upstream dictionary, described below.
 
 ## HSK vocabulary (`hsk1.ts` … `hsk6.ts`)
 
@@ -38,6 +40,46 @@ characters instead.
 
 Both are dev dependencies and ship no code to the client.
 
+## Taiwanese readings (`taiwanese.json`)
+
+- Source: [ChhoeTaigi](https://github.com/ChhoeTaigi/ChhoeTaigiDatabase), dataset
+  `ChhoeTaigi_TaihoaSoanntengTuichiautian.csv` — the 臺華雙語辭典.
+- Licence: **CC BY-SA 4.0**, the same terms as the gloss data.
+- Shape: `{ source, rows }`, where each row carries its Mandarin glosses, its Taiwanese written forms
+  and its reading in both romanisations.
+
+The upstream file is 9.8 MB and describes the whole language, so it is not vendored. Instead
+`tools/extract-taigi.ts` keeps a row when **either** its Mandarin gloss or its Taiwanese characters
+match a word already in our HSK lists, and writes the 848 KB result here. That extract is itself a
+derivative and carries the source's share-alike terms.
+
+Regenerate it with `npx tsx tools/extract-taigi.ts <path-to-csv>`. It defaults to `%TEMP%\taigi\`, and
+the download URL is recorded as `SOURCE_URL` in that script.
+
+Both romanisations come from the source's own parallel columns — `KipUnicode` is Tâi-lô, the scheme
+Taiwan's Ministry of Education uses, and `PojUnicode` is POJ. Neither is derived from the other, and
+neither is derived by us.
+
+### Datasets in the same collection that are *not* used
+
+- 教育部臺灣閩南語常用詞辭典 — CC BY-ND 3.0 TW. NoDerivatives, so it cannot be redistributed in a
+  modified form, which is what embedding it in our JSON would be.
+- iTaigi — CC0, so usable, but its rows are whole sentences rather than headwords, so a word-keyed
+  join matches almost nothing. It was used only as a cross-check while choosing the source.
+- 台日大辭典, Maryknoll, Embree, 甘字典 — CC BY-NC-SA. Non-commercial, so out of scope.
+
+### Changes made to the Taiwanese data
+
+1. Filtered to the rows that can describe one of our HSK words.
+2. One Taiwanese form chosen per word by `tools/lib/taiwanese.ts`: a row whose characters match ours (a
+   reading of the same word) beats a row that merely shares a Mandarin gloss, then the shorter headword
+   wins, because the source is sorted alphabetically by romanisation and carries no frequency signal.
+3. Hand corrections, listed in `tools/lib/taiwaneseOverrides.ts`.
+4. Readings parsed from the source's spelling into per-syllable form by `tools/lib/taigiReading.ts`, so
+   the app can render them in either orthography or as tone numbers.
+5. Re-encoded and re-ordered; the romanisations and headwords themselves are unaltered except where
+   step 3 says otherwise.
+
 ## Licensing
 
 Two licences apply, and they are not the same one.
@@ -56,10 +98,13 @@ The upstream lists this repo copies (`hsk.academy`, Jun Da) do not appear to car
 themselves, so credit the real source:
 
 > Definitions from CC-CEDICT, licensed CC BY-SA 4.0.
+>
+> Taiwanese readings from the 臺華雙語辭典, via ChhoeTaigi, licensed CC BY-SA 4.0.
 
 Obligations, which apply to every redistributed copy of the generated JSON as well as to this repo:
 
-1. Credit CC-CEDICT and name the licence. The Settings screen does this — keep it in step.
+1. Credit CC-CEDICT and ChhoeTaigi, naming the licence for each. The Settings screen does this — keep
+   it in step.
 2. License copies of the data under CC BY-SA 4.0. Do not relicense them as MIT.
 3. State that the data has been changed. The build regenerates pinyin with `pinyin-pro`, converts
    traditional forms with `opencc-js`, de-duplicates entries, truncates glosses to the first sense for

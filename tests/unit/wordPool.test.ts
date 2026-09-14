@@ -22,9 +22,9 @@ const MANIFEST: ListManifest = {
     version: 1,
     generatedAt: '2026-01-01T00:00:00.000Z',
     lists: [
-        { id: 'hsk1', name: 'HSK 1', subtitle: '', count: 2, file: 'hsk1.json', bytes: 0, kind: 'hsk', level: 1 },
-        { id: 'hsk2', name: 'HSK 2', subtitle: '', count: 2, file: 'hsk2.json', bytes: 0, kind: 'hsk', level: 2 },
-        { id: 'junda', name: 'Jun Da', subtitle: '', count: 4, file: 'junda.json', bytes: 0, kind: 'junda' },
+        { id: 'hsk1', name: 'HSK 1', subtitle: '', count: 2, file: 'hsk1.json', bytes: 0, kind: 'hsk', language: 'mandarin', level: 1 },
+        { id: 'hsk2', name: 'HSK 2', subtitle: '', count: 2, file: 'hsk2.json', bytes: 0, kind: 'hsk', language: 'mandarin', level: 2 },
+        { id: 'junda', name: 'Jun Da', subtitle: '', count: 4, file: 'junda.json', bytes: 0, kind: 'junda', language: 'mandarin' },
     ],
 }
 
@@ -58,11 +58,13 @@ beforeEach(() => {
 
 describe('listIdsFor', () => {
     it('loads a single HSK level by default', () => {
-        expect(listIdsFor({ kind: 'hsk', level: 3, includeLower: false })).toEqual(['hsk3'])
+        expect(listIdsFor({ kind: 'hsk', level: 3, includeLower: false }, 'mandarin')).toEqual([
+            'hsk3',
+        ])
     })
 
     it('includes lower levels when asked, in ascending order', () => {
-        expect(listIdsFor({ kind: 'hsk', level: 3, includeLower: true })).toEqual([
+        expect(listIdsFor({ kind: 'hsk', level: 3, includeLower: true }, 'mandarin')).toEqual([
             'hsk1',
             'hsk2',
             'hsk3',
@@ -70,32 +72,51 @@ describe('listIdsFor', () => {
     })
 
     it('loads the Jun Da list for a rank selection', () => {
-        expect(listIdsFor({ kind: 'junda', maxRank: 500 })).toEqual(['junda'])
+        expect(listIdsFor({ kind: 'junda', maxRank: 500 }, 'mandarin')).toEqual(['junda'])
+    })
+
+    it('points at the Taiwanese lists for the same selection', () => {
+        expect(listIdsFor({ kind: 'hsk', level: 2, includeLower: true }, 'taiwanese')).toEqual([
+            'hsk1-tw',
+            'hsk2-tw',
+        ])
     })
 })
 
 describe('resolvePool', () => {
     it('returns one HSK level with its display name', async () => {
-        const pool = await resolvePool({ kind: 'hsk', level: 1, includeLower: false }, MANIFEST)
+        const pool = await resolvePool(
+            { kind: 'hsk', level: 1, includeLower: false },
+            MANIFEST,
+            'mandarin',
+        )
 
         expect(pool.entries.map((entry) => entry.id)).toEqual(['ai', 'wo'])
         expect(pool.listNames).toEqual(['HSK 1'])
     })
 
     it('merges levels and de-duplicates words that appear in more than one', async () => {
-        const pool = await resolvePool({ kind: 'hsk', level: 2, includeLower: true }, MANIFEST)
+        const pool = await resolvePool(
+            { kind: 'hsk', level: 2, includeLower: true },
+            MANIFEST,
+            'mandarin',
+        )
 
         expect(pool.entries.map((entry) => entry.id)).toEqual(['ai', 'wo', 'xiang'])
         expect(pool.listNames).toEqual(['HSK 1', 'HSK 2'])
     })
 
     it('keeps the first occurrence when de-duplicating', async () => {
-        const pool = await resolvePool({ kind: 'hsk', level: 2, includeLower: true }, MANIFEST)
+        const pool = await resolvePool(
+            { kind: 'hsk', level: 2, includeLower: true },
+            MANIFEST,
+            'mandarin',
+        )
         expect(pool.entries.find((entry) => entry.id === 'ai')?.hsk).toBe(1)
     })
 
     it('filters Jun Da entries by rank', async () => {
-        const pool = await resolvePool({ kind: 'junda', maxRank: 2 }, MANIFEST)
+        const pool = await resolvePool({ kind: 'junda', maxRank: 2 }, MANIFEST, 'mandarin')
 
         expect(pool.entries.map((entry) => entry.id)).toEqual(['de', 'yi'])
         expect(pool.listNames).toEqual(['Jun Da'])
@@ -103,7 +124,7 @@ describe('resolvePool', () => {
 
     it('surfaces a clear error when a list file is missing', async () => {
         await expect(
-            resolvePool({ kind: 'hsk', level: 6, includeLower: false }, MANIFEST),
+            resolvePool({ kind: 'hsk', level: 6, includeLower: false }, MANIFEST, 'mandarin'),
         ).rejects.toThrow(/missing list hsk6/)
     })
 })

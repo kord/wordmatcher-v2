@@ -63,8 +63,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }, [settings.theme])
 
     useEffect(() => {
-        document.documentElement.dataset.charset = settings.characterSet
-    }, [settings.characterSet])
+        // The active variety's script drives the CJK face, so switching languages switches
+        // the font without disturbing the other language's stored preference.
+        document.documentElement.dataset.charset =
+            settings.byLanguage[settings.language].characterSet
+    }, [settings.byLanguage, settings.language])
 
     const value = useMemo(
         () => ({ settings, update, replace, reset }),

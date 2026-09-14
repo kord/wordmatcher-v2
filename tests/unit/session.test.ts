@@ -15,10 +15,10 @@ import { makeEntry, makePinyin } from './fixtures'
 const NOW = 1_700_000_000_000
 
 const ENTRIES: WordEntry[] = [
-    makeEntry({ simp: '爱', id: 'ai', glossShort: 'to love', pinyin: makePinyin('ai4') }),
-    makeEntry({ simp: '恨', id: 'hen', glossShort: 'to hate', pinyin: makePinyin('hen4') }),
-    makeEntry({ simp: '想', id: 'xiang', glossShort: 'to want', pinyin: makePinyin('xiang3') }),
-    makeEntry({ simp: '看', id: 'kan', glossShort: 'to look', pinyin: makePinyin('kan4') }),
+    makeEntry({ simp: '爱', id: 'ai', glossShort: 'to love', romanizations: { pinyin: makePinyin('ai4') } }),
+    makeEntry({ simp: '恨', id: 'hen', glossShort: 'to hate', romanizations: { pinyin: makePinyin('hen4') } }),
+    makeEntry({ simp: '想', id: 'xiang', glossShort: 'to want', romanizations: { pinyin: makePinyin('xiang3') } }),
+    makeEntry({ simp: '看', id: 'kan', glossShort: 'to look', romanizations: { pinyin: makePinyin('kan4') } }),
 ]
 
 function questionFor(index: number): Question {
@@ -35,11 +35,13 @@ function questionFor(index: number): Question {
 
 function config(overrides: Partial<SessionConfig> = {}): SessionConfig {
     return {
+        language: 'mandarin',
         selection: { kind: 'hsk', level: 1, includeLower: false },
         length: { unit: 'rounds', value: 3 },
         optionCount: 3,
         pinyinDisplay: { style: 'diacritic', toneColours: false },
         characterSet: 'simp',
+        romanization: 'pinyin',
         ...overrides,
     }
 }

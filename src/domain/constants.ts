@@ -43,7 +43,21 @@ export const NOVELTY_WEIGHT = 3
 /** A missed word is re-asked once, this many questions later, within the session. */
 export const REASK_DELAY_QUESTIONS = 8
 
+/**
+ * Objectives that every word can be asked, in any variety: they are expressed in terms of
+ * surfaces, and every word has characters, a gloss and a reading.
+ */
 export const OBJECTIVES: Objective[] = ['zh-en', 'en-zh', 'zh-pinyin', 'pinyin-zh']
+
+/**
+ * Asked only of a Taiwanese word that is written differently from the Mandarin word for the
+ * same thing. The question shows the Mandarin form the learner already knows and asks for the
+ * Taiwanese one, which is the whole difficulty for a fluent Mandarin speaker starting out.
+ *
+ * Not in `OBJECTIVES` because it cannot be asked universally: a word with no Mandarin
+ * counterpart has nothing to show as the prompt.
+ */
+export const CONTRAST_OBJECTIVE: Objective = 'zh-tw'
 
 export const DEFAULT_OPTION_COUNT = 4
 export const OPTION_COUNT_PRESETS = [3, 4, 5, 6]

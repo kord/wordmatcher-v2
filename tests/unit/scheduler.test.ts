@@ -20,11 +20,15 @@ const NOW = 1_700_000_000_000
 
 describe('createProgress', () => {
     it('starts unseen and immediately due', () => {
-        const record = createProgress('w1', NOW)
+        const record = createProgress('w1', 'mandarin', NOW)
         expect(record.seen).toBe(0)
         expect(record.box).toBe(0)
         expect(record.dueAt).toBe(NOW)
         expect(isMastered(record)).toBe(false)
+    })
+
+    it('records which variety the progress belongs to', () => {
+        expect(createProgress('w1', 'taiwanese', NOW).language).toBe('taiwanese')
     })
 })
 
@@ -78,7 +82,7 @@ describe('scoreCandidate', () => {
 
 describe('applyOutcome', () => {
     it('does not promote on a single correct answer', () => {
-        const start = createProgress('w1', NOW)
+        const start = createProgress('w1', 'mandarin', NOW)
         const once = applyOutcome(start, 'correct', NOW, 1200)
 
         expect(once.box).toBe(0)
@@ -90,7 +94,7 @@ describe('applyOutcome', () => {
     })
 
     it('promotes after the required streak and resets the streak', () => {
-        let record = createProgress('w1', NOW)
+        let record = createProgress('w1', 'mandarin', NOW)
         record = applyOutcome(record, 'correct', NOW, 1000)
         record = applyOutcome(record, 'correct', NOW, 1000)
 
@@ -100,7 +104,7 @@ describe('applyOutcome', () => {
     })
 
     it('promotes repeatedly over consecutive correct answers', () => {
-        let record = createProgress('w1', NOW)
+        let record = createProgress('w1', 'mandarin', NOW)
         for (let i = 0; i < 4; i++) record = applyOutcome(record, 'correct', NOW, 1000)
 
         expect(record.box).toBe(2)

@@ -8,7 +8,7 @@ import { makeEntry, makePinyin } from './fixtures'
 const LONG = makeEntry({
     simp: '怎么样',
     id: 'zenmeyang',
-    pinyin: makePinyin('zen3', 'me5', 'yang4'),
+    romanizations: { pinyin: makePinyin('zen3', 'me5', 'yang4') },
     glossShort: 'how about',
 })
 
@@ -16,18 +16,18 @@ const LONG = makeEntry({
 const PEER = makeEntry({
     simp: '图书馆',
     id: 'tushuguan',
-    pinyin: makePinyin('tu2', 'shu1', 'guan3'),
+    romanizations: { pinyin: makePinyin('tu2', 'shu1', 'guan3') },
     glossShort: 'library',
 })
 
 const SHORT_WORDS: WordEntry[] = [
-    makeEntry({ simp: '这', id: 'zhe', pinyin: makePinyin('zhe4'), glossShort: 'this' }),
-    makeEntry({ simp: '好', id: 'hao', pinyin: makePinyin('hao3'), glossShort: 'good' }),
-    makeEntry({ simp: '请', id: 'qing', pinyin: makePinyin('qing3'), glossShort: 'please' }),
+    makeEntry({ simp: '这', id: 'zhe', romanizations: { pinyin: makePinyin('zhe4') }, glossShort: 'this' }),
+    makeEntry({ simp: '好', id: 'hao', romanizations: { pinyin: makePinyin('hao3') }, glossShort: 'good' }),
+    makeEntry({ simp: '请', id: 'qing', romanizations: { pinyin: makePinyin('qing3') }, glossShort: 'please' }),
 ]
 
-function syllableCounts(options: { face: { pinyin?: { syllables: unknown[] } } }[]): number[] {
-    return options.map((option) => option.face.pinyin?.syllables.length ?? 0)
+function syllableCounts(options: { face: { romanization?: { syllables: unknown[] } } }[]): number[] {
+    return options.map((option) => option.face.romanization?.syllables.length ?? 0)
 }
 
 function characterCounts(options: { face: { text: string } }[]): number[] {

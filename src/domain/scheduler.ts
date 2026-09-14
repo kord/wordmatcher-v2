@@ -10,7 +10,7 @@ import {
 } from './constants'
 import type { Rng } from './rng'
 import { pickWeighted } from './rng'
-import type { Outcome, ProgressRecord, WordEntry } from './types'
+import type { Language, Outcome, ProgressRecord, WordEntry } from './types'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -18,9 +18,11 @@ export function clampBox(box: number): number {
     return Math.max(0, Math.min(MAX_BOX, Math.round(box)))
 }
 
-export function createProgress(wordId: string, now: number): ProgressRecord {
+export function createProgress(wordId: string, language: Language, now: number): ProgressRecord {
     return {
         wordId,
+        // Progress is siloed per variety, so a record has to say which one it belongs to.
+        language,
         box: 0,
         correctStreak: 0,
         lapses: 0,

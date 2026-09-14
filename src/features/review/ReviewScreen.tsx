@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useRoute } from '../../app/router'
 import { faceFor, objectiveLabel } from '../../domain/faces'
+import { romanizationFor } from '../../domain/romanization'
 import type { MistakeRecord } from '../../domain/types'
 import { Button, IconButton } from '../../ui/components/Button'
 import { PinyinText } from '../../ui/components/PinyinText'
@@ -14,7 +15,8 @@ import styles from './review.module.css'
 function ReviewCard({ mistake }: { mistake: MistakeRecord }) {
     const { settings } = useSettings()
     const { speak, available: ttsAvailable } = useTts()
-    const hanText = faceFor(mistake.entry, 'han', settings.characterSet).text
+    const language = settings.byLanguage[settings.language]
+    const hanText = faceFor(mistake.entry, 'han', language.characterSet, language.romanization).text
 
     return (
         <div className={styles.card}>
@@ -24,13 +26,22 @@ function ReviewCard({ mistake }: { mistake: MistakeRecord }) {
 
             <span className={styles.pinyin}>
                 <PinyinText
-                    pinyin={mistake.entry.pinyin}
+                    romanization={romanizationFor(mistake.entry, language.romanization)}
                     style={settings.pinyinDisplay.style}
                     toneColours={settings.pinyinDisplay.toneColours}
                 />
             </span>
 
             <div className={styles.glossList}>
+                {/* The difference from Mandarin goes first: for a Taiwanese miss it is usually
+                    the thing worth remembering, more than a gloss the learner already knows. */}
+                {mistake.entry.mandarin ? (
+                    <span>
+                        {mistake.entry.mandarin.differs === 'word'
+                            ? `Mandarin uses ${mistake.entry.mandarin.trad} (${mistake.entry.mandarin.pinyin.marked})`
+                            : `Same characters as Mandarin — ${mistake.entry.mandarin.pinyin.marked}`}
+                    </span>
+                ) : null}
                 {mistake.entry.glosses.map((gloss) => (
                     <span key={gloss}>{gloss}</span>
                 ))}
@@ -42,7 +53,7 @@ function ReviewCard({ mistake }: { mistake: MistakeRecord }) {
                 ) : null}
                 {mistake.entry.trad !== mistake.entry.simp ? (
                     <span>
-                        {settings.characterSet === 'trad' ? mistake.entry.simp : mistake.entry.trad} (other
+                        {language.characterSet === 'trad' ? mistake.entry.simp : mistake.entry.trad} (other
                         script)
                     </span>
                 ) : null}

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import {
-    LEGACY_IMPORT_FLAG,
     SETTINGS_KEY,
     defaultSettings,
     loadSettings,
@@ -30,22 +29,31 @@ class FakeStorage implements StorageLike {
     }
 }
 
-/** Keys as written by the original Create React App version. */
-function seedLegacy(storage: FakeStorage, values: Record<string, string>): void {
-    for (const [key, value] of Object.entries(values)) storage.set(`wm_options-${key}`, value)
-}
-
 describe('defaultSettings', () => {
     it('starts on HSK 1, simplified, diacritic pinyin, 20 rounds', () => {
         const settings = defaultSettings()
 
-        expect(settings.selection).toEqual({ kind: 'hsk', level: 1, includeLower: false })
+        expect(settings.language).toBe('mandarin')
+        expect(settings.byLanguage.mandarin.selection).toEqual({
+            kind: 'hsk',
+            level: 1,
+            includeLower: false,
+        })
+        expect(settings.byLanguage.mandarin.characterSet).toBe('simp')
         expect(settings.length).toEqual({ unit: 'rounds', value: 20 })
         expect(settings.optionCount).toBe(4)
         expect(settings.pinyinDisplay).toEqual({ style: 'diacritic', toneColours: false })
-        expect(settings.characterSet).toBe('simp')
         expect(settings.autoAdvance).toBe(true)
         expect(settings.theme).toBe('system')
+    })
+
+    it('gives Taiwanese traditional characters and Tai-lo', () => {
+        // Neither is a choice there: Taiwanese is never written in simplified characters
+        // and is never romanised with pinyin.
+        const { taiwanese } = defaultSettings().byLanguage
+
+        expect(taiwanese.characterSet).toBe('trad')
+        expect(taiwanese.romanization).toBe('tailo')
     })
 })
 
@@ -58,38 +66,64 @@ describe('normalizeSettings', () => {
 
     it('keeps valid values', () => {
         const settings = normalizeSettings({
-            selection: { kind: 'hsk', level: 4, includeLower: true },
+            language: 'mandarin',
+            byLanguage: {
+                mandarin: {
+                    selection: { kind: 'hsk', level: 4, includeLower: true },
+                    characterSet: 'trad',
+                    romanization: 'pinyin',
+                },
+            },
             length: { unit: 'time', value: 300 },
             optionCount: 6,
             pinyinDisplay: { style: 'numbers', toneColours: true },
-            characterSet: 'trad',
             autoAdvance: false,
             sound: false,
             haptics: false,
             theme: 'dark',
         })
 
-        expect(settings.selection).toEqual({ kind: 'hsk', level: 4, includeLower: true })
+        expect(settings.byLanguage.mandarin.selection).toEqual({
+            kind: 'hsk',
+            level: 4,
+            includeLower: true,
+        })
+        expect(settings.byLanguage.mandarin.characterSet).toBe('trad')
         expect(settings.length).toEqual({ unit: 'time', value: 300 })
         expect(settings.optionCount).toBe(6)
         expect(settings.pinyinDisplay).toEqual({ style: 'numbers', toneColours: true })
-        expect(settings.characterSet).toBe('trad')
         expect(settings.autoAdvance).toBe(false)
         expect(settings.sound).toBe(false)
         expect(settings.haptics).toBe(false)
         expect(settings.theme).toBe('dark')
     })
 
+    it('keeps the two language buckets apart', () => {
+        const settings = normalizeSettings({
+            language: 'taiwanese',
+            byLanguage: {
+                mandarin: { characterSet: 'simp', romanization: 'pinyin' },
+                taiwanese: { characterSet: 'trad', romanization: 'poj' },
+            },
+        })
+
+        expect(settings.language).toBe('taiwanese')
+        expect(settings.byLanguage.mandarin.characterSet).toBe('simp')
+        expect(settings.byLanguage.taiwanese.romanization).toBe('poj')
+    })
+
     it('rejects out-of-range and unknown values', () => {
         const settings = normalizeSettings({
-            selection: { kind: 'hsk', level: 99 },
+            byLanguage: { mandarin: { selection: { kind: 'hsk', level: 99 } } },
             length: { unit: 'fortnights', value: 3 },
             optionCount: 99,
             pinyinDisplay: { style: 'wingdings' },
             theme: 'neon',
         })
 
-        expect(settings.selection).toEqual(defaultSettings().selection)
+        expect(settings.byLanguage.mandarin.selection).toEqual(
+            defaultSettings().byLanguage.mandarin.selection,
+        )
         expect(settings.length).toEqual(defaultSettings().length)
         expect(settings.optionCount).toBe(4)
         expect(settings.pinyinDisplay.style).toBe('diacritic')
@@ -98,11 +132,11 @@ describe('normalizeSettings', () => {
 
     it('accepts a junda selection and rounds values', () => {
         const settings = normalizeSettings({
-            selection: { kind: 'junda', maxRank: 499.6 },
+            byLanguage: { mandarin: { selection: { kind: 'junda', maxRank: 499.6 } } },
             length: { unit: 'rounds', value: 10.7 },
         })
 
-        expect(settings.selection).toEqual({ kind: 'junda', maxRank: 500 })
+        expect(settings.byLanguage.mandarin.selection).toEqual({ kind: 'junda', maxRank: 500 })
         expect(settings.length).toEqual({ unit: 'rounds', value: 11 })
     })
 })
@@ -142,62 +176,5 @@ describe('save and load', () => {
         }
 
         expect(() => saveSettings(defaultSettings(), hostile)).not.toThrow()
-    })
-})
-
-describe('legacy settings import', () => {
-    it('maps the old keys, correcting the broken "questions" duration', () => {
-        const storage = new FakeStorage()
-        seedLegacy(storage, {
-            wordListType: 'HSK',
-            hskLevel: '1002', // the old app offset HSK levels by 999
-            includeLowerHskLevels: 'true',
-            characterType: 'cn',
-            gameDurationType: 'questions',
-            gameDurationQuestions: '25',
-        })
-
-        const settings = loadSettings(storage)
-
-        expect(settings.selection).toEqual({ kind: 'hsk', level: 3, includeLower: true })
-        expect(settings.characterSet).toBe('simp')
-        // The old app compared against 'rounds', so this silently became unlimited.
-        expect(settings.length).toEqual({ unit: 'rounds', value: 25 })
-        expect(storage.getItem(LEGACY_IMPORT_FLAG)).not.toBeNull()
-    })
-
-    it('maps a time duration and a Jun Da selection', () => {
-        const storage = new FakeStorage()
-        seedLegacy(storage, {
-            wordListType: 'JunDa',
-            jundaMax: '800',
-            characterType: 'tw',
-            gameDurationType: 'time',
-            gameDurationTimeSeconds: '90',
-        })
-
-        const settings = loadSettings(storage)
-
-        expect(settings.selection).toEqual({ kind: 'junda', maxRank: 800 })
-        expect(settings.characterSet).toBe('trad')
-        expect(settings.length).toEqual({ unit: 'time', value: 90 })
-    })
-
-    it('falls back to defaults when no legacy keys exist, and does not re-import', () => {
-        const storage = new FakeStorage()
-        expect(loadSettings(storage)).toEqual(defaultSettings())
-
-        // A later legacy write must not be picked up once the import has run.
-        seedLegacy(storage, { hskLevel: '1005' })
-        expect(loadSettings(storage)).toEqual(defaultSettings())
-    })
-
-    it('prefers stored v2 settings over legacy keys', () => {
-        const storage = new FakeStorage()
-        seedLegacy(storage, { hskLevel: '1005' })
-        saveSettings({ ...defaultSettings(), optionCount: 3 }, storage)
-
-        expect(loadSettings(storage).optionCount).toBe(3)
-        expect(loadSettings(storage).selection).toEqual({ kind: 'hsk', level: 1, includeLower: false })
     })
 })

@@ -101,10 +101,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
         return buildQuestion({
             entry,
-            objective: chooseObjective(rngRef.current),
+            objective: chooseObjective(rngRef.current, entry),
             pool: distractorPool,
             optionCount: config.optionCount,
             charset: config.characterSet,
+            scheme: config.romanization,
             rng: rngRef.current,
         })
     }, [])
@@ -118,6 +119,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             setPhase('finished')
             void saveSession({
                 id: `${finished.startedAt}-${Math.random().toString(36).slice(2, 8)}`,
+                language: finished.config.language,
                 startedAt: finished.startedAt,
                 finishedAt: now,
                 summary: result,
@@ -154,13 +156,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     )
 
     const configFromSettings = useCallback(
-        (): SessionConfig => ({
-            selection: settings.selection,
-            length: settings.length,
-            optionCount: settings.optionCount,
-            pinyinDisplay: settings.pinyinDisplay,
-            characterSet: settings.characterSet,
-        }),
+        (): SessionConfig => {
+            const language = settings.byLanguage[settings.language]
+            return {
+                // Captured here and never re-read, which is what fixes the variety for the
+                // whole session: changing the setting mid-session cannot reach it.
+                language: settings.language,
+                selection: language.selection,
+                length: settings.length,
+                optionCount: settings.optionCount,
+                pinyinDisplay: settings.pinyinDisplay,
+                characterSet: language.characterSet,
+                romanization: language.romanization,
+            }
+        },
         [settings],
     )
 
@@ -172,11 +181,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         try {
             const config = configFromSettings()
             const manifest = await loadManifest()
-            const pool = await resolvePool(config.selection, manifest)
+            const pool = await resolvePool(config.selection, manifest, config.language)
             if (pool.entries.length < 2) {
                 throw new Error('That word list is too small to play. Pick another list.')
             }
-            const progress = await loadProgress()
+            const progress = await loadProgress(config.language)
             beginSession(config, pool, pool.listNames, progress)
             return true
         } catch (cause) {
@@ -209,13 +218,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             let distractorPool = entries
             try {
                 const manifest = await loadManifest()
-                const full = await resolvePool(config.selection, manifest)
+                const full = await resolvePool(config.selection, manifest, config.language)
                 if (full.entries.length >= 2) distractorPool = full.entries
             } catch {
                 // Offline with only the reviewed words available: use them.
             }
 
-            const progress = await loadProgress()
+            const progress = await loadProgress(config.language)
             beginSession(
                 config,
                 { entries, listNames: ['Mistake review'], distractorPool },
@@ -243,7 +252,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             applyState(next)
 
             const wordId = current.question.entry.id
-            const record = progressRef.current.get(wordId) ?? createProgress(wordId, now)
+            const record =
+                progressRef.current.get(wordId) ??
+                createProgress(wordId, current.config.language, now)
             const outcome = chosen.isAnswer ? 'correct' : 'incorrect'
             const msToAnswer = next.answered[next.answered.length - 1]?.msToAnswer ?? 0
             const updated = applyOutcome(record, outcome, now, msToAnswer)

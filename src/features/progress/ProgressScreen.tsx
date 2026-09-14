@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useRoute } from '../../app/router'
 import { MAX_BOX } from '../../domain/constants'
+import { LANGUAGE_LABELS } from '../../domain/languages'
 import type { ProgressRecord, StoredSession } from '../../domain/types'
 import { Button } from '../../ui/components/Button'
 import { ProgressBar } from '../../ui/components/ProgressBar'
@@ -9,6 +10,7 @@ import primitives from '../../ui/components/primitives.module.css'
 import { formatPercent } from '../../utils/format'
 import { loadProgress } from '../../storage/progressRepo'
 import { loadSessions } from '../../storage/sessionRepo'
+import { useSettings } from '../../ui/hooks/useSettings'
 import { useSession } from '../session/SessionProvider'
 import styles from './progress.module.css'
 
@@ -48,13 +50,19 @@ function summarise(records: ProgressRecord[], now: number): Stats {
 export function ProgressScreen() {
     const { navigate } = useRoute()
     const { progressRevision } = useSession()
+    const { settings } = useSettings()
     const [records, setRecords] = useState<ProgressRecord[] | null>(null)
     const [sessions, setSessions] = useState<StoredSession[] | null>(null)
 
     useEffect(() => {
         let cancelled = false
 
-        void Promise.all([loadProgress(), loadSessions(10)]).then(([map, history]) => {
+        // One variety at a time: the numbers below describe the language being practised, not
+        // everything the learner has ever done, so switching languages changes all of them.
+        void Promise.all([
+            loadProgress(settings.language),
+            loadSessions(settings.language, 10),
+        ]).then(([map, history]) => {
             if (cancelled) return
             setRecords([...map.values()])
             setSessions(history)
@@ -63,14 +71,18 @@ export function ProgressScreen() {
         return () => {
             cancelled = true
         }
-    }, [progressRevision])
+    }, [progressRevision, settings.language])
 
     const stats = records ? summarise(records, Date.now()) : null
 
     return (
         <Screen
             title="Your progress"
-            subtitle={stats ? `${stats.touched.toLocaleString()} words seen` : undefined}
+            subtitle={
+                stats
+                    ? `${LANGUAGE_LABELS[settings.language]} · ${stats.touched.toLocaleString()} words seen`
+                    : LANGUAGE_LABELS[settings.language]
+            }
             onBack={() => navigate('home')}
         >
             {stats ? (

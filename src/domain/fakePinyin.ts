@@ -1,12 +1,12 @@
-import { applyToneMark, pinyinFromSyllables } from './pinyin'
+import { applyToneMark, romanizationFromSyllables } from './pinyin'
 import type { Rng } from './rng'
 import { shuffle } from './rng'
-import type { Pinyin, PinyinSyllable, Tone } from './types'
+import type { Romanization, RomanizationSyllable, Tone } from './types'
 
 const TONES: Tone[] = [1, 2, 3, 4, 0]
 
 export interface SyntheticPinyinInput {
-    answer: Pinyin
+    answer: Romanization
     /** How many extra readings to produce. */
     count: number
     /** Face keys already on screen; a synthetic reading must never duplicate one. */
@@ -24,29 +24,33 @@ export interface SyntheticPinyinInput {
  *
  * Real syllable shapes are kept throughout, so the options look like plausible
  * readings and the number of syllables can never give the answer away.
+ *
+ * **Pinyin only.** The tone marks are applied with pinyin's placement rules, which are not
+ * Tai-lo's, so a Tai-lo reading put through this would come back misspelled. Taiwanese
+ * questions draw their wrong answers from the pool instead; see `buildQuestion`.
  */
-export function syntheticPinyinOptions(input: SyntheticPinyinInput): Pinyin[] {
+export function syntheticPinyinOptions(input: SyntheticPinyinInput): Romanization[] {
     const { answer, count, taken, rng } = input
     const syllables = answer.syllables
 
     if (count <= 0 || syllables.length === 0) return []
 
     const seen = new Set(taken)
-    const results: Pinyin[] = []
+    const results: Romanization[] = []
 
-    const consider = (candidate: PinyinSyllable[]): void => {
+    const consider = (candidate: RomanizationSyllable[]): void => {
         if (results.length >= count) return
 
-        const pinyin = pinyinFromSyllables(candidate)
-        const key = `pinyin:${pinyin.marked}`
-        if (pinyin.marked === answer.marked || seen.has(key)) return
+        const romanization = romanizationFromSyllables(candidate, answer.scheme)
+        const key = `romanization:${romanization.marked}`
+        if (romanization.marked === answer.marked || seen.has(key)) return
 
         seen.add(key)
-        results.push(pinyin)
+        results.push(romanization)
     }
 
     // One syllable's tone at a time.
-    const toneVariants: PinyinSyllable[][] = []
+    const toneVariants: RomanizationSyllable[][] = []
     syllables.forEach((syllable, index) => {
         if (!syllable.han) return
         for (const tone of TONES) {
@@ -58,7 +62,7 @@ export function syntheticPinyinOptions(input: SyntheticPinyinInput): Pinyin[] {
     })
 
     // Reorderings keep every syllable real, so they always read plausibly.
-    const reorderVariants: PinyinSyllable[][] = []
+    const reorderVariants: RomanizationSyllable[][] = []
     if (syllables.length >= 2) {
         reorderVariants.push([...syllables].reverse())
         for (let index = 0; index < syllables.length - 1; index++) {

@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { syntheticPinyinOptions } from '../../src/domain/fakePinyin'
 import { mulberry32 } from '../../src/domain/rng'
-import type { Pinyin } from '../../src/domain/types'
+import type { Romanization } from '../../src/domain/types'
 
-const HOW_ABOUT: Pinyin = {
+const HOW_ABOUT: Romanization = {
+    scheme: 'pinyin',
     marked: 'zěn me yàng',
     numbered: 'zen3 me5 yang4',
     syllables: [
@@ -13,7 +14,7 @@ const HOW_ABOUT: Pinyin = {
     ],
 }
 
-function generate(count: number, taken = new Set<string>(), seed = 5): Pinyin[] {
+function generate(count: number, taken = new Set<string>(), seed = 5): Romanization[] {
     return syntheticPinyinOptions({ answer: HOW_ABOUT, count, taken, rng: mulberry32(seed) })
 }
 
@@ -40,9 +41,9 @@ describe('syntheticPinyinOptions', () => {
 
     it('never repeats an option already on screen', () => {
         // Claim the answer and one plausible synthesis, then make sure neither returns.
-        const taken = new Set(['pinyin:zěn me yàng', 'pinyin:zèn me yàng'])
+        const taken = new Set(['romanization:zěn me yàng', 'romanization:zèn me yàng'])
         for (const reading of generate(8, taken)) {
-            expect(taken.has(`pinyin:${reading.marked}`)).toBe(false)
+            expect(taken.has(`romanization:${reading.marked}`)).toBe(false)
         }
     })
 
@@ -76,7 +77,8 @@ describe('syntheticPinyinOptions', () => {
     })
 
     it('returns nothing when there is nothing safe to change', () => {
-        const punctuation: Pinyin = {
+        const punctuation: Romanization = {
+            scheme: 'pinyin',
             marked: '…',
             numbered: '…',
             syllables: [{ base: '…', marked: '…', tone: 0, han: false }],
@@ -91,7 +93,8 @@ describe('syntheticPinyinOptions', () => {
     })
 
     it('can still vary a single neutral-tone syllable', () => {
-        const neutral: Pinyin = {
+        const neutral: Romanization = {
+            scheme: 'pinyin',
             marked: 'de',
             numbered: 'de5',
             syllables: [{ base: 'de', marked: 'de', tone: 0, han: true }],

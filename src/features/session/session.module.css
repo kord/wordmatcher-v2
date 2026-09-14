@@ -244,6 +244,23 @@
     color: var(--text-muted);
 }
 
+/*
+ * The Mandarin word this one stands for. Sits below the answer card rather than inside it,
+ * because it is context the learner already has rather than part of what they are being
+ * asked, and it should not compete with the answer for attention.
+ */
+.revealMandarin {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    text-align: center;
+    padding-inline: var(--space-3);
+    line-height: 1.4;
+}
+
+.revealMandarinHan {
+    font-family: var(--font-han);
+}
+
 .speaker {
     flex: 0 0 auto;
     width: 2.5rem;

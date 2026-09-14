@@ -1,6 +1,6 @@
 import { pinyin as toPinyin } from 'pinyin-pro'
 import { isHan } from '../../src/domain/han.ts'
-import type { Pinyin, PinyinSyllable, Tone } from '../../src/domain/types.ts'
+import type { Romanization, RomanizationSyllable, Tone } from '../../src/domain/types.ts'
 
 /**
  * Build the per-syllable shape once, at build time, so the client never needs a
@@ -25,7 +25,7 @@ function parseTone(numbered: string): Tone {
     return value >= 1 && value <= 4 ? (value as Tone) : 0
 }
 
-export function buildPinyin(word: string): Pinyin {
+export function buildPinyin(word: string): Romanization {
     const marked = toArray(toPinyin(word, { type: 'array' }))
     const numbered = toArray(toPinyin(word, { type: 'array', toneType: 'num' }))
     const base = toArray(toPinyin(word, { type: 'array', toneType: 'none' }))
@@ -36,7 +36,7 @@ export function buildPinyin(word: string): Pinyin {
     // directly whether a syllable came from a Chinese character.
     const alignedWithCharacters = characters.length === count
 
-    const syllables: PinyinSyllable[] = []
+    const syllables: RomanizationSyllable[] = []
 
     for (let i = 0; i < count; i++) {
         const syllableBase = base[i]
@@ -51,6 +51,7 @@ export function buildPinyin(word: string): Pinyin {
     }
 
     return {
+        scheme: 'pinyin',
         marked: syllables.map((syllable) => syllable.marked).join(' '),
         numbered: numbered.join(' '),
         syllables,

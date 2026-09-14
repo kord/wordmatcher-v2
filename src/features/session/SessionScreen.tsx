@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 import { useRoute } from '../../app/router'
 import { faceFor, taskHintFor } from '../../domain/faces'
 import { isHan } from '../../domain/han'
+import { romanizationFor } from '../../domain/romanization'
 import type { PinyinDisplay, QuestionFace, QuestionOption } from '../../domain/types'
 import { formatClock } from '../../utils/format'
 import { Button, IconButton } from '../../ui/components/Button'
@@ -23,16 +24,16 @@ import styles from './session.module.css'
  * prompt from growing absurdly on a very large screen. The prompt is allowed to
  * grow a long way, which is what makes it fill the space when there is space.
  */
-const PROMPT_MAX_FONT = { han: 320, pinyin: 160, gloss: 160 } as const
+const PROMPT_MAX_FONT = { han: 320, mandarin: 320, romanization: 160, gloss: 160 } as const
 const MIN_FONT_SIZE = 12
 const OPTION_MAX_FONT = 48
 
 /** Renders whichever surface a face describes. */
 function FaceContent({ face, display }: { face: QuestionFace; display: PinyinDisplay }) {
-    if (face.kind === 'pinyin' && face.pinyin) {
+    if (face.kind === 'romanization' && face.romanization) {
         return (
             <PinyinText
-                pinyin={face.pinyin}
+                romanization={face.romanization}
                 style={display.style}
                 toneColours={display.toneColours}
             />
@@ -292,17 +293,15 @@ export function SessionScreen() {
     useEffect(() => {
         if (!reveal || !state || !settings.sound || !ttsAvailable || spokenIndex === index) return
         setSpokenIndex(index)
-        speak(faceFor(state.question.entry, 'han', settings.characterSet).text)
-    }, [
-        reveal,
-        state,
-        settings.sound,
-        settings.characterSet,
-        ttsAvailable,
-        speak,
-        spokenIndex,
-        index,
-    ])
+        speak(
+            faceFor(
+                state.question.entry,
+                'han',
+                state.config.characterSet,
+                state.config.romanization,
+            ).text,
+        )
+    }, [reveal, state, settings.sound, ttsAvailable, speak, spokenIndex, index])
 
     // Auto-advance, with a longer beat after a miss so the answer can be read.
     useEffect(() => {
@@ -347,7 +346,12 @@ export function SessionScreen() {
                 ? 1 - remaining / (config.length.value * 1000)
                 : 0
 
-    const hanText = faceFor(state.question.entry, 'han', settings.characterSet).text
+    const hanText = faceFor(
+        state.question.entry,
+        'han',
+        config.characterSet,
+        config.romanization,
+    ).text
     const promptIsHan = state.question.prompt.kind === 'han'
     const promptRepeatsAnswer = promptIsHan && state.question.prompt.text === hanText
 
@@ -417,7 +421,10 @@ export function SessionScreen() {
                             <div className={styles.revealMeta}>
                                 <span className={styles.revealPinyin}>
                                     <PinyinText
-                                        pinyin={state.question.entry.pinyin}
+                                        romanization={romanizationFor(
+                                            state.question.entry,
+                                            config.romanization,
+                                        )}
                                         style={settings.pinyinDisplay.style}
                                         toneColours={settings.pinyinDisplay.toneColours}
                                     />
@@ -435,6 +442,34 @@ export function SessionScreen() {
                                 </button>
                             ) : null}
                         </div>
+
+                        {/*
+                         * A Taiwanese entry carries the Mandarin word it answers for. Where
+                         * the characters differ the learner needs that to index the word
+                         * against what they already know; where they are the same, what
+                         * changed is only the reading, and the pinyin is a reference point.
+                         * In a contrast question the prompt *was* the Mandarin word, so
+                         * there is nothing to introduce - only the reading, which the prompt
+                         * did not show.
+                         */}
+                        {state.question.entry.mandarin ? (
+                            <p className={styles.revealMandarin}>
+                                {state.question.objective === 'zh-tw'
+                                    ? 'Mandarin '
+                                    : state.question.entry.mandarin.differs === 'word'
+                                      ? 'Mandarin uses '
+                                      : 'Same characters — Mandarin '}
+                                <span className={styles.revealMandarinHan}>
+                                    {state.question.entry.mandarin.trad}
+                                </span>{' '}
+                                <PinyinText
+                                    romanization={state.question.entry.mandarin.pinyin}
+                                    style={settings.pinyinDisplay.style}
+                                    toneColours={settings.pinyinDisplay.toneColours}
+                                />
+                            </p>
+                        ) : null}
+
                         {settings.autoAdvance ? (
                             <p className={styles.tapHint}>Tap anywhere to continue</p>
                         ) : (
@@ -521,7 +556,7 @@ function PromptText({
             ref={ref}
             className={[
                 styles.promptText,
-                kind === 'han' ? styles.hanPrompt : '',
+                kind === 'han' || kind === 'mandarin' ? styles.hanPrompt : '',
                 singleLine ? styles.promptSingleLine : '',
             ]
                 .filter(Boolean)

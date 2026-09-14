@@ -18,7 +18,7 @@ const MAX_SHORT_GLOSS = 80
 
 interface RawEntry {
     simp: string
-    pinyin: { marked: string; numbered: string }
+    romanizations: Record<string, { marked: string; numbered: string } | undefined>
     glosses: string[]
     glossShort: string
 }
@@ -45,11 +45,11 @@ const senses: Sense[] = entries.flatMap((item) =>
 )
 
 function label({ list, entry }: Item): string {
-    return `${list} ${entry.simp} (${entry.pinyin.numbered}): ${entry.glossShort}`
+    return `${list} ${entry.simp} (${entry.romanizations.pinyin?.numbered ?? '?'}): ${entry.glossShort}`
 }
 
 function labelSense({ list, entry, sense }: Sense): string {
-    return `${list} ${entry.simp} (${entry.pinyin.numbered}): ${sense}`
+    return `${list} ${entry.simp} (${entry.romanizations.pinyin?.numbered ?? '?'}): ${sense}`
 }
 
 describe('generated glosses', () => {
@@ -123,5 +123,32 @@ describe('generated glosses', () => {
             .map(labelSense)
 
         expect(offenders).toEqual([])
+    })
+})
+
+describe('readings match the sense each entry is glossed with', () => {
+    /**
+     * Characters whose most common reading in isolation is not the reading of the sense the
+     * list teaches, corrected by hand in `tools/lib/pinyinOverrides.ts`.
+     *
+     * The verb senses are asserted alongside the corrected ones, because the whole point of
+     * keying an override by list is that the same character is a different word elsewhere:
+     * 了 really is liǎo in the Jun Da list, and 过 really is guò in HSK 3.
+     */
+    const CASES: { list: string; simp: string; numbered: string }[] = [
+        { list: 'hsk1', simp: '了', numbered: 'le0' },
+        { list: 'hsk2', simp: '得', numbered: 'de0' },
+        { list: 'hsk4', simp: '得', numbered: 'de0' },
+        { list: 'hsk2', simp: '过', numbered: 'guo0' },
+        { list: 'hsk3', simp: '地', numbered: 'de0' },
+        { list: 'hsk3', simp: '过', numbered: 'guo4' },
+        { list: 'junda', simp: '了', numbered: 'liao3' },
+    ]
+
+    it.each(CASES)('reads $list $simp as $numbered', ({ list, simp, numbered }) => {
+        const match = entries.find((item) => item.list === list && item.entry.simp === simp)
+
+        expect(match, `${list} has no entry for ${simp}`).toBeDefined()
+        expect(match?.entry.romanizations.pinyin?.numbered).toBe(numbered)
     })
 })
