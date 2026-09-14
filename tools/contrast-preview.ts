@@ -6,8 +6,8 @@
  * Useful for eyeballing the drill without playing twenty rounds hoping one comes up. Writes
  * UTF-8 itself rather than printing, because PowerShell mangles CJK on the way to the console.
  */
-import { readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { readFile } from 'node:fs/promises'
+import { writeReport } from './lib/tmp.ts'
 import { buildQuestion } from '../src/domain/distractors'
 import { taskHintFor } from '../src/domain/faces'
 import { chooseObjective } from '../src/domain/objectives'
@@ -58,6 +58,4 @@ lines.unshift(
     '',
 )
 
-const out = join(process.env.TEMP ?? '.', 'contrast-preview.txt')
-await writeFile(out, lines.join('\n'), 'utf8')
-console.log(out)
+console.log(await writeReport('contrast-preview.txt', lines.join('\n')))

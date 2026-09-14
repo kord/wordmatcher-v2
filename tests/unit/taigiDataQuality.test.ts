@@ -39,11 +39,18 @@ interface TaiwaneseEntry {
     }
 }
 
-const file = JSON.parse(
-    readFileSync(join(process.cwd(), 'public', 'data', 'lists', 'hsk1-tw.json'), 'utf8'),
-) as { entries: TaiwaneseEntry[] }
+/**
+ * Every Taiwanese list is checked the same way, so a new level inherits the guarantees rather
+ * than getting its own copy of them.
+ */
+const LIST_IDS = ['hsk1-tw', 'hsk2-tw'] as const
 
-const entries = file.entries
+function entriesOf(listId: string): TaiwaneseEntry[] {
+    const file = JSON.parse(
+        readFileSync(join(process.cwd(), 'public', 'data', 'lists', `${listId}.json`), 'utf8'),
+    ) as { entries: TaiwaneseEntry[] }
+    return file.entries
+}
 
 /** Locates a failure, since the entry itself may have no characters to name it by. */
 function label(entry: TaiwaneseEntry): string {
@@ -51,10 +58,15 @@ function label(entry: TaiwaneseEntry): string {
     return `${written} ${entry.romanizations.tailo?.marked ?? '?'} -> ${entry.mandarin?.simp ?? '?'}`
 }
 
-describe('the Taiwanese list is complete enough to play', () => {
+describe.each(LIST_IDS)('%s is complete enough to play', (listId) => {
+    const entries = entriesOf(listId)
+
     it('covers every word in the Mandarin list it mirrors', () => {
         const mandarin = JSON.parse(
-            readFileSync(join(process.cwd(), 'public', 'data', 'lists', 'hsk1.json'), 'utf8'),
+            readFileSync(
+                join(process.cwd(), 'public', 'data', 'lists', `${listId.replace('-tw', '')}.json`),
+                'utf8',
+            ),
         ) as { entries: unknown[] }
 
         // The resolver drops a word it cannot place, so a shortfall here means the join or
@@ -76,7 +88,9 @@ describe('the Taiwanese list is complete enough to play', () => {
     })
 })
 
-describe('the two romanisations are genuinely different systems', () => {
+describe.each(LIST_IDS)('%s: the two romanisations are genuinely different systems', (listId) => {
+    const entries = entriesOf(listId)
+
     it('gives every entry a Tai-lo reading', () => {
         for (const entry of entries) {
             expect(entry.romanizations.tailo, label(entry)).toBeDefined()
@@ -84,18 +98,28 @@ describe('the two romanisations are genuinely different systems', () => {
     })
 
     it('spells them differently wherever the two schemes disagree', () => {
-        // Tai-lo writes ts/tsh, oo, nn and ing where POJ writes ch/chh, o͘, ⁿ and eng. Any
-        // word containing one of those must therefore read differently in the two schemes.
-        // A word with none of them legitimately reads the same, which is why this only
-        // checks the ones that cannot.
-        const schemeSpecific = /ts|oo|nn|ing/
+        // Tai-lo writes ts/tsh, oo and ing where POJ writes ch/chh, o͘ and eng, and it writes a
+        // nasalised vowel as nn where POJ writes ⁿ. A word containing one of those cannot read
+        // the same in both, so it must be spelled differently.
+        //
+        // `nn` only counts after a vowel. As a syllable onset the two schemes agree on it - 卵
+        // is nn̄g in both - so requiring a difference there would be wrong.
+        //
+        // A word with none of these legitimately reads the same in both schemes, which is why
+        // this only checks the ones that cannot.
+        const differsInBothSchemes = /ts|oo|ing|[aeiou]nn/
+
+        // Tone marks are combining characters and sit between the vowel and the `nn`, so they
+        // have to be set aside before the pattern can see it.
+        const setAsideToneMarks = (text: string) =>
+            text.normalize('NFD').replace(/[\u0300-\u036d]/g, '')
 
         for (const entry of entries) {
             const tailo = entry.romanizations.tailo
             const poj = entry.romanizations.poj
             if (!tailo || !poj) continue
 
-            if (schemeSpecific.test(tailo.marked)) {
+            if (differsInBothSchemes.test(setAsideToneMarks(tailo.marked))) {
                 expect(tailo.marked, label(entry)).not.toBe(poj.marked)
             }
         }
@@ -111,7 +135,9 @@ describe('the two romanisations are genuinely different systems', () => {
     })
 })
 
-describe('the romanisations are well formed', () => {
+describe.each(LIST_IDS)('%s: the romanisations are well formed', (listId) => {
+    const entries = entriesOf(listId)
+
     it('gives every syllable a base without tone marks', () => {
         for (const entry of entries) {
             for (const reading of Object.values(entry.romanizations)) {
@@ -150,7 +176,9 @@ describe('the romanisations are well formed', () => {
     })
 })
 
-describe('the difference from Mandarin is recorded honestly', () => {
+describe.each(LIST_IDS)('%s: the difference from Mandarin is recorded honestly', (listId) => {
+    const entries = entriesOf(listId)
+
     it('marks a difference of characters as a word difference', () => {
         for (const entry of entries) {
             if (!entry.mandarin) continue
@@ -167,7 +195,8 @@ describe('the difference from Mandarin is recorded honestly', () => {
     })
 })
 
-describe('the Mandarin contrast drill has enough to work with', () => {
+describe.each(LIST_IDS)('%s: the Mandarin contrast drill has enough to work with', (listId) => {
+    const entries = entriesOf(listId)
     const contrast = entries.filter((entry) => entry.mandarin?.differs === 'word')
 
     it('never offers a prompt that is also the answer', () => {

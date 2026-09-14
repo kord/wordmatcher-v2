@@ -245,13 +245,13 @@ async function main(): Promise<void> {
         ),
     )
 
-    // Taiwanese lists mirror the Mandarin ones by HSK level. Only HSK 1 is built so far,
-    // because the join is curated by hand rather than mechanical, and each level is checked
-    // before it ships.
+    // Taiwanese lists mirror the Mandarin ones by HSK level. Each level is curated by hand
+    // rather than joined mechanically, so a level is added here once its forms have been
+    // chosen and checked against the source. HSK 1 and HSK 2 so far.
     const taiwanese = await loadTaiwaneseSource()
     const taiwaneseIndex = indexTaiwanese(taiwanese.rows)
 
-    for (const level of [1] as HskLevel[]) {
+    for (const level of [1, 2] as HskLevel[]) {
         const entries = buildTaiwaneseEntries(
             mandarinByLevel.get(level) ?? [],
             taiwaneseIndex,

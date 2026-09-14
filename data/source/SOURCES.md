@@ -70,6 +70,11 @@ neither is derived by us.
 
 ### Changes made to the Taiwanese data
 
+The list is built two different ways depending on the level, and the difference is a declared
+modification either way.
+
+**HSK 1** was derived from the source: a form was picked mechanically and then corrected.
+
 1. Filtered to the rows that can describe one of our HSK words.
 2. One Taiwanese form chosen per word by `tools/lib/taiwanese.ts`: a row whose characters match ours (a
    reading of the same word) beats a row that merely shares a Mandarin gloss, then the shorter headword
@@ -79,6 +84,25 @@ neither is derived by us.
    the app can render them in either orthography or as tone numbers.
 5. Re-encoded and re-ordered; the romanisations and headwords themselves are unaltered except where
    step 3 says otherwise.
+
+**HSK 2 and later** invert that: the Taiwanese form for every word was written by hand first, from
+knowledge of the language, and only then checked against the source. The reason is that by this level
+the everyday Taiwanese word is frequently not the character in front of you at all — 跑步 is 走 but 走
+is 行, 黑 is 烏, 玩 is 耍, 找 is 揣, 眼睛 is 目睭, 忙 is 無閒 — and a ranking has no way to tell a
+literary reading from the word people say.
+
+1. Every form is authored in `tools/lib/taiwaneseHsk2.ts` and marked `fromSource: false`, so a
+   reviewer can tell these apart from the HSK 1 corrections that were merely pickings.
+2. `tools/hsk2-check.ts` reports each one against the extract: whether the source knows the word, and
+   separately whether it agrees on the spelling, the tones and the POJ. As shipped, 119 of 149 agree
+   exactly with a source reading, none disagree on tone, and the rest are words the extract either
+   lacks or carries only in their literary reading.
+3. Where the source carries the same word with a variant reading, the source's spelling is adopted, so
+   one orthography runs across both levels.
+4. The result is emitted as `hsk2-tw` alongside the Mandarin list it mirrors.
+
+`tests/unit/taigiDataQuality.test.ts` checks every built Taiwanese list against the same invariants,
+so a new level cannot ship without meeting them.
 
 ## Licensing
 

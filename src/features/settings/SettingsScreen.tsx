@@ -137,9 +137,9 @@ export function SettingsScreen() {
                             settings.language === 'taiwanese'
                                 ? [{ value: 'hsk' as const, label: 'HSK' }]
                                 : [
-                                      { value: 'hsk' as const, label: 'HSK' },
-                                      { value: 'junda' as const, label: 'Jun Da' },
-                                  ]
+                                    { value: 'hsk' as const, label: 'HSK' },
+                                    { value: 'junda' as const, label: 'Jun Da' },
+                                ]
                         }
                         onChange={(kind) =>
                             updateLanguage({

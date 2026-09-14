@@ -51,10 +51,10 @@ export function HomeScreen() {
                 ? 'Tâi-lô'
                 : 'POJ'
             : settings.pinyinDisplay.style === 'diacritic'
-              ? 'Tone marks'
-              : settings.pinyinDisplay.style === 'numbers'
-                ? 'Tone numbers'
-                : 'Superscript tones'
+                ? 'Tone marks'
+                : settings.pinyinDisplay.style === 'numbers'
+                    ? 'Tone numbers'
+                    : 'Superscript tones'
 
     return (
         <Screen

@@ -14,7 +14,13 @@
  *
  * Keyed by `listId|simplified`, and every correction here is declared as a modification in
  * `data/source/SOURCES.md` under the source's share-alike terms.
+ *
+ * HSK 2 does not follow this pattern. Its forms were authored by hand first and only then
+ * checked against the extract, because by that level the everyday Taiwanese word is often not
+ * the character in front of you at all. Those live in `taiwaneseHsk2.ts` and are merged in below.
  */
+import { HSK2_ROWS } from './taiwaneseHsk2.ts'
+
 export interface TaiwaneseOverride {
     /** Taiwanese written form. Empty when the word is written in romanisation alone. */
     han: string
@@ -29,7 +35,32 @@ export interface TaiwaneseOverride {
     fromSource: boolean
 }
 
+/**
+ * The HSK 2 forms, in the shape the resolver expects.
+ *
+ * `fromSource` is false throughout: these were not picked from the dictionary, and marking them
+ * otherwise would hide the one fact a reviewer needs. The note on each row becomes the reason,
+ * so the explanation travels with the entry into the build output.
+ */
+const HSK2_OVERRIDES: Record<string, TaiwaneseOverride> = Object.fromEntries(
+    HSK2_ROWS.map(([simp, han, tailo, poj, note]): [string, TaiwaneseOverride] => [
+        `hsk2|${simp}`,
+        {
+            han,
+            tailo,
+            poj,
+            reason: note ?? 'hand-authored for HSK 2, checked against the extract',
+            fromSource: false,
+        },
+    ]),
+)
+
 export const TAIWANESE_OVERRIDES: Readonly<Record<string, TaiwaneseOverride>> = {
+    // --- HSK 2: chosen by hand, then verified against the extract ------------------------
+
+    ...HSK2_OVERRIDES,
+
+    // --- HSK 1: corrections to the mechanically ranked forms ----------------------------
     // --- Candidates the ranking passed over: the answer was in the data all along ------
 
     // Character match gave 說 suat (literary "to speak"). The everyday verb is 講.
@@ -118,7 +149,7 @@ export const TAIWANESE_OVERRIDES: Readonly<Record<string, TaiwaneseOverride>> = 
     'hsk1|下雨': {
         han: '落雨',
         tailo: 'lo̍h-hōo',
-        poj: 'lo̍h-hōo',
+        poj: 'lo̍h-hō͘',
         reason: 'hōo-lâi is "rain comes"; to rain is 落雨 lo̍h-hōo',
         fromSource: true,
     },

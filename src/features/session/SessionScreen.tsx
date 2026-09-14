@@ -457,8 +457,8 @@ export function SessionScreen() {
                                 {state.question.objective === 'zh-tw'
                                     ? 'Mandarin '
                                     : state.question.entry.mandarin.differs === 'word'
-                                      ? 'Mandarin uses '
-                                      : 'Same characters — Mandarin '}
+                                        ? 'Mandarin uses '
+                                        : 'Same characters — Mandarin '}
                                 <span className={styles.revealMandarinHan}>
                                     {state.question.entry.mandarin.trad}
                                 </span>{' '}

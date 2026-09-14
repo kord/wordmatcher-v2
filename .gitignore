@@ -4,6 +4,9 @@ dist-ssr
 coverage
 playwright-report
 test-results
+
+# Scratch output from the tools in `tools/` - reports and downloaded source data.
+tmp
 .firebase
 .firebase/*.log
 *.local
