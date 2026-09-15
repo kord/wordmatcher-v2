@@ -49,9 +49,9 @@ function loadReference(path: string) {
     } catch {
         throw new Error(
             `No reference at ${path}.\n` +
-                'Download 駱嘉鵬\'s correspondence tables from\n' +
-                '  https://github.com/Taiwanese-Corpus/Loh8_2004_hanyu-document\n' +
-                'then run:  python tools/xls-to-tsv.py <the directory holding the .xls files>',
+            'Download 駱嘉鵬\'s correspondence tables from\n' +
+            '  https://github.com/Taiwanese-Corpus/Loh8_2004_hanyu-document\n' +
+            'then run:  python tools/xls-to-tsv.py <the directory holding the .xls files>',
         )
     }
 
