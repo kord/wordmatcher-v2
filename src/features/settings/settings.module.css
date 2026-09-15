@@ -41,6 +41,25 @@
     line-height: 1.15;
 }
 
+/* The reading with the voice test beside it, so what is heard can be compared to what is
+   written without looking away. */
+.previewRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.speaker {
+    flex: 0 0 auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .previewPinyin {
     font-size: var(--step-1);
 }

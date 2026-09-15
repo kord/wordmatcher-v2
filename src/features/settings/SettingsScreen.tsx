@@ -120,6 +120,13 @@ const TAIWANESE_PREVIEW: Record<'tailo' | 'poj', Romanization> = {
 const taiwanesePreview = (scheme: RomanizationScheme): Romanization =>
     scheme === 'poj' ? TAIWANESE_PREVIEW.poj : TAIWANESE_PREVIEW.tailo
 
+/**
+ * The sample word: one blessing whose four syllables fall on four different tones in both
+ * varieties, which is why the reading preview shows it. The voice test speaks it too, so that
+ * what is heard and what is written are always the same word.
+ */
+const SAMPLE_HAN = { trad: '花好月圓', simp: '花好月圆' } as const
+
 /** Keeps the stored set in one order, whatever order the switches were flipped in. */
 const inCanonicalOrder = (objectives: Objective[]): Objective[] =>
     ALL_OBJECTIVES.filter((objective) => objectives.includes(objective))
@@ -135,7 +142,7 @@ const inCanonicalOrder = (objectives: Objective[]): Objective[] =>
 function speechDescription(language: Language, available: boolean, fit: VoiceFit | null): string {
     if (!available) return 'Unavailable — no Chinese voice is installed on this device.'
     if (fit === 'approximate') {
-        return 'Reads each answer with a Mandarin voice, so Taiwanese words get Mandarin readings. Add a Taiwanese (Min Nan) voice in your device’s text-to-speech settings to hear them properly.'
+        return 'Reads each answer with a Mandarin voice, so Taiwanese words get Mandarin readings. Add a Taiwanese (Min Nan) voice in your device’s text-to-speech settings — the 🔊 beside the sample shows what you have now.'
     }
     return language === 'taiwanese'
         ? 'Reads each answer aloud with your Taiwanese voice.'
@@ -203,13 +210,14 @@ function QuestionTypes({
 
 export function SettingsScreen() {
     const { settings, update } = useSettings()
-    const { available: ttsAvailable, fit: ttsFit } = useTts(settings.language)
+    const { available: ttsAvailable, fit: ttsFit, speak } = useTts(settings.language)
     const { navigate } = useRoute()
     const { quit } = useSession()
     const { manifest } = useManifest()
 
     const language = settings.byLanguage[settings.language]
     const selection = language.selection
+    const sampleHan = language.characterSet === 'trad' ? SAMPLE_HAN.trad : SAMPLE_HAN.simp
 
     // Only offer levels that exist for the chosen variety, so the app cannot be pointed at a
     // list that has not been built. It matters now because Taiwanese is being built one
@@ -445,20 +453,37 @@ export function SettingsScreen() {
                 <div className={styles.preview}>
                     {/* Same blessing in both varieties, traditional or simplified by setting.
                         See the samples above for what its four tones are. */}
-                    <span className={styles.previewHan}>
-                        {language.characterSet === 'trad' ? '花好月圓' : '花好月圆'}
-                    </span>
-                    <span className={styles.previewPinyin}>
-                        <PinyinText
-                            romanization={
-                                settings.language === 'taiwanese'
-                                    ? taiwanesePreview(language.romanization)
-                                    : MANDARIN_PREVIEW
-                            }
-                            style={settings.pinyinDisplay.style}
-                            toneColours={settings.pinyinDisplay.toneColours}
-                        />
-                    </span>
+                    <span className={styles.previewHan}>{sampleHan}</span>
+                    <div className={styles.previewRow}>
+                        <span className={styles.previewPinyin}>
+                            <PinyinText
+                                romanization={
+                                    settings.language === 'taiwanese'
+                                        ? taiwanesePreview(language.romanization)
+                                        : MANDARIN_PREVIEW
+                                }
+                                style={settings.pinyinDisplay.style}
+                                toneColours={settings.pinyinDisplay.toneColours}
+                            />
+                        </span>
+                        {/*
+                         * Hearing the sample is how a voice is tested: the reading is right
+                         * there to compare against, so a Mandarin voice reading Taiwanese gives
+                         * itself away in one tap. Deliberately not gated on the speech setting -
+                         * auditioning a voice is exactly what a player does while deciding
+                         * whether to turn speech on.
+                         */}
+                        {ttsAvailable ? (
+                            <button
+                                type="button"
+                                className={styles.speaker}
+                                aria-label="Hear this word"
+                                onClick={() => speak(sampleHan)}
+                            >
+                                <span aria-hidden="true">🔊</span>
+                            </button>
+                        ) : null}
+                    </div>
                 </div>
             </section>
 
