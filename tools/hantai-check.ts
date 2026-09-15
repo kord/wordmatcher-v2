@@ -82,9 +82,9 @@ function loadReference(path: string) {
     } catch {
         throw new Error(
             `No reference at ${path}.\n` +
-                'Download 駱嘉鵬\'s correspondence tables from\n' +
-                '  https://github.com/Taiwanese-Corpus/Loh8_2004_hanyu-document\n' +
-                'then run:  python tools/xls-to-tsv.py <the directory holding the .xls files>',
+            'Download 駱嘉鵬\'s correspondence tables from\n' +
+            '  https://github.com/Taiwanese-Corpus/Loh8_2004_hanyu-document\n' +
+            'then run:  python tools/xls-to-tsv.py <the directory holding the .xls files>',
         )
     }
 
@@ -144,7 +144,14 @@ function loadExtract(): Map<string, Set<string>> {
 }
 
 /** The letters of a numbered syllable, so a tone difference can be told from a wrong reading. */
-const letters = (syllable: string) => syllable.replace(/[0-9]+$/, '')
+const letters = (syllable: string) => syllable.replace(/[0-9]+$/, '').toLowerCase()
+
+/**
+ * Readings are compared without case. Proper nouns are capitalised in the Tai-lo our tables carry
+ * - `Tn̂g-siânn` for the Great Wall - so comparing raw text reports every capitalised syllable as
+ * unattested.
+ */
+const key = (syllable: string) => syllable.toLowerCase()
 
 const reference = loadReference(referencePath)
 const extract = loadExtract()
@@ -185,25 +192,28 @@ for (const entry of entries) {
         const knownReadings = reference.readings.get(character)
         if (!knownReadings) continue
         known += 1
+        const knownLower = [...knownReadings].map(key)
+        const written = key(syllable)
 
-        if (knownReadings.has(syllable)) {
+        if (knownLower.includes(written)) {
             const colloquial = reference.colloquial.get(character)
-            if (colloquial && colloquial.size > 0 && !colloquial.has(syllable)) {
+            const colloquialLower = [...(colloquial ?? [])].map(key)
+            if (colloquialLower.length > 0 && !colloquialLower.includes(written)) {
                 literary.push(
-                    `  ${label}  — ${character} ${syllable}; colloquial here is ${[...colloquial].join(' ')}`,
+                    `  ${label}  — ${character} ${syllable}; colloquial here is ${[...(colloquial ?? [])].join(' ')}`,
                 )
             }
             continue
         }
 
-        const mine = extract.get(character) ?? new Set<string>()
-        const sameLetters = [...knownReadings].filter((r) => letters(r) === letters(syllable))
-        const detail = `  ${label}  — ${character} ${syllable}; tables ${[...knownReadings].join(' ')}; extract ${[...mine].join(' ') || '—'}`
+        const mine = new Set([...(extract.get(character) ?? [])].map(key))
+        const sameLetters = knownLower.filter((r) => letters(r) === letters(syllable))
+        const detail = `  ${label}  — ${character} ${syllable}; tables ${[...knownReadings].join(' ')}; extract ${[...(extract.get(character) ?? [])].join(' ') || '—'}`
 
         if (sameLetters.length > 0) toneOnly.push(detail)
-        else if (mine.has(syllable)) ours.push(detail)
+        else if (mine.has(written)) ours.push(detail)
         else if (mine.size === 0) silent.push(detail)
-        else if ([...knownReadings].some((r) => mine.has(r))) theirs.push(detail)
+        else if (knownLower.some((r) => mine.has(r))) theirs.push(detail)
         else neither.push(detail)
     }
 }
