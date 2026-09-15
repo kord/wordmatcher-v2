@@ -2,16 +2,20 @@ import { useRoute } from '../../app/router'
 import { useManifest } from '../../content/useManifest'
 import { listIdsFor } from '../../content/wordPool'
 import {
+    ALL_OBJECTIVES,
     JUN_DA_PRESETS,
+    OBJECTIVES,
     OPTION_COUNT_PRESETS,
     ROUND_LENGTH_PRESETS,
     TIME_LENGTH_PRESETS,
 } from '../../domain/constants'
+import { objectiveLabel, taskHintFor } from '../../domain/faces'
 import { LANGUAGE_LABELS } from '../../domain/languages'
 import type {
     HskLevel,
     Language,
     LanguageSettings,
+    Objective,
     PinyinStyle,
     Romanization,
     RomanizationScheme,
@@ -24,6 +28,7 @@ import { SegmentedControl } from '../../ui/components/SegmentedControl'
 import { Field, Switch } from '../../ui/components/Switch'
 import { useSettings } from '../../ui/hooks/useSettings'
 import { useTts } from '../../ui/hooks/useTts'
+import type { VoiceFit } from '../../ui/hooks/voiceChoice'
 import { resetProgress } from '../../storage/progressRepo'
 import { resetSessions } from '../../storage/sessionRepo'
 import { useSession } from '../session/SessionProvider'
@@ -115,9 +120,90 @@ const TAIWANESE_PREVIEW: Record<'tailo' | 'poj', Romanization> = {
 const taiwanesePreview = (scheme: RomanizationScheme): Romanization =>
     scheme === 'poj' ? TAIWANESE_PREVIEW.poj : TAIWANESE_PREVIEW.tailo
 
+/** Keeps the stored set in one order, whatever order the switches were flipped in. */
+const inCanonicalOrder = (objectives: Objective[]): Objective[] =>
+    ALL_OBJECTIVES.filter((objective) => objectives.includes(objective))
+
+/**
+ * What the speech switch says, which depends on what the device can actually do.
+ *
+ * A Taiwanese voice is rare, so Taiwanese falls back to a Mandarin voice rather than going
+ * silent. That is worth having, but it gives Taiwanese words their Mandarin readings - 卵 comes
+ * out `luǎn` where the answer is `nn̄g` - so the fallback is named as a stand-in and the player
+ * is told what to install, rather than being left to learn a reading that is wrong.
+ */
+function speechDescription(language: Language, available: boolean, fit: VoiceFit | null): string {
+    if (!available) return 'Unavailable — no Chinese voice is installed on this device.'
+    if (fit === 'approximate') {
+        return 'Reads each answer with a Mandarin voice, so Taiwanese words get Mandarin readings. Add a Taiwanese (Min Nan) voice in your device’s text-to-speech settings to hear them properly.'
+    }
+    return language === 'taiwanese'
+        ? 'Reads each answer aloud with your Taiwanese voice.'
+        : "Reads each answer aloud with your device's Chinese voice."
+}
+
+/**
+ * Which question types to ask, one switch each.
+ *
+ * Per variety, because the contrast drill exists only for Taiwanese: offering it to a Mandarin
+ * player would be a switch that can never do anything, since the prompt it needs is the Mandarin
+ * counterpart itself.
+ *
+ * The last switch left on cannot be turned off. A session with no question types has nothing to
+ * ask, so rather than allowing that and failing when the session starts, the remaining switch is
+ * disabled and the section says why. `normalizeSettings` refuses an empty set too, which covers a
+ * store written by an older build or edited by hand.
+ */
+function QuestionTypes({
+    language,
+    enabled,
+    onChange,
+}: {
+    language: Language
+    enabled: Objective[]
+    onChange: (objectives: Objective[]) => void
+}) {
+    const offered = language === 'taiwanese' ? ALL_OBJECTIVES : OBJECTIVES
+
+    return (
+        <section className={styles.group}>
+            <h2 className={styles.groupTitle}>Question types</h2>
+
+            <p className={styles.groupNote}>
+                Turn off the question types you do not want. At least one stays on.
+            </p>
+
+            {offered.map((objective) => {
+                const on = enabled.includes(objective)
+                return (
+                    <Switch
+                        key={objective}
+                        label={objectiveLabel(objective)}
+                        // The exact instruction shown above the prompt in a session, so the
+                        // panel says what the question will look like rather than restating the
+                        // label.
+                        description={taskHintFor(objective)}
+                        checked={on}
+                        disabled={on && enabled.length <= 1}
+                        onChange={(next) =>
+                            onChange(
+                                inCanonicalOrder(
+                                    next
+                                        ? [...enabled, objective]
+                                        : enabled.filter((item) => item !== objective),
+                                ),
+                            )
+                        }
+                    />
+                )
+            })}
+        </section>
+    )
+}
+
 export function SettingsScreen() {
     const { settings, update } = useSettings()
-    const { available: ttsAvailable } = useTts()
+    const { available: ttsAvailable, fit: ttsFit } = useTts(settings.language)
     const { navigate } = useRoute()
     const { quit } = useSession()
     const { manifest } = useManifest()
@@ -247,6 +333,12 @@ export function SettingsScreen() {
                     </Field>
                 )}
             </section>
+
+            <QuestionTypes
+                language={settings.language}
+                enabled={language.objectives}
+                onChange={(objectives) => updateLanguage({ objectives })}
+            />
 
             <section className={styles.group}>
                 <h2 className={styles.groupTitle}>Session</h2>
@@ -382,11 +474,7 @@ export function SettingsScreen() {
 
                 <Switch
                     label="Speak the answer"
-                    description={
-                        ttsAvailable
-                            ? "Uses your device's built-in Mandarin voice."
-                            : 'Unavailable — no Chinese voice is installed on this device.'
-                    }
+                    description={speechDescription(settings.language, ttsAvailable, ttsFit)}
                     checked={settings.sound && ttsAvailable}
                     disabled={!ttsAvailable}
                     onChange={(sound) => update({ sound })}

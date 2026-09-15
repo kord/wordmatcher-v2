@@ -260,6 +260,8 @@ export interface SessionConfig {
     characterSet: CharacterSet
     /** Which romanisation is shown, e.g. Tai-lo rather than POJ. */
     romanization: RomanizationScheme
+    /** Question types the player left switched on when the session started. */
+    objectives: Objective[]
 }
 
 export interface StoredSession {
@@ -286,6 +288,12 @@ export interface LanguageSettings {
     selection: ListSelection
     characterSet: CharacterSet
     romanization: RomanizationScheme
+    /**
+     * Which question types to ask, out of `ALL_OBJECTIVES`. Per variety because the contrast
+     * objective only exists for Taiwanese, so a shared set would offer a Mandarin player a
+     * switch that could never do anything.
+     */
+    objectives: Objective[]
 }
 
 export interface Settings {

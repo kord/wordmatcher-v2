@@ -92,7 +92,7 @@ export function SessionScreen() {
     const { settings } = useSettings()
     const { navigate } = useRoute()
     const reduced = useReducedMotion()
-    const { speak, available: ttsAvailable } = useTts()
+    const { speak, available: ttsAvailable } = useTts(state?.config.language ?? settings.language)
     const haptic = useHaptics(settings.haptics)
 
     const [now, setNow] = useState(() => Date.now())

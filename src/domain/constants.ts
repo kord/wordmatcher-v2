@@ -59,6 +59,14 @@ export const OBJECTIVES: Objective[] = ['zh-en', 'en-zh', 'zh-pinyin', 'pinyin-z
  */
 export const CONTRAST_OBJECTIVE: Objective = 'zh-tw'
 
+/**
+ * Every objective the app can ask, in the order the settings panel offers them.
+ *
+ * Ordered rather than derived at each use site so that the panel, the stored setting and the
+ * question chooser cannot drift into three different orders.
+ */
+export const ALL_OBJECTIVES: readonly Objective[] = [...OBJECTIVES, CONTRAST_OBJECTIVE]
+
 export const DEFAULT_OPTION_COUNT = 4
 export const OPTION_COUNT_PRESETS = [3, 4, 5, 6]
 

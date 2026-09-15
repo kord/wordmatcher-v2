@@ -101,7 +101,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
         return buildQuestion({
             entry,
-            objective: chooseObjective(rngRef.current, entry),
+            objective: chooseObjective(rngRef.current, entry, config.objectives),
             pool: distractorPool,
             optionCount: config.optionCount,
             charset: config.characterSet,
@@ -168,6 +168,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
                 pinyinDisplay: settings.pinyinDisplay,
                 characterSet: language.characterSet,
                 romanization: language.romanization,
+                objectives: language.objectives,
             }
         },
         [settings],

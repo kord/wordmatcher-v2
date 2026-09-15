@@ -14,7 +14,7 @@ import styles from './review.module.css'
 
 function ReviewCard({ mistake }: { mistake: MistakeRecord }) {
     const { settings } = useSettings()
-    const { speak, available: ttsAvailable } = useTts()
+    const { speak, available: ttsAvailable } = useTts(settings.language)
     const language = settings.byLanguage[settings.language]
     const hanText = faceFor(mistake.entry, 'han', language.characterSet, language.romanization).text
 

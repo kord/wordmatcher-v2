@@ -16,6 +16,13 @@
     color: var(--text-muted);
 }
 
+/* Prose that introduces a group, as opposed to the per-row description on a switch. */
+.groupNote {
+    font-size: var(--step--1);
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
 .preview {
     display: flex;
     flex-direction: column;

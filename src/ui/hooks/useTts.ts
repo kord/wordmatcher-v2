@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { Language } from '../../domain/types'
+import { pickVoice, type VoiceFit } from './voiceChoice'
 
 /**
  * Browser speech synthesis. No audio assets, no download cost, and Mandarin
@@ -10,33 +12,32 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
  * detect that after the fact, which is why we resolve a voice up front and
  * expose `available` so callers can hide the controls instead of offering a
  * button that does nothing.
+ *
+ * The second catch is that a voice can be intelligible and still wrong. A Taiwanese voice is
+ * rare, so Taiwanese falls back to a Mandarin voice - which reads 卵 as `luǎn` where the answer
+ * is `nn̄g` - and `fit` reports that, so the UI can tell the player rather than letting them
+ * learn the wrong pronunciation. See `voiceChoice.ts` for how a voice is chosen.
  */
-
-/** Any Chinese voice is more useful than none. */
-const ANY_CHINESE = /^(zh|cmn)/i
-
-/** Mainland Mandarin first, then the other Mandarin locales, then anything. */
-const PREFERRED_LANGS = [/^zh[-_]cn$/i, /^zh[-_]hans/i, /^zh[-_]sg$/i, /^zh[-_]tw$/i, /^zh[-_]hant/i]
-
-function pickVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
-    const chinese = voices.filter((voice) => ANY_CHINESE.test(voice.lang))
-    for (const pattern of PREFERRED_LANGS) {
-        const match = chinese.find((voice) => pattern.test(voice.lang))
-        if (match) return match
-    }
-    return chinese[0] ?? null
-}
 
 export interface Tts {
     speak: (text: string, lang?: string) => void
     cancel: () => void
     /** The browser exposes the speech synthesis API at all. */
     supported: boolean
-    /** A Chinese voice is installed, so speech will actually be intelligible. */
+    /** A voice is installed, so speech will actually be intelligible. */
     available: boolean
+    /**
+     * `approximate` when the only voice available is the wrong variety - a Mandarin voice asked
+     * to read Taiwanese - so the caller can say so. `null` when there is no voice.
+     */
+    fit: VoiceFit | null
 }
 
-export function useTts(): Tts {
+/**
+ * @param language the variety being practised, which decides which voice is wanted: a Min Nan
+ * voice for Taiwanese, and never a Min Nan voice for Mandarin.
+ */
+export function useTts(language: Language): Tts {
     const supported = useMemo(
         () => typeof speechSynthesis !== 'undefined' && typeof SpeechSynthesisUtterance !== 'undefined',
         [],
@@ -61,7 +62,8 @@ export function useTts(): Tts {
         }
     }, [supported])
 
-    const voice = useMemo(() => pickVoice(voices), [voices])
+    const pick = useMemo(() => pickVoice(voices, language), [voices, language])
+    const voice = pick.voice
 
     // Safari can garbage-collect an utterance mid-speech if nothing holds it.
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
@@ -74,6 +76,11 @@ export function useTts(): Tts {
             utterance.lang = voice.lang || lang
             utterance.rate = 0.85
             utterance.pitch = 1
+            // `volume` is the API's only loudness control and it is capped at 1, which is also
+            // what leaving it unset gives. There is no headroom, so speech that sounds quiet is
+            // the device's media volume rather than ours. Set it anyway: it is the one knob
+            // there is, and a silent default cannot be told apart from a deliberate one.
+            utterance.volume = 1
             utteranceRef.current = utterance
 
             if (speechSynthesis.speaking || speechSynthesis.pending) {
@@ -96,5 +103,5 @@ export function useTts(): Tts {
 
     useEffect(() => cancel, [cancel])
 
-    return { speak, cancel, supported, available: supported && voice !== null }
+    return { speak, cancel, supported, available: supported && voice !== null, fit: pick.fit }
 }

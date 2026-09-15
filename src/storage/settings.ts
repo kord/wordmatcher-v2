@@ -1,10 +1,11 @@
-import { DEFAULT_LENGTH, DEFAULT_OPTION_COUNT } from '../domain/constants'
+import { ALL_OBJECTIVES, DEFAULT_LENGTH, DEFAULT_OPTION_COUNT, OBJECTIVES } from '../domain/constants'
 import type {
     CharacterSet,
     HskLevel,
     Language,
     LanguageSettings,
     ListSelection,
+    Objective,
     PinyinStyle,
     RomanizationScheme,
     SessionLength,
@@ -36,6 +37,7 @@ export function defaultSettings(): Settings {
                 selection: { kind: 'hsk', level: 1, includeLower: false },
                 characterSet: 'simp',
                 romanization: 'pinyin',
+                objectives: [...OBJECTIVES],
             },
             // Taiwanese is written in traditional characters only and is never romanised
             // with pinyin, so these two are fixed rather than offered as choices.
@@ -43,6 +45,7 @@ export function defaultSettings(): Settings {
                 selection: { kind: 'hsk', level: 1, includeLower: false },
                 characterSet: 'trad',
                 romanization: 'tailo',
+                objectives: [...ALL_OBJECTIVES],
             },
         },
         length: { ...DEFAULT_LENGTH },
@@ -88,7 +91,11 @@ function asCharacterSet(value: unknown, fallback: CharacterSet): CharacterSet {
     return value === 'trad' || value === 'simp' ? value : fallback
 }
 
-function normalizeLanguageSettings(raw: unknown, fallback: LanguageSettings): LanguageSettings {
+function normalizeLanguageSettings(
+    raw: unknown,
+    fallback: LanguageSettings,
+    askable: readonly Objective[],
+): LanguageSettings {
     if (typeof raw !== 'object' || raw === null) return fallback
     const candidate = raw as Record<string, unknown>
 
@@ -96,7 +103,29 @@ function normalizeLanguageSettings(raw: unknown, fallback: LanguageSettings): La
         selection: normalizeSelection(candidate.selection, fallback.selection),
         characterSet: asCharacterSet(candidate.characterSet, fallback.characterSet),
         romanization: asScheme(candidate.romanization) ?? fallback.romanization,
+        objectives: normalizeObjectives(candidate.objectives, fallback.objectives, askable),
     }
+}
+
+/**
+ * Unknown ids are dropped and the result is re-ordered to `askable`, so the stored set can only
+ * ever be a subset in the canonical order. `askable` is what *this variety* can be asked, not
+ * everything the app knows, so a Mandarin store cannot hold the contrast drill even if one is
+ * written into it by hand.
+ *
+ * An empty set is refused rather than honoured: a session with no question types has nothing to
+ * ask and would fail at start. The panel makes that unreachable by refusing to switch the last
+ * one off, so this only matters for a store written by hand or by an older build.
+ */
+function normalizeObjectives(
+    value: unknown,
+    fallback: Objective[],
+    askable: readonly Objective[],
+): Objective[] {
+    if (!Array.isArray(value)) return fallback
+
+    const known = askable.filter((objective) => value.includes(objective))
+    return known.length > 0 ? [...known] : fallback
 }
 
 function normalizeLength(value: unknown, fallback: SessionLength): SessionLength {
@@ -146,10 +175,15 @@ export function normalizeSettings(raw: unknown): Settings {
         schemaVersion: SETTINGS_SCHEMA_VERSION,
         language: asLanguage(candidate.language) ?? defaults.language,
         byLanguage: {
-            mandarin: normalizeLanguageSettings(byLanguage?.mandarin, defaults.byLanguage.mandarin),
+            mandarin: normalizeLanguageSettings(
+                byLanguage?.mandarin,
+                defaults.byLanguage.mandarin,
+                OBJECTIVES,
+            ),
             taiwanese: normalizeLanguageSettings(
                 byLanguage?.taiwanese,
                 defaults.byLanguage.taiwanese,
+                ALL_OBJECTIVES,
             ),
         },
         length: normalizeLength(candidate.length, defaults.length),

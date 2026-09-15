@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { OBJECTIVES } from '../../src/domain/constants'
 import { buildQuestion } from '../../src/domain/distractors'
 import { mulberry32 } from '../../src/domain/rng'
 import {
@@ -42,6 +43,7 @@ function config(overrides: Partial<SessionConfig> = {}): SessionConfig {
         pinyinDisplay: { style: 'diacritic', toneColours: false },
         characterSet: 'simp',
         romanization: 'pinyin',
+        objectives: [...OBJECTIVES],
         ...overrides,
     }
 }
