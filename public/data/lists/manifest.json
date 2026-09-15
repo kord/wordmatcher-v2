@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-14T14:24:44.280Z",
+  "generatedAt": "2026-09-15T02:53:57.055Z",
   "lists": [
     {
       "id": "hsk1",
@@ -128,7 +128,7 @@
       "subtitle": "1300 words",
       "count": 1300,
       "file": "hsk5-tw.json",
-      "bytes": 1192892,
+      "bytes": 1192946,
       "kind": "hsk",
       "language": "taiwanese",
       "level": 5

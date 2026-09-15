@@ -5,6 +5,39 @@ These files are inputs to `tools/build-data.ts`; do not edit them by hand.
 Most are read-only copies of the word lists used by the original `wordmatcher` project. `taiwanese.json`
 is different: it is a filtered extract of an upstream dictionary, described below.
 
+## Reading a source versus shipping it
+
+"We used a dictionary" covers two activities, and only one of them is governed by the source's licence.
+
+**Reading a source** — looking up what a word is called, then writing our own row — uses the facts the
+dictionary records. A word's form, its reading and its sense are facts; copyright protects the
+expression of them, not the facts themselves. This needs no permission from anyone, whatever the
+licence says. It is also already how the hand-authored tables work (`tools/lib/taiwaneseHsk2.ts` and
+up): the Taiwanese form for every word is written first, from knowledge of the language, and the source
+is then consulted to check it.
+
+**Shipping a source** — copying rows into `data/source/` or into the generated JSON — is reproduction,
+and there the licence is the constraint, because we are distributing copies rather than using what they
+say. Two sources are shipped today, CC-CEDICT for the glosses and ChhoeTaigi for the Taiwanese
+readings, both CC BY-SA 4.0, and both are compliant.
+
+The line this draws, for any source we look at:
+
+- Reading it, and recording a form, a reading or a sense: always fine.
+- Taking one of its rows instead of writing our own: fine only under the source's licence, and only
+  because we can attribute it. HSK 1's `fromSource: true` corrections are this case.
+- Reproducing a definition's wording, an example sentence, or a headword list wholesale: never. That is
+  the dictionary's expression and its selection, both of which are protected.
+- Mirroring a large share of a source's headwords into ours: the same thing at scale. A NoDerivatives or
+  NonCommercial licence bites here even though it cannot touch consultation.
+
+So the licence column below reads as "may we ship this", not "may we look at this".
+
+Exposure scales with volume and with how far one source carries us. A few dozen words checked against a
+dictionary is consultation; a level whose every answer could only have come from a single dictionary is
+closer to copying its selection. That is worth avoiding on its own terms, not only licensing ones — a
+second opinion is what catches the mistakes one source would have propagated.
+
 ## HSK vocabulary (`hsk1.ts` … `hsk6.ts`)
 
 - Source: <https://hsk.academy/en/hsk-6-vocabulary-list>
@@ -60,13 +93,19 @@ Both romanisations come from the source's own parallel columns — `KipUnicode` 
 Taiwan's Ministry of Education uses, and `PojUnicode` is POJ. Neither is derived from the other, and
 neither is derived by us.
 
-### Datasets in the same collection that are *not* used
+### Datasets in the same collection that are *not* shipped
 
-- 教育部臺灣閩南語常用詞辭典 — CC BY-ND 3.0 TW. NoDerivatives, so it cannot be redistributed in a
-  modified form, which is what embedding it in our JSON would be.
-- iTaigi — CC0, so usable, but its rows are whole sentences rather than headwords, so a word-keyed
+Excluded from `taiwanese.json`, which is a different thing from being unusable as a reference — see
+"Reading a source versus shipping it" above.
+
+- 教育部臺灣閩南語常用詞辭典 — CC BY-ND 3.0 TW. NoDerivatives, so a copy cannot be redistributed in a
+  modified form, which is what embedding its rows in our JSON would be. Re-checked against the fork that
+  carries it, which states the same terms — see "Other Taiwanese corpora surveyed" below. Reading it to
+  check a hand-authored row is unaffected, and is worth doing.
+- iTaigi — CC0, so shippable, but its rows are whole sentences rather than headwords, so a word-keyed
   join matches almost nothing. It was used only as a cross-check while choosing the source.
-- 台日大辭典, Maryknoll, Embree, 甘字典 — CC BY-NC-SA. Non-commercial, so out of scope.
+- 台日大辭典, Maryknoll, Embree, 甘字典 — CC BY-NC-SA. Non-commercial, and the share-alike term would
+  conflict with the CC BY-SA 4.0 we ship under, so they are out of scope for copying. Fine to read.
 
 ### Changes made to the Taiwanese data
 
@@ -136,6 +175,121 @@ from documentation, by aligning every source row that carries both romanisations
 
 `tests/unit/taigiDataQuality.test.ts` checks every built Taiwanese list against the same invariants,
 so a new level cannot ship without meeting them.
+
+## Other Taiwanese corpora surveyed
+
+The [Taiwanese-Corpus](https://github.com/Taiwanese-Corpus) organisation was surveyed as a possible
+second Taiwanese source. **Nothing from it is vendored**, so it adds no licensing obligation; this
+section records what was looked at and why it was not taken, so the same ground is not covered twice.
+
+The organisation is 47 repositories, almost all mirrors or transcriptions of third-party works
+maintained by one person, and most declare no licence at all. Its own index is
+[hue7jip8](https://github.com/Taiwanese-Corpus/hue7jip8) (MIT) — "Huē-ji̍p", the importer that feeds
+corpora into the 臺灣言語資料庫 format — and that README is the most useful thing in the collection,
+because it catalogues every Taiwanese corpus the author knows of with its form and size.
+
+| corpus | form | size | may we ship it |
+| ------ | ---- | ---- | -------------- |
+| 臺灣閩南語常用詞辭典 (詞條 / 例句) | 全漢、全羅 | 28,830 / 13,835 | no — CC BY-ND 3.0 TW |
+| 台語文語料庫蒐集及語料庫為本字詞頻統計 (guliau-supin) | 漢羅、全羅 | 193,071 段 | no — undeclared, MOE-derived |
+| iCorpus 臺華平行新聞語料庫 (漢字臺羅版) | 全羅、**華語平行** | 83,544 句 | **yes — CC BY 4.0** |
+| 台語文數位典藏資料庫 (nmtl dadwt) | 漢羅、全羅 | 67,005 段 | no — undeclared |
+| 教育部詞彙分級計劃 | 全漢、全羅 | 61,354 句 | unknown — MOE, API only |
+| 教育部臺灣閩南語字詞頻調查工作 (KIPsupin) | 漢羅、全羅 | 59,300 段 | no — undeclared, MOE-derived |
+| 白話字文獻館 (pojbh) | 漢羅、全羅 | 43,493 段 | no — undeclared |
+| TGB通訊 | 漢羅、**華語平行** | 35,017 句 | no — undeclared |
+| 台灣白話基礎語句 (1956) | 羅馬字、華語漢字 | 6,515 詞翻譯對照 | yes — public domain |
+| 咱的字你敢捌－台語漢字 | 臺語→臺語 | 988 筆 | no — undeclared |
+| 新北市900例句 | 全漢、全羅 | 150 句 + audio | yes — MIT |
+
+Every one of them may be *read* regardless, which is the column that matters for hand-authoring.
+
+Three conclusions:
+
+1. **The best-known Taiwanese dictionary data is the one we already do not ship.** The fork carrying
+   教育部臺灣閩南語常用詞辭典 is the most-forked item in the organisation, and its README states the
+   NoDerivatives terms in the same words we do. It adds a detail worth knowing: the 華語對照表 — the
+   Mandarin cross-reference table, i.e. exactly the shape our contrast drill needs — is *outside* the
+   MOE licence, having been taken from the web edition under Copyright Act art. 50 for non-profit
+   teaching. So it cannot be copied either, though it can be read like anything else.
+2. **The one capability we lack is frequency, and no repository here supplies it for copying.** The
+   ranking has no frequency signal (see "HSK 1" above), which is why 漂亮 picked 巧 `khiáu` over 媠
+   `suí`. `Ungian_2009_KIPsupin` and `Ungian_2005_guliau-supin` are frequency work, but neither declares
+   a licence, both derive from MOE-commissioned research, and the KIPsupin JSON is split by genre
+   (`Sanbun`, `Siokgan`, `lunbun`, `pokoa`…), which reads as a segmented corpus rather than a word
+   list. The most on-point resource in the field is 教育部詞彙分級計劃 — a graded vocabulary, 61,354
+   sentences in both orthographies — but it is served from an MOE API rather than vendored, so shipping
+   it is the ND problem again. All of them are worth reading to sanity-check a ranking.
+3. **Mandarin↔Taiwanese parallel text exists with a permissive licence, and is parked.**
+   [icorpus_ka1_han3-ji7](https://github.com/Taiwanese-Corpus/icorpus_ka1_han3-ji7) is 83,544
+   Taiwanese–Mandarin sentence pairs (news, 2008–2014) with automatically tagged *and* human-corrected
+   columns for both characters and Tâi-lô, released **CC BY 4.0** — attribution only, which is less
+   restrictive than the CC BY-SA 4.0 we already carry. It speaks directly to the contrast drill, whose
+   coverage falls to 9% at HSK 5 precisely because the Taiwanese word usually shares the Mandarin
+   characters; a parallel corpus is how you see what the Taiwanese side actually says. It is not taken
+   because it is sentence-aligned rather than word-aligned, the Taiwanese side is one translator's news
+   register, and the yield against HSK vocabulary is unproven — a bounded experiment, not a
+   commitment.
+
+The 對照 dictionaries in the organisation are the right *genre* — Mandarin to Taiwanese word mappings,
+which is the contrast drill's data — and under the rule above they are usable as **checking references**
+for hand-authored rows even though nothing in them may be copied. Read them to confirm a form; do not
+lift their rows or their definitions. That distinction is worth stating here rather than anywhere else,
+because this is the genre covering our weakest area — contrast coverage falls to 9% by HSK 5 — so it is
+also where the temptation to extract in bulk would be strongest.
+
+Of the three, one turned out to be usable and is now in the pipeline:
+
+- **`Loh8_2004_hanyu-document`** (駱嘉鵬) — the source of the second-opinion check below. Its
+  `k_t_duiing.xls` is 12,965 rows of *character* readings keyed on the Mandarin reading, each flagged
+  文 or 俗/白 where the literary and spoken readings of that character differ, and its `t_wenbai.xls`
+  is 2,739 characters with the two readings side by side. Spelled in Tâi-lô with digit tones, which is
+  what `Romanization.numbered` already produces, so the two compare syllable for syllable.
+- **`koktai`** (吳守禮《國臺對照活用辭典》) — the most permissive of the three: Wikimedia Taiwan has a
+  CC BY-SA grant from the estate, with the written agreement still in progress, and the reformatting is
+  CC0. Not used yet because the text is Big5 with PE2 print control codes and needs a user-defined-glyph
+  font to render at all, so reading it means working out a 造字 mapping first.
+- **`Tai-Hua-Khah-Lan-Ku`** (黃元興 1992) — no data in the repository, only a README pointing at a blog.
+
+### Second opinion on the readings (`tools/hantai-check.ts`)
+
+Every row in the hand-authored tables was written for the word and then checked against the ChhoeTaigi
+extract, which is word-keyed. That leaves one gap: a reading the extract does not know, or one both we
+and it reached by the same character-match instinct, goes unchallenged. The reference above is
+character-keyed and records *which* reading is the spoken one, so it asks two different questions — is
+our reading attested for that character at all, and did we use the literary reading of a character whose
+spoken reading is something else.
+
+Because two dictionaries disagreeing only means one of them is wrong, every flagged syllable also gets
+the extract's position on it, giving four verdicts: `theirs` (both sources against us), `ours` (the two
+disagree and the extract backs us), `neither`, and `silent` (the extract has no reading for the
+character). The reference is not vendored; `tools/xls-to-tsv.py` converts the two workbooks to a TSV
+under `tmp/` after the download.
+
+Across HSK 5's 1,300 words it compares 2,454 syllables for the 2,450 whose characters the tables know,
+and 18 came back `theirs`. Fourteen were corrected — the 從 of 從此/從而/從前/從事/自從 was written `tsông`
+against `tsiông`, 促 was `tshok` against `tshiok` in 促進 and 促使, 模 was `môo` against `bôo` in 模仿,
+模糊 and 模特, and 熬夜, 斜, 癢 and 暈 each had a vowel or tone that neither source supports. The
+extract agrees *more* after the change than before — 903 to 912 exact readings, 904 to 913 exact POJ —
+which is the real confirmation, since word-level evidence is stronger than character-level evidence.
+
+The method has to be used with its limits in view. Four flags were left alone, and two of them show why:
+
+- **`管仔` `kóng-á` was a false positive.** The character tables give 管 as `kńg`, which is what the plain
+  word is, but the extract has 管仔 as `kóng-á`. Character evidence is not word evidence; a compound can
+  use a reading the character never has on its own.
+- **`雪文` `sap-bûn` is right and looks wrong.** 雪 is `seh`/`suat` everywhere except in this word for
+  soap, where it is `sap`. No source lists the reading because it exists only here.
+- **`辣椒` and `尋找`** read 辣 as `hiam` and 找 as `tshuē`, which no source attests: the Taiwanese words
+  are 薟椒 and 揣, and the characters in front of you are the Mandarin ones. Left for a decision, because
+  keeping the familiar characters is a real option and the honest one is not.
+
+The reference has its own noise — it gives 肉 a colloquial reading of `hik8`, which is not a thing — and
+a literary reading is correct in plenty of formal compounds. Nothing here rewrites a table on its own.
+
+If a Hakka or Indigenous variety is ever wanted, the same organisation covers those with the same
+integration pipeline (`moedict-data-hakka`, `hakka_elearning`, `klokah_data_extract`, `amis-data`),
+and the licences are the same mixture of undeclared and ND.
 
 ## Licensing
 

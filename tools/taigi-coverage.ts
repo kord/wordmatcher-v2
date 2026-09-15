@@ -57,7 +57,7 @@ for (let level = from; level <= to; level += 1) {
 
     summary.push(
         `hsk${level}: ${total} words — characters ${byCharacters} (${share(byCharacters)}), ` +
-            `gloss only ${byGloss} (${share(byGloss)}), nothing ${nothing} (${share(nothing)})`,
+        `gloss only ${byGloss} (${share(byGloss)}), nothing ${nothing} (${share(nothing)})`,
     )
     lines.push(`HSK ${level}`)
     lines.push(`  words                    ${total}`)
