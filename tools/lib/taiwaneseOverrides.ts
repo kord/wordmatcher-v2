@@ -30,6 +30,18 @@ import {
     HSK5_ROWS_D,
     HSK5_ROWS_E,
 } from './taiwaneseHsk5.ts'
+import {
+    HSK6_ROWS_A,
+    HSK6_ROWS_B,
+    HSK6_ROWS_C,
+    HSK6_ROWS_D,
+    HSK6_ROWS_E,
+    HSK6_ROWS_F,
+    HSK6_ROWS_G,
+    HSK6_ROWS_H,
+    HSK6_ROWS_I,
+    HSK6_ROWS_J,
+} from './taiwaneseHsk6.ts'
 
 /** HSK 5 is authored in five chunks purely so the file stays reviewable. */
 const HSK5_ROWS: readonly HandRow[] = [
@@ -38,6 +50,20 @@ const HSK5_ROWS: readonly HandRow[] = [
     ...HSK5_ROWS_C,
     ...HSK5_ROWS_D,
     ...HSK5_ROWS_E,
+]
+
+/** HSK 6 is the largest level, and is split ten ways for the same reason. */
+const HSK6_ROWS: readonly HandRow[] = [
+    ...HSK6_ROWS_A,
+    ...HSK6_ROWS_B,
+    ...HSK6_ROWS_C,
+    ...HSK6_ROWS_D,
+    ...HSK6_ROWS_E,
+    ...HSK6_ROWS_F,
+    ...HSK6_ROWS_G,
+    ...HSK6_ROWS_H,
+    ...HSK6_ROWS_I,
+    ...HSK6_ROWS_J,
 ]
 
 export interface TaiwaneseOverride {
@@ -83,6 +109,7 @@ export const TAIWANESE_OVERRIDES: Readonly<Record<string, TaiwaneseOverride>> = 
     ...handAuthored(3, HSK3_ROWS),
     ...handAuthored(4, HSK4_ROWS),
     ...handAuthored(5, HSK5_ROWS),
+    ...handAuthored(6, HSK6_ROWS),
 
     // --- HSK 1: corrections to the mechanically ranked forms ----------------------------
     // --- Candidates the ranking passed over: the answer was in the data all along ------

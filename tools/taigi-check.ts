@@ -23,6 +23,18 @@ import { HSK2_ROWS } from './lib/taiwaneseHsk2.ts'
 import { HSK3_ROWS } from './lib/taiwaneseHsk3.ts'
 import { HSK4_ROWS } from './lib/taiwaneseHsk4.ts'
 import {
+    HSK6_ROWS_A,
+    HSK6_ROWS_B,
+    HSK6_ROWS_C,
+    HSK6_ROWS_D,
+    HSK6_ROWS_E,
+    HSK6_ROWS_F,
+    HSK6_ROWS_G,
+    HSK6_ROWS_H,
+    HSK6_ROWS_I,
+    HSK6_ROWS_J,
+} from './lib/taiwaneseHsk6.ts'
+import {
     HSK5_ROWS_A,
     HSK5_ROWS_B,
     HSK5_ROWS_C,
@@ -40,6 +52,19 @@ const TABLES: Readonly<Record<number, readonly HandRow[]>> = {
         ...HSK5_ROWS_C,
         ...HSK5_ROWS_D,
         ...HSK5_ROWS_E,
+    ],
+    // HSK 6 is being authored in ten chunks; the rest are appended as they are written.
+    6: [
+        ...HSK6_ROWS_A,
+        ...HSK6_ROWS_B,
+        ...HSK6_ROWS_C,
+        ...HSK6_ROWS_D,
+        ...HSK6_ROWS_E,
+        ...HSK6_ROWS_F,
+        ...HSK6_ROWS_G,
+        ...HSK6_ROWS_H,
+        ...HSK6_ROWS_I,
+        ...HSK6_ROWS_J,
     ],
 }
 

@@ -34,7 +34,7 @@ const darkTheme = tokens.slice(darkThemeStart)
 function tonesInUse(): number[] {
     const tones = new Set<number>()
 
-    for (const id of ['hsk1-tw', 'hsk2-tw', 'hsk3-tw', 'hsk4-tw', 'hsk5-tw']) {
+    for (const id of ['hsk1-tw', 'hsk2-tw', 'hsk3-tw', 'hsk4-tw', 'hsk5-tw', 'hsk6-tw']) {
         const file = JSON.parse(
             readFileSync(join(process.cwd(), 'public', 'data', 'lists', `${id}.json`), 'utf8'),
         ) as { entries: { romanizations?: Record<string, { syllables?: { tone: number }[] }> }[] }
