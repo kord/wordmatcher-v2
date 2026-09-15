@@ -266,26 +266,61 @@ disagree and the extract backs us), `neither`, and `silent` (the extract has no 
 character). The reference is not vendored; `tools/xls-to-tsv.py` converts the two workbooks to a TSV
 under `tmp/` after the download.
 
-Across HSK 5's 1,300 words it compares 2,454 syllables for the 2,450 whose characters the tables know,
-and 18 came back `theirs`. Fourteen were corrected — the 從 of 從此/從而/從前/從事/自從 was written `tsông`
-against `tsiông`, 促 was `tshok` against `tshiok` in 促進 and 促使, 模 was `môo` against `bôo` in 模仿,
-模糊 and 模特, and 熬夜, 斜, 癢 and 暈 each had a vowel or tone that neither source supports. The
-extract agrees *more* after the change than before — 903 to 912 exact readings, 904 to 913 exact POJ —
-which is the real confirmation, since word-level evidence is stronger than character-level evidence.
+Across the four levels that were authored by hand it compares 4,313 syllables. The verdict `theirs` —
+the tables and the extract both contradict us — came back 29 times: 0 in HSK 2, 3 in HSK 3, 8 in HSK 4
+and 18 in HSK 5. **Sixteen were corrected**, and each was checked against the extract at *word* level
+before being changed:
 
-The method has to be used with its limits in view. Four flags were left alone, and two of them show why:
+- **From** `tsông` **to** `tsiông` — 從此, 從而, 從前, 從事, 自從. 從前 the extract carries outright as
+  `tsiông-tsiân`, so both syllables there were wrong.
+- **From** `tsông-lâi` **to** `tsîng-lâi` — 從來. The 從 of 從來 is `tsîng`, and the 從 of 自從 is
+  `tsiông`: the same character, two words, two readings, which is why each row was looked up separately.
+- **From** `tshok` **to** `tshiok` — 促進, 促使.
+- **From** `môo` **to** `bôo` — 模仿, 模糊, 模特.
+- **From** `hou` **to** `hoo` — 招呼 in 拍招呼. The character tables gave 呼 as `khoo`, which would have
+  been wrong; the extract's own 拍招呼 is `phah-tsio-hoo`.
+- 熬夜 `gâu`→`gô`, 斜 `tshuâ`→`tshiâ`, 癢 `tsīnn`→`tsiunn`, 暈 `hîn`→`hūn`.
 
-- **`管仔` `kóng-á` was a false positive.** The character tables give 管 as `kńg`, which is what the plain
-  word is, but the extract has 管仔 as `kóng-á`. Character evidence is not word evidence; a compound can
-  use a reading the character never has on its own.
-- **`雪文` `sap-bûn` is right and looks wrong.** 雪 is `seh`/`suat` everywhere except in this word for
-  soap, where it is `sap`. No source lists the reading because it exists only here.
-- **`辣椒` and `尋找`** read 辣 as `hiam` and 找 as `tshuē`, which no source attests: the Taiwanese words
-  are 薟椒 and 揣, and the characters in front of you are the Mandarin ones. Left for a decision, because
-  keeping the familiar characters is a real option and the honest one is not.
+The extract then agrees *more* than before — over the two affected levels, 903→912 and 904→913 for HSK 5,
+409→411 and 410→412 for HSK 4 — which is the real confirmation, because word-level evidence is stronger
+than character-level evidence.
 
-The reference has its own noise — it gives 肉 a colloquial reading of `hik8`, which is not a thing — and
-a literary reading is correct in plenty of formal compounds. Nothing here rewrites a table on its own.
+**Thirteen of the 29 are still standing, and not one of them is a wrong reading.** Seven rows across six
+words were confirmed correct — in each, character evidence said we were wrong and the extract's own entry
+for the word said we were right, which is the whole argument for demanding word evidence:
+
+| word | character tables gave | the word is | cited by |
+| ---- | --------------------- | ----------- | -------- |
+| 香蕉 `king-tsio` | 香 as `hiang`/`hiunn` | `king-tsio` | the extract's own 香蕉 row |
+| 馬虎 `má-hu` | 虎 as `hóo` | `má-hu` | the extract's own 馬虎 row |
+| 普遍 `phóo-phiàn` | 遍 as `piàn` | `phóo-phiàn` | the extract's own 普遍 row |
+| 管仔 `kóng-á` | 管 as `kńg` | `kóng-á` | the extract's own 管仔 row |
+| 提 `the̍h` | 提 as `thê` | `the̍h` | 提 carries both; `thê` is the other sense |
+| 雪文 `sap-bûn` | 雪 as `seh`/`suat` | `sap-bûn` | the only word where 雪 is `sap` |
+
+The remaining six rows, across five words, are open for a different reason: the reading is right and the
+*character* is borrowed from Mandarin, so no source attests it. 難 `oh` (the word is 惡 or 僫), 辣 `hiam`
+and 辣椒 `hiam-tsio` (薟椒), 香 `phang` (芳), 找 `tshuē` (揣), and 毋過 `m̄-koh`, where nothing is wrong
+but the MoE-recommended spelling is 毋閣. Changing the character changes what the learner reads and turns
+the entry into a `differs: 'word'` contrast candidate, so these are a product decision rather than a
+correction, and are left for the author.
+
+The method has to be used with its limits in view. The reference has its own noise — it gives 肉 a
+colloquial reading of `hik8`, which is not a thing — and a 文讀 is correct in plenty of formal compounds.
+Two further traps cost real time and are worth naming:
+
+- **Character evidence is not word evidence.** A compound can use a reading the character never has on
+  its own, and character tables are built by reading characters.
+- **Readings are compared without case.** Proper nouns are capitalised in our Tâi-lô (`Tn̂g-siânn` for the
+  Great Wall), so a case-sensitive comparison reports every capitalised syllable as unattested — which
+  is how 長城 and 長江 first appeared on the list.
+
+`koktai` (吳守禮《國臺對照活用辭典》) is CC BY-SA via a grant from the estate arranged by Wikimedia Taiwan,
+with the written agreement still in progress, and the reformatting is CC0 — so it is the most permissive
+of the three. It is not used because the text is Big5 with PE2 print control codes and needs a
+user-defined-glyph font to render at all.
+
+`Tai-Hua-Khah-Lan-Ku` (黃元興 1992) holds no data in the repository, only a README pointing at a blog.
 
 If a Hakka or Indigenous variety is ever wanted, the same organisation covers those with the same
 integration pipeline (`moedict-data-hakka`, `hakka_elearning`, `klokah_data_extract`, `amis-data`),
